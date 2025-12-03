@@ -262,22 +262,45 @@ class VoBeeChatbot {
 
     /**
      * Find the matching category for user input
+     * Uses a scoring system to find the best match, prioritizing longer/more specific matches
      * @param {string} input - User's message
      * @returns {string|null} - Matched category name or null
      */
     findMatchingCategory(input) {
         const normalizedInput = input.toLowerCase().trim();
+        let bestMatch = null;
+        let bestScore = 0;
 
-        // Check each category's keywords
+        // Check each category's keywords and score them
         for (const [category, keywords] of Object.entries(KeywordMappings)) {
             for (const keyword of keywords) {
                 if (normalizedInput.includes(keyword)) {
-                    return category;
+                    // Score based on keyword length (longer = more specific = better)
+                    // Also give bonus for exact or near-exact matches
+                    let score = keyword.length;
+                    
+                    // Bonus for exact match
+                    if (normalizedInput === keyword) {
+                        score += 100;
+                    }
+                    // Bonus if keyword is a significant portion of input
+                    else if (keyword.length >= normalizedInput.length * 0.5) {
+                        score += 20;
+                    }
+                    // Bonus for phrase matches (multi-word keywords)
+                    if (keyword.includes(' ')) {
+                        score += 15;
+                    }
+                    
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMatch = category;
+                    }
                 }
             }
         }
 
-        return null;
+        return bestMatch;
     }
 
     /**

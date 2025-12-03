@@ -230,6 +230,87 @@ const ResponsePatterns = {
         "I wish I knew the answer to that! I've noted it down for my learning journey! 📝",
         "My circuits are a bit confused, but I'm logging this to improve! 💡",
         "That's a great input! I don't have an answer yet, but I'm storing it to learn! 🌱"
+    ],
+
+    /**
+     * Czech greeting responses
+     */
+    czechGreetings: [
+        "Ahoj! 🐝 Jsem VoBee, tvůj přátelský AI asistent!",
+        "Nazdar! VoBee k vašim službám! Jak vám mohu pomoci?",
+        "Čau! Vítej u VoBee! Co máš na srdci?",
+        "Zdravím! Jsem VoBee, tvůj přátelský pomocník! 🌻",
+        "Ahoj ahoj! Tady VoBee, těším se na náš rozhovor!"
+    ],
+
+    /**
+     * Czech farewell responses
+     */
+    czechFarewells: [
+        "Měj se! Přijď zase! 🐝",
+        "Na shledanou! Zůstaň sladký jako med! 🍯",
+        "Čau! Bylo mi potěšením si s tebou popovídat!",
+        "Ahoj! VoBee tu bude, až mě budeš potřebovat!",
+        "Nashle! Ať se ti daří! ✨"
+    ],
+
+    /**
+     * Czech how are you responses
+     */
+    czechHowAreYou: [
+        "Mám se skvěle, díky za optání! Bzučím pozitivní energií! 🐝",
+        "Jsem fantastický! Jak se máš ty?",
+        "Cítím se úžasně! Každý rozhovor mi zlepšuje den! 😊",
+        "Výborně! Těším se, že ti můžu pomoct!"
+    ],
+
+    /**
+     * Czech thanks responses
+     */
+    czechThanks: [
+        "Není zač! Rád pomohu! 🌟",
+        "Rádo se stalo! To je to, proč tu jsem!",
+        "Není problém! Klidně se ptej, kdyby bylo cokoliv dalšího!",
+        "To mě těší! Pomáhat ti mě baví! 🐝"
+    ],
+
+    /**
+     * Czech jokes
+     */
+    czechJokes: [
+        "Proč mají včely lepivé vlasy? Protože používají plástve! 🐝😄",
+        "Co řekne včela, když přiletí domů? Med jsem doma! 🍯",
+        "Jak se zdraví včely? Ahoj, bzzzkamaráde! 🐝",
+        "Proč včely tak dobře počítají? Protože znají včelaritmetiku! 📐"
+    ],
+
+    /**
+     * Czech capabilities responses
+     */
+    czechCapabilities: [
+        "Umím si s tebou povídat na různá témata, odpovídat na otázky a dělat ti společnost! Neustále se učím! 🧠",
+        "Jsem tu, abych ti pomohl s konverzací, poskytl informace a zpříjemnil ti den!",
+        "Můžu ti pomoct s obecnými otázkami a vést přátelské rozhovory! O čem bys chtěl mluvit?"
+    ],
+
+    /**
+     * Czech help responses
+     */
+    czechHelp: [
+        "Jsem tu, abych pomohl! Můžeš se mě ptát na různé věci nebo si jen popovídat! 🐝",
+        "Potřebuješ pomoct? Můžu odpovídat na otázky a vést konverzace!",
+        "Tady jsou věci, které můžeš zkusit: pozdrav mě, zeptej se na mě, nebo si prostě popovídej!"
+    ],
+
+    /**
+     * Czech fallback responses
+     */
+    czechFallbacks: [
+        "Hmm, to je pro mě novinka! 🤔 Zapamatuji si to na příště!",
+        "Zajímavé! Nevím, jak na to odpovědět, ale učím se každý den! 📚",
+        "To mě dostalo! 🐝 Uložil jsem si tvou zprávu, abych se z ní mohl učit!",
+        "To je mimo mé současné znalosti, ale neustále se rozšiřuji! Zkusíš něco jiného?",
+        "Moje včelí mozek bzučí, ale tohle ještě nechápu! Mohl bys to přeformulovat? 🐝"
     ]
 };
 
@@ -239,6 +320,7 @@ const ResponsePatterns = {
  * that trigger that category
  */
 const KeywordMappings = {
+    // English keywords
     greetings: ['hello', 'hi', 'hey', 'greetings', 'howdy', 'hola', 'sup', 'yo', 'hiya'],
     farewells: ['bye', 'goodbye', 'see you', 'farewell', 'later', 'cya', 'take care', 'goodnight'],
     identity: ['who are you', 'what are you', 'your name', 'about you', 'tell me about yourself'],
@@ -256,7 +338,16 @@ const KeywordMappings = {
     goodNight: ['good night', 'goodnight', 'gn', 'sleep', 'bedtime'],
     feelingSad: ['sad', 'depressed', 'unhappy', 'feeling low', 'not okay', 'crying'],
     feelingHappy: ['happy', 'great', 'wonderful', 'fantastic', 'excited', 'joyful', 'feeling good'],
-    bored: ['bored', 'boring', 'nothing to do', 'entertain me']
+    bored: ['bored', 'boring', 'nothing to do', 'entertain me'],
+    
+    // Czech keywords
+    czechGreetings: ['ahoj', 'čau', 'nazdar', 'zdravím', 'dobrý den', 'zdar', 'čus'],
+    czechFarewells: ['nashle', 'na shledanou', 'měj se', 'sbohem', 'papa', 'zatím', 'dobrou noc'],
+    czechHowAreYou: ['jak se máš', 'jak se daří', 'co ty', 'jak jsi', 'jak je'],
+    czechThanks: ['díky', 'děkuji', 'dekuju', 'dík', 'díkes'],
+    czechCapabilities: ['co umíš', 'co dokážeš', 'co můžeš', 'co zvládneš', 'tvoje schopnosti'],
+    czechHelp: ['pomoc', 'pomož', 'pomoct', 'potřebuji pomoc', 'poraď'],
+    czechJokes: ['vtip', 'něco vtipného', 'rozesměj mě', 'zasmát', 'humor']
 };
 
 // Export for use in other modules
