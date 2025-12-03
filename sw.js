@@ -11,7 +11,8 @@ const urlsToCache = [
     '/css/styles.css',
     '/js/chatbot.js',
     '/js/response-patterns.js',
-    '/manifest.json'
+    '/manifest.json',
+    '/icons/icon-192.svg'
 ];
 
 // Install event - cache resources
