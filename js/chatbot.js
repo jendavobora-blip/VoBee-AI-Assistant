@@ -4,6 +4,13 @@
  */
 
 class VoBeeChatbot {
+    // Match score thresholds for knowledge base searches
+    static KEYWORD_MATCH_THRESHOLD = 0.3;
+    static MINIMUM_MATCH_THRESHOLD = 0.2;
+    
+    // Minimum word length for filtering (keeping short Czech words)
+    static MIN_WORD_LENGTH = 2;
+
     constructor() {
         this.kb = KnowledgeBase;
         this.conversationHistory = [];
@@ -102,7 +109,7 @@ class VoBeeChatbot {
         }
 
         // Also search all topics regardless of keyword match
-        if (!bestMatch || bestScore < 0.3) {
+        if (!bestMatch || bestScore < VoBeeChatbot.KEYWORD_MATCH_THRESHOLD) {
             for (const category of categories) {
                 for (const [topicKey, topicData] of Object.entries(this.kb[category].topics)) {
                     const score = this.calculateMatchScore(message, topicData.question);
@@ -114,7 +121,7 @@ class VoBeeChatbot {
             }
         }
 
-        return bestScore > 0.2 ? bestMatch : null;
+        return bestScore > VoBeeChatbot.MINIMUM_MATCH_THRESHOLD ? bestMatch : null;
     }
 
     /**
@@ -124,12 +131,13 @@ class VoBeeChatbot {
      * @returns {number} Match score 0-1
      */
     calculateMatchScore(message, questions) {
-        const messageWords = message.split(' ').filter(w => w.length > 2);
+        // Filter words by minimum length (2 chars to keep short Czech words like 'je', 'na', 'do')
+        const messageWords = message.split(' ').filter(w => w.length >= VoBeeChatbot.MIN_WORD_LENGTH);
         let maxScore = 0;
 
         for (const question of questions) {
             const questionNormalized = this.normalizeText(question);
-            const questionWords = questionNormalized.split(' ').filter(w => w.length > 2);
+            const questionWords = questionNormalized.split(' ').filter(w => w.length >= VoBeeChatbot.MIN_WORD_LENGTH);
 
             // Exact match
             if (message === questionNormalized) {
