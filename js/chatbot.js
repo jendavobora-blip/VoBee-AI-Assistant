@@ -20,7 +20,7 @@ class VoBeeChatbot {
      */
     constructor() {
         this.dbName = 'VoBeeDB';
-        this.dbVersion = 1;
+        this.dbVersion = 2;
         this.db = null;
         this.conversationHistory = [];
         this.isInitialized = false;
@@ -28,7 +28,8 @@ class VoBeeChatbot {
         // Store names for IndexedDB
         this.stores = {
             conversations: 'conversations',
-            unrecognized: 'unrecognized_queries'
+            unrecognized: 'unrecognized_queries',
+            settings: 'user_settings'
         };
     }
 
@@ -40,6 +41,7 @@ class VoBeeChatbot {
         try {
             await this.initDatabase();
             await this.loadConversationHistory();
+            await this.loadUserSettings();
             this.isInitialized = true;
             console.log('VoBee Chatbot initialized successfully! 🐝');
         } catch (error) {
@@ -89,6 +91,13 @@ class VoBeeChatbot {
                     unrecognizedStore.createIndex('timestamp', 'timestamp', { unique: false });
                     unrecognizedStore.createIndex('count', 'count', { unique: false });
                 }
+
+                // Create user settings store for avatar and preferences
+                if (!db.objectStoreNames.contains(this.stores.settings)) {
+                    db.createObjectStore(this.stores.settings, {
+                        keyPath: 'key'
+                    });
+                }
             };
         });
     }
@@ -120,6 +129,77 @@ class VoBeeChatbot {
                 reject(error);
             }
         });
+    }
+
+    /**
+     * Load user settings from IndexedDB
+     * @returns {Promise<Object>}
+     */
+    async loadUserSettings() {
+        this.userSettings = {};
+        if (!this.db) return this.userSettings;
+
+        return new Promise((resolve, reject) => {
+            try {
+                const transaction = this.db.transaction([this.stores.settings], 'readonly');
+                const store = transaction.objectStore(this.stores.settings);
+                const request = store.getAll();
+
+                request.onsuccess = () => {
+                    const settings = request.result || [];
+                    settings.forEach(setting => {
+                        this.userSettings[setting.key] = setting.value;
+                    });
+                    resolve(this.userSettings);
+                };
+
+                request.onerror = () => {
+                    console.error('Error loading user settings:', request.error);
+                    reject(request.error);
+                };
+            } catch (error) {
+                console.error('Transaction error:', error);
+                reject(error);
+            }
+        });
+    }
+
+    /**
+     * Save a user setting to IndexedDB
+     * @param {string} key - Setting key (e.g., 'avatar')
+     * @param {*} value - Setting value
+     * @returns {Promise<void>}
+     */
+    async saveSetting(key, value) {
+        this.userSettings[key] = value;
+
+        if (this.db) {
+            return new Promise((resolve, reject) => {
+                try {
+                    const transaction = this.db.transaction([this.stores.settings], 'readwrite');
+                    const store = transaction.objectStore(this.stores.settings);
+                    const request = store.put({ key, value });
+
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => {
+                        console.error('Error saving setting:', request.error);
+                        reject(request.error);
+                    };
+                } catch (error) {
+                    console.error('Transaction error:', error);
+                    reject(error);
+                }
+            });
+        }
+    }
+
+    /**
+     * Get a user setting
+     * @param {string} key - Setting key
+     * @returns {*} Setting value or undefined
+     */
+    getSetting(key) {
+        return this.userSettings ? this.userSettings[key] : undefined;
     }
 
     /**
@@ -353,6 +433,15 @@ class ChatUI {
         this.userInput = null;
         this.sendButton = null;
         this.clearButton = null;
+        this.voiceRecordButton = null;
+        this.avatarUpload = null;
+        this.userAvatar = null;
+        this.avatarEditBtn = null;
+        
+        // Voice recording state
+        this.mediaRecorder = null;
+        this.audioChunks = [];
+        this.isRecording = false;
     }
 
     /**
@@ -369,12 +458,19 @@ class ChatUI {
         this.userInput = document.getElementById('user-input');
         this.sendButton = document.getElementById('send-button');
         this.clearButton = document.getElementById('clear-button');
+        this.voiceRecordButton = document.getElementById('voice-record-button');
+        this.avatarUpload = document.getElementById('avatar-upload');
+        this.userAvatar = document.getElementById('user-avatar');
+        this.avatarEditBtn = document.getElementById('avatar-edit-btn');
 
         // Initialize chatbot
         await this.chatbot.init();
 
         // Set up event listeners
         this.setupEventListeners();
+
+        // Load and display saved avatar
+        this.loadSavedAvatar();
 
         // Load and display existing conversation history
         this.displayHistory();
@@ -410,6 +506,200 @@ class ChatUI {
         if (this.clearButton) {
             this.clearButton.addEventListener('click', () => this.handleClear());
         }
+
+        // Voice record button
+        if (this.voiceRecordButton) {
+            this.voiceRecordButton.addEventListener('click', () => this.handleVoiceRecord());
+        }
+
+        // Avatar upload
+        if (this.avatarUpload && this.userAvatar) {
+            this.avatarEditBtn.addEventListener('click', () => this.avatarUpload.click());
+            this.userAvatar.addEventListener('click', () => this.avatarUpload.click());
+            this.avatarUpload.addEventListener('change', (e) => this.handleAvatarUpload(e));
+        }
+    }
+
+    /**
+     * Load saved avatar from storage
+     */
+    loadSavedAvatar() {
+        const savedAvatar = this.chatbot.getSetting('avatar');
+        if (savedAvatar && this.userAvatar) {
+            this.displayAvatar(savedAvatar);
+        }
+    }
+
+    /**
+     * Handle avatar upload
+     * @param {Event} event - File input change event
+     */
+    async handleAvatarUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file.');
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image file is too large. Maximum size is 5MB.');
+            return;
+        }
+
+        try {
+            const base64 = await this.fileToBase64(file);
+            await this.chatbot.saveSetting('avatar', base64);
+            this.displayAvatar(base64);
+            this.displayMessage('bot', 'Nice new avatar! Looking good! 🐝');
+        } catch (error) {
+            console.error('Error uploading avatar:', error);
+            alert('Failed to upload avatar. Please try again.');
+        }
+    }
+
+    /**
+     * Convert file to base64 string
+     * @param {File} file - The file to convert
+     * @returns {Promise<string>} Base64 string
+     */
+    fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /**
+     * Display avatar image
+     * @param {string} base64 - Base64 encoded image
+     */
+    displayAvatar(base64) {
+        if (!this.userAvatar) return;
+        
+        this.userAvatar.innerHTML = `<img src="${base64}" alt="User avatar">`;
+        this.userAvatar.classList.add('has-image');
+    }
+
+    /**
+     * Handle voice recording toggle
+     */
+    async handleVoiceRecord() {
+        if (this.isRecording) {
+            this.stopRecording();
+        } else {
+            await this.startRecording();
+        }
+    }
+
+    /**
+     * Start voice recording
+     */
+    async startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.mediaRecorder = new MediaRecorder(stream);
+            this.audioChunks = [];
+
+            this.mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    this.audioChunks.push(event.data);
+                }
+            };
+
+            this.mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                // Display voice message
+                this.displayVoiceMessage('user', audioUrl);
+                
+                // Save voice message
+                const base64Audio = await this.blobToBase64(audioBlob);
+                await this.chatbot.saveMessage('user', '[Voice Message]');
+                await this.chatbot.saveSetting('lastVoiceMessage', base64Audio);
+                
+                // Bot responds to voice message
+                this.showTypingIndicator();
+                setTimeout(async () => {
+                    const response = "I heard your voice message! 🎤 That's a cool feature! While I can't understand audio yet, I love that you're trying new ways to communicate! 🐝";
+                    await this.chatbot.saveMessage('bot', response);
+                    this.hideTypingIndicator();
+                    this.displayMessage('bot', response);
+                }, 1000);
+
+                // Stop all tracks
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            this.mediaRecorder.start();
+            this.isRecording = true;
+            this.voiceRecordButton.classList.add('recording');
+            this.voiceRecordButton.textContent = '⏹️';
+        } catch (error) {
+            console.error('Error starting recording:', error);
+            alert('Unable to access microphone. Please check permissions.');
+        }
+    }
+
+    /**
+     * Stop voice recording
+     */
+    stopRecording() {
+        if (this.mediaRecorder && this.isRecording) {
+            this.mediaRecorder.stop();
+            this.isRecording = false;
+            this.voiceRecordButton.classList.remove('recording');
+            this.voiceRecordButton.textContent = '🎤';
+        }
+    }
+
+    /**
+     * Convert blob to base64
+     * @param {Blob} blob - The blob to convert
+     * @returns {Promise<string>} Base64 string
+     */
+    blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    /**
+     * Display voice message in chat
+     * @param {string} sender - 'user' or 'bot'
+     * @param {string} audioUrl - URL of the audio blob
+     */
+    displayVoiceMessage(sender, audioUrl) {
+        if (!this.chatMessages) return;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content voice-message';
+        contentDiv.innerHTML = `
+            <span>🎤 Voice Message</span>
+            <audio controls src="${audioUrl}"></audio>
+        `;
+
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        messageDiv.appendChild(contentDiv);
+        messageDiv.appendChild(timeDiv);
+
+        this.chatMessages.appendChild(messageDiv);
+        this.scrollToBottom();
     }
 
     /**

@@ -38,6 +38,18 @@ A creative, friendly AI chatbot Progressive Web App (PWA) with pseudo-learning c
 - 10+ entertaining fallback messages
 - Informs users that their input is being logged for learning
 
+### 📷 Custom Avatar Upload
+- Upload your own photo for the avatar
+- Click the avatar or camera icon to select an image
+- Avatar is saved persistently in IndexedDB
+- Supports common image formats (JPEG, PNG, GIF, etc.)
+
+### 🎤 Voice Recording
+- Record voice messages directly in the chat
+- Click the microphone button to start/stop recording
+- Voice messages are displayed with playback controls
+- Requires microphone permission
+
 ## Project Structure
 
 ```
@@ -69,10 +81,13 @@ Manages the user interface:
 - Event handling (send, clear)
 - Typing indicators
 - Welcome messages
+- Avatar upload and display
+- Voice recording and playback
 
 ### IndexedDB Stores
 1. **conversations**: Stores all chat messages with timestamps
 2. **unrecognized_queries**: Logs unknown inputs with occurrence counts
+3. **user_settings**: Stores user preferences including avatar image
 
 ## Usage
 
@@ -94,6 +109,17 @@ Manages the user interface:
 - Ask "Tell me a joke" or "Fun fact"
 - Express emotions: "I'm feeling sad" or "I'm so happy!"
 - Ask for help with "Help" or "What can you do?"
+
+### Customizing Your Avatar
+- Click on the bee emoji avatar in the header, or click the camera (📷) button
+- Select an image file from your device (JPEG, PNG, GIF supported)
+- Your avatar will be saved and displayed on future visits
+
+### Recording Voice Messages
+- Click the microphone (🎤) button to start recording
+- Speak your message (grant microphone permission if prompted)
+- Click the stop (⏹️) button to end recording
+- Your voice message will appear in the chat with playback controls
 
 ## Extending the Chatbot
 
