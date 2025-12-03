@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="40" fill="#1A1A2E"/>
+  <circle cx="96" cy="90" r="50" fill="#FFB800"/>
+  <ellipse cx="80" cy="80" rx="8" ry="10" fill="#1A1A2E"/>
+  <ellipse cx="112" cy="80" rx="8" ry="10" fill="#1A1A2E"/>
+  <path d="M76 100 Q96 120 116 100" stroke="#1A1A2E" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="60" cy="75" rx="18" ry="10" fill="rgba(255,255,255,0.3)" transform="rotate(-30 60 75)"/>
+  <ellipse cx="132" cy="75" rx="18" ry="10" fill="rgba(255,255,255,0.3)" transform="rotate(30 132 75)"/>
+  <rect x="90" y="140" width="12" height="20" fill="#FFB800"/>
+  <path d="M96 45 L96 30" stroke="#1A1A2E" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="96" cy="25" r="6" fill="#1A1A2E"/>
+  <text x="96" y="178" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#FFB800" text-anchor="middle">VoBee</text>
+</svg>
