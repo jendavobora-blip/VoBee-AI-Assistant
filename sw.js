@@ -38,7 +38,8 @@ self.addEventListener('fetch', (event) => {
             })
             .catch(() => {
                 // Fallback for offline HTML requests
-                if (event.request.headers.get('accept').includes('text/html')) {
+                const acceptHeader = event.request.headers.get('accept');
+                if (acceptHeader && acceptHeader.includes('text/html')) {
                     return caches.match('/index.html');
                 }
             })
