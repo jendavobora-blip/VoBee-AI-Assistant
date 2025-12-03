@@ -1,0 +1,19 @@
+{
+  "name": "vobee-ai-assistant",
+  "version": "1.0.0",
+  "description": "VoBee - Your Creative AI Assistant. An engaging chatbot PWA with pseudo-dynamic learning.",
+  "main": "chatbot.js",
+  "scripts": {
+    "start": "npx http-server -p 3000 -c-1",
+    "test": "node tests/chatbot.test.js"
+  },
+  "keywords": [
+    "chatbot",
+    "ai",
+    "assistant",
+    "pwa",
+    "creative"
+  ],
+  "author": "",
+  "license": "ISC"
+}

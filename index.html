@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VoBee - Your Creative AI Assistant">
+    <meta name="theme-color" content="#FFB800">
+    <title>VoBee AI Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">
+                <span class="bee-icon">🐝</span>
+                <h1>VoBee</h1>
+            </div>
+            <p class="tagline">Your Creative AI Assistant</p>
+        </header>
+
+        <main class="chat-container" id="chat-container">
+            <div class="messages" id="messages">
+                <!-- Messages will be dynamically added here -->
+            </div>
+        </main>
+
+        <footer class="input-container">
+            <form id="chat-form" class="chat-form">
+                <input 
+                    type="text" 
+                    id="user-input" 
+                    class="user-input" 
+                    placeholder="Type your message..." 
+                    autocomplete="off"
+                    aria-label="Type your message"
+                >
+                <button type="submit" class="send-btn" aria-label="Send message">
+                    <span class="send-icon">➤</span>
+                </button>
+            </form>
+        </footer>
+    </div>
+
+    <script src="chatbot.js"></script>
+</body>
+</html>
