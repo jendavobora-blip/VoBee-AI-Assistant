@@ -73,6 +73,56 @@ html, body {
     font-size: 24px;
 }
 
+/* Avatar container */
+.avatar-container {
+    position: relative;
+    display: inline-block;
+}
+
+#user-avatar {
+    cursor: pointer;
+    overflow: hidden;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+
+#user-avatar:hover {
+    transform: scale(1.05);
+}
+
+#user-avatar.has-image {
+    background: transparent;
+    font-size: 0;
+}
+
+#user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-edit-btn {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 22px;
+    height: 22px;
+    background: var(--primary-color);
+    border: 2px solid var(--secondary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: transform 0.2s ease;
+}
+
+.avatar-edit-btn:hover {
+    transform: scale(1.1);
+}
+
 .header h1 {
     color: var(--secondary-color);
     font-size: 1.8rem;
@@ -253,6 +303,60 @@ html, body {
     color: var(--secondary-color);
 }
 
+/* Voice recording button */
+.btn-voice {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    padding: 15px 18px;
+    font-size: 1.2rem;
+}
+
+.btn-voice:hover {
+    background: rgba(255, 193, 7, 0.2);
+}
+
+.btn-voice.recording {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Voice message styles */
+.voice-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.voice-message audio {
+    max-width: 200px;
+    height: 35px;
+}
+
+.voice-message .play-btn {
+    background: var(--primary-color);
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Scrollbar styling */
 .chat-messages::-webkit-scrollbar {
     width: 6px;
@@ -307,6 +411,10 @@ html, body {
     }
 
     .btn-clear {
+        padding: 12px 15px;
+    }
+
+    .btn-voice {
         padding: 12px 15px;
     }
 }

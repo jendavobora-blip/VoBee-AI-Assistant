@@ -24,7 +24,11 @@
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <div class="logo">🐝</div>
+                <div class="avatar-container">
+                    <div id="user-avatar" class="logo" title="Click to upload avatar">🐝</div>
+                    <input type="file" id="avatar-upload" accept="image/*" hidden aria-label="Upload avatar image">
+                    <button id="avatar-edit-btn" class="avatar-edit-btn" aria-label="Change avatar">📷</button>
+                </div>
                 <div>
                     <h1>VoBee AI</h1>
                     <p>Your Friendly Assistant</p>
@@ -48,6 +52,9 @@
                 aria-label="Type your message"
                 autocomplete="off"
             >
+            <button id="voice-record-button" class="btn btn-voice" aria-label="Record voice message" title="Record voice message">
+                🎤
+            </button>
             <button id="send-button" class="btn btn-send" aria-label="Send message">
                 Send
             </button>
