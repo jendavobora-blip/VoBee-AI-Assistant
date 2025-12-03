@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VoBee AI Asistent - Váš osobní finanční poradce pro kryptoměny, akcie, ETF a finanční gramotnost">
+    <meta name="theme-color" content="#FFD700">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VoBee AI">
+    
+    <title>VoBee AI Asistent</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="bee-icon">🐝</span>
+                    <h1>VoBee AI</h1>
+                </div>
+                <button id="installBtn" class="install-btn hidden" aria-label="Nainstalovat aplikaci">
+                    <span>📲</span> Instalovat
+                </button>
+            </div>
+        </header>
+
+        <!-- Topic Selection -->
+        <nav class="topics-nav">
+            <button class="topic-btn active" data-topic="general" aria-label="Obecné">
+                <span class="topic-icon">💬</span>
+                <span class="topic-label">Obecné</span>
+            </button>
+            <button class="topic-btn" data-topic="crypto" aria-label="Kryptoměny">
+                <span class="topic-icon">₿</span>
+                <span class="topic-label">Krypto</span>
+            </button>
+            <button class="topic-btn" data-topic="stocks" aria-label="Akcie">
+                <span class="topic-icon">📈</span>
+                <span class="topic-label">Akcie</span>
+            </button>
+            <button class="topic-btn" data-topic="etf" aria-label="ETF">
+                <span class="topic-icon">📊</span>
+                <span class="topic-label">ETF</span>
+            </button>
+            <button class="topic-btn" data-topic="literacy" aria-label="Finanční gramotnost">
+                <span class="topic-icon">📚</span>
+                <span class="topic-label">Gramotnost</span>
+            </button>
+            <button class="topic-btn" data-topic="insolvency" aria-label="Insolvence">
+                <span class="topic-icon">⚖️</span>
+                <span class="topic-label">Insolvence</span>
+            </button>
+            <button class="topic-btn" data-topic="savings" aria-label="Šetření">
+                <span class="topic-icon">💰</span>
+                <span class="topic-label">Šetření</span>
+            </button>
+        </nav>
+
+        <!-- Chat Container -->
+        <main class="chat-container" id="chatContainer">
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome message -->
+                <div class="message bot-message">
+                    <div class="message-avatar">🐝</div>
+                    <div class="message-content">
+                        <p>Ahoj! Jsem <strong>VoBee</strong>, váš osobní finanční asistent. 🐝</p>
+                        <p>Mohu vám pomoci s dotazy ohledně:</p>
+                        <ul>
+                            <li>💰 <strong>Kryptoměn</strong> - Bitcoin, Ethereum a další</li>
+                            <li>📈 <strong>Akcií</strong> - investování na burze</li>
+                            <li>📊 <strong>ETF</strong> - exchange-traded funds</li>
+                            <li>📚 <strong>Finanční gramotnosti</strong> - základy financí</li>
+                            <li>⚖️ <strong>Insolvencí</strong> - oddlužení a bankrot</li>
+                            <li>💵 <strong>Šetření</strong> - jak ušetřit peníze</li>
+                        </ul>
+                        <p>Vyberte téma nahoře nebo se mě rovnou zeptejte!</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Chat Input -->
+        <footer class="chat-input-container">
+            <form id="chatForm" class="chat-form">
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        id="messageInput" 
+                        class="message-input" 
+                        placeholder="Napište svou otázku..." 
+                        autocomplete="off"
+                        aria-label="Napište zprávu"
+                    >
+                    <button type="submit" class="send-btn" aria-label="Odeslat zprávu">
+                        <span>📤</span>
+                    </button>
+                </div>
+            </form>
+            <div class="offline-indicator hidden" id="offlineIndicator">
+                <span>📴</span> Offline režim
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/knowledge-base.js"></script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

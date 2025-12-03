@@ -1,0 +1,24 @@
+{
+  "name": "vobee-ai-assistant",
+  "version": "1.0.0",
+  "description": "VoBee AI Asistent - Váš osobní finanční poradce pro kryptoměny, akcie, ETF a finanční gramotnost (PWA)",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8080 -c-1",
+    "dev": "npx http-server -p 8080 -c-1 -o",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "pwa",
+    "chatbot",
+    "finance",
+    "crypto",
+    "czech",
+    "ai-assistant"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "sharp": "^0.34.5"
+  }
+}
