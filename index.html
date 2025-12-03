@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VoBee AI Asistent - Český finanční chatbot pro kryptoměny, akcie, ETF a finanční gramotnost">
+    <meta name="theme-color" content="#1a1a2e">
+    
+    <title>VoBee AI Asistent</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-72x72.png">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🐝</span>
+                    <h1>VoBee AI</h1>
+                </div>
+                <button class="menu-btn" id="menuBtn" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Témata</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="topic-btn" data-topic="crypto">
+                    <span class="topic-icon">₿</span>
+                    <span>Kryptoměny</span>
+                </button>
+                <button class="topic-btn" data-topic="stocks">
+                    <span class="topic-icon">📈</span>
+                    <span>Akcie</span>
+                </button>
+                <button class="topic-btn" data-topic="etf">
+                    <span class="topic-icon">📊</span>
+                    <span>ETF</span>
+                </button>
+                <button class="topic-btn" data-topic="literacy">
+                    <span class="topic-icon">📚</span>
+                    <span>Finanční gramotnost</span>
+                </button>
+                <button class="topic-btn" data-topic="insolvency">
+                    <span class="topic-icon">⚖️</span>
+                    <span>Insolvence</span>
+                </button>
+                <button class="topic-btn" data-topic="savings">
+                    <span class="topic-icon">💰</span>
+                    <span>Šetření</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="clear-history-btn" id="clearHistory">
+                    <span>🗑️</span>
+                    <span>Vymazat historii</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will be inserted here -->
+            </div>
+
+            <!-- Quick Replies -->
+            <div class="quick-replies" id="quickReplies">
+                <button class="quick-reply-btn" data-message="Co jsou kryptoměny?">Co jsou kryptoměny?</button>
+                <button class="quick-reply-btn" data-message="Jak začít investovat?">Jak začít investovat?</button>
+                <button class="quick-reply-btn" data-message="Co je ETF?">Co je ETF?</button>
+                <button class="quick-reply-btn" data-message="Jak šetřit peníze?">Jak šetřit peníze?</button>
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-container">
+                <form class="chat-input-form" id="chatForm">
+                    <input 
+                        type="text" 
+                        class="chat-input" 
+                        id="chatInput" 
+                        placeholder="Napište zprávu..." 
+                        autocomplete="off"
+                        aria-label="Zpráva"
+                    >
+                    <button type="submit" class="send-btn" id="sendBtn" aria-label="Odeslat">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2L15 22L11 13M11 13L2 9L22 2"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <!-- Overlay for mobile sidebar -->
+        <div class="overlay" id="overlay"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/knowledge-base.js"></script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
