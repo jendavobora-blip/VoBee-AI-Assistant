@@ -392,13 +392,15 @@ class VoBeeBot {
     /**
      * Register service worker for PWA functionality
      */
+    /**
+     * Register service worker for PWA functionality
+     */
     async registerServiceWorker() {
         if ('serviceWorker' in navigator) {
             try {
-                const registration = await navigator.serviceWorker.register('/sw.js');
-                console.log('Service Worker registered successfully:', registration.scope);
-            } catch (error) {
-                console.log('Service Worker registration failed:', error);
+                await navigator.serviceWorker.register('/sw.js');
+            } catch {
+                // Service worker registration failed - app will work without offline support
             }
         }
     }

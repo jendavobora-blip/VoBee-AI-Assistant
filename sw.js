@@ -10,7 +10,13 @@ const urlsToCache = [
     '/styles.css',
     '/chatbot.js',
     '/manifest.json',
+    '/icons/icon-72.png',
+    '/icons/icon-96.png',
+    '/icons/icon-128.png',
+    '/icons/icon-144.png',
+    '/icons/icon-152.png',
     '/icons/icon-192.png',
+    '/icons/icon-384.png',
     '/icons/icon-512.png'
 ];
 
@@ -19,11 +25,7 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('VoBee: Cache opened');
                 return cache.addAll(urlsToCache);
-            })
-            .catch((error) => {
-                console.log('VoBee: Cache failed:', error);
             })
     );
     // Activate immediately
@@ -37,7 +39,6 @@ self.addEventListener('activate', (event) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (cacheName !== CACHE_NAME) {
-                        console.log('VoBee: Removing old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
