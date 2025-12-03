@@ -106,7 +106,8 @@ class VoBeeChatbot {
 
         // Rozloučení
         if (this.matchesAny(message, ['nashledanou', 'na shledanou', 'cau', 'bye', 'papa', 'ahoj', 'sbohem'])) {
-            if (message.includes('nashle') || message.includes('shle') || message.includes('bye') || message.includes('papa') || message.includes('sbohem')) {
+            const farewellPatterns = ['nashle', 'shle', 'bye', 'papa', 'sbohem'];
+            if (farewellPatterns.some(pattern => message.includes(pattern))) {
                 const farewells = KnowledgeBase.general.farewell;
                 return { text: farewells[Math.floor(Math.random() * farewells.length)] };
             }
