@@ -442,6 +442,10 @@ class ChatUI {
         this.mediaRecorder = null;
         this.audioChunks = [];
         this.isRecording = false;
+        this.mediaStream = null;
+        
+        // Track object URLs for cleanup
+        this.audioObjectUrls = [];
     }
 
     /**
@@ -582,7 +586,14 @@ class ChatUI {
     displayAvatar(base64) {
         if (!this.userAvatar) return;
         
-        this.userAvatar.innerHTML = `<img src="${base64}" alt="User avatar">`;
+        // Clear existing content
+        this.userAvatar.textContent = '';
+        
+        // Create img element programmatically to avoid XSS
+        const img = document.createElement('img');
+        img.src = base64;
+        img.alt = 'User avatar';
+        this.userAvatar.appendChild(img);
         this.userAvatar.classList.add('has-image');
     }
 
@@ -602,8 +613,8 @@ class ChatUI {
      */
     async startRecording() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            this.mediaRecorder = new MediaRecorder(stream);
+            this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.mediaRecorder = new MediaRecorder(this.mediaStream);
             this.audioChunks = [];
 
             this.mediaRecorder.ondataavailable = (event) => {
@@ -616,13 +627,14 @@ class ChatUI {
                 const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
                 const audioUrl = URL.createObjectURL(audioBlob);
                 
+                // Track URL for cleanup
+                this.audioObjectUrls.push(audioUrl);
+                
                 // Display voice message
                 this.displayVoiceMessage('user', audioUrl);
                 
-                // Save voice message
-                const base64Audio = await this.blobToBase64(audioBlob);
+                // Save message reference to conversation history
                 await this.chatbot.saveMessage('user', '[Voice Message]');
-                await this.chatbot.saveSetting('lastVoiceMessage', base64Audio);
                 
                 // Bot responds to voice message
                 this.showTypingIndicator();
@@ -634,7 +646,7 @@ class ChatUI {
                 }, 1000);
 
                 // Stop all tracks
-                stream.getTracks().forEach(track => track.stop());
+                this.cleanupMediaStream();
             };
 
             this.mediaRecorder.start();
@@ -644,6 +656,16 @@ class ChatUI {
         } catch (error) {
             console.error('Error starting recording:', error);
             alert('Unable to access microphone. Please check permissions.');
+        }
+    }
+
+    /**
+     * Clean up media stream resources
+     */
+    cleanupMediaStream() {
+        if (this.mediaStream) {
+            this.mediaStream.getTracks().forEach(track => track.stop());
+            this.mediaStream = null;
         }
     }
 
@@ -660,20 +682,6 @@ class ChatUI {
     }
 
     /**
-     * Convert blob to base64
-     * @param {Blob} blob - The blob to convert
-     * @returns {Promise<string>} Base64 string
-     */
-    blobToBase64(blob) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-            reader.readAsDataURL(blob);
-        });
-    }
-
-    /**
      * Display voice message in chat
      * @param {string} sender - 'user' or 'bot'
      * @param {string} audioUrl - URL of the audio blob
@@ -686,10 +694,17 @@ class ChatUI {
 
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content voice-message';
-        contentDiv.innerHTML = `
-            <span>🎤 Voice Message</span>
-            <audio controls src="${audioUrl}"></audio>
-        `;
+        
+        // Create elements programmatically to avoid XSS
+        const labelSpan = document.createElement('span');
+        labelSpan.textContent = '🎤 Voice Message';
+        
+        const audioElement = document.createElement('audio');
+        audioElement.controls = true;
+        audioElement.src = audioUrl;
+        
+        contentDiv.appendChild(labelSpan);
+        contentDiv.appendChild(audioElement);
 
         const timeDiv = document.createElement('div');
         timeDiv.className = 'message-time';
@@ -734,7 +749,21 @@ class ChatUI {
         if (this.chatMessages) {
             this.chatMessages.innerHTML = '';
         }
+        
+        // Clean up object URLs to free memory
+        this.cleanupObjectUrls();
+        
         this.displayWelcomeMessage();
+    }
+
+    /**
+     * Clean up all tracked object URLs
+     */
+    cleanupObjectUrls() {
+        this.audioObjectUrls.forEach(url => {
+            URL.revokeObjectURL(url);
+        });
+        this.audioObjectUrls = [];
     }
 
     /**
