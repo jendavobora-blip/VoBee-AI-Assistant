@@ -1,4 +1,5 @@
-# VoBee AI Assistant 🐝
+# VoBee AI Assistant <img width="480" height="480" alt="image" src="https://github.com/user-attachments/assets/feb0de59-8c3c-4796-8b99-554155982991" />
+
 
 A creative, friendly AI chatbot Progressive Web App (PWA) with pseudo-learning capabilities and persistent conversation history.
 
