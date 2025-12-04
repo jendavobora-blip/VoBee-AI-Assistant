@@ -1,5 +1,9 @@
 # VoBee AI Assistant <img width="480" height="480" alt="image" src="https://github.com/user-attachments/assets/feb0de59-8c3c-4796-8b99-554155982991" />
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PWA Ready](https://img.shields.io/badge/PWA-Ready-blue.svg)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Czech Language](https://img.shields.io/badge/Language-Czech-red.svg)](https://en.wikipedia.org/wiki/Czech_language)
 
 A creative, friendly AI chatbot Progressive Web App (PWA) with pseudo-learning capabilities and persistent conversation history.
 
