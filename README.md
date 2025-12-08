@@ -51,6 +51,8 @@ VoBee-AI-Assistant/
 ├── js/
 │   ├── chatbot.js          # Main chatbot logic and UI controller
 │   └── response-patterns.js # Response templates and keyword mappings
+├── scripts/
+│   └── fetch_recent_commits.sh # Automation script to fetch recent commits
 └── icons/
     └── icon-192.svg        # App icon
 ```
@@ -118,6 +120,87 @@ Access logged queries programmatically:
 ```javascript
 const queries = await vobee.getUnrecognizedQueries();
 console.log(queries);
+```
+
+## Automation Scripts
+
+### Fetch Recent Commits Script
+The repository includes an automation script to fetch commits from the last 2 hours across all your accessible GitHub repositories.
+
+#### Prerequisites
+- **jq** - JSON processor (required)
+- **curl** - HTTP client (required if not using GitHub CLI)
+- **GitHub CLI (gh)** - Optional but recommended
+
+Install prerequisites:
+```bash
+# On Ubuntu/Debian
+sudo apt-get install jq curl
+
+# On macOS
+brew install jq curl
+
+# On CentOS/RHEL
+sudo yum install jq curl
+```
+
+#### Authentication
+The script supports two authentication methods:
+
+**Option 1: GitHub CLI (Recommended)**
+```bash
+gh auth login
+```
+
+**Option 2: Personal Access Token**
+```bash
+export GITHUB_TOKEN="your_github_personal_access_token"
+```
+
+To create a personal access token:
+1. Go to GitHub Settings → Developer settings → Personal access tokens
+2. Generate a new token with `repo` scope
+3. Copy the token and set it as an environment variable
+
+#### Usage
+```bash
+# Run the script
+./scripts/fetch_recent_commits.sh
+
+# Enable debug mode for verbose output
+DEBUG=1 ./scripts/fetch_recent_commits.sh
+```
+
+#### Output
+The script will:
+1. Authenticate with GitHub
+2. Fetch all repositories you have access to (owned, collaborator, organization member)
+3. Query each repository for commits from the last 2 hours
+4. Display commits grouped by repository with:
+   - Commit SHA (short)
+   - Author name and email
+   - Commit date
+   - Commit message
+
+#### Example Output
+```
+[INFO] Starting to fetch commits from the last 2 hours...
+[SUCCESS] Authenticated as: username
+[INFO] Fetching commits since: 2024-12-08T20:12:00Z
+[SUCCESS] Found 15 accessible repositories
+
+Repository: username/repo-name
+Total commits: 2
+================================================================================
+  Commit: a1b2c3d
+  Author: John Doe <john@example.com>
+  Date:   2024-12-08T21:30:00Z
+  Message: Add new feature
+
+  Commit: e4f5g6h
+  Author: Jane Smith <jane@example.com>
+  Date:   2024-12-08T20:45:00Z
+  Message: Fix bug in component
 ```
 
 ## Browser Support
