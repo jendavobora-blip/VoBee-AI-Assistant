@@ -251,8 +251,8 @@ main() {
     local repos_with_commits=0
     local total_commits=0
     
-    # Iterate through repositories
-    echo "$repos" | jq -r '.[] | .full_name' | while read -r repo_full_name; do
+    # Iterate through repositories using process substitution to avoid subshell
+    while IFS= read -r repo_full_name; do
         log_debug "Processing repository: $repo_full_name"
         
         # Fetch commits for this repository
@@ -263,33 +263,18 @@ main() {
         commit_count=$(echo "$commits" | jq 'length')
         
         if [ "$commit_count" -gt 0 ]; then
-            ((repos_with_commits++)) || true
-            ((total_commits+=commit_count)) || true
+            ((repos_with_commits++))
+            ((total_commits+=commit_count))
             display_commits "$repo_full_name" "$commits"
         fi
-    done
+    done < <(echo "$repos" | jq -r '.[] | .full_name')
     
-    # Summary - note: the counters in the while loop don't propagate due to subshell
-    # So we recalculate for the summary
+    # Summary
     echo ""
     echo "$(printf '=%.0s' {1..80})"
     log_success "Scan complete!"
-    
-    # Count repos with commits and total commits
-    local summary_repos=0
-    local summary_commits=0
-    echo "$repos" | jq -r '.[] | .full_name' | while read -r repo_full_name; do
-        local commits
-        commits=$(fetch_commits_since "$repo_full_name" "$since_timestamp")
-        local commit_count
-        commit_count=$(echo "$commits" | jq 'length')
-        
-        if [ "$commit_count" -gt 0 ]; then
-            ((summary_repos++)) || true
-            ((summary_commits+=commit_count)) || true
-        fi
-    done
-    
+    log_info "Repositories with commits: ${repos_with_commits} out of ${repo_count}"
+    log_info "Total commits found: ${total_commits}"
     echo ""
 }
 
