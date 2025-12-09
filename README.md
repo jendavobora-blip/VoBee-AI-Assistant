@@ -39,11 +39,22 @@ A creative, friendly AI chatbot Progressive Web App (PWA) with pseudo-learning c
 - 10+ entertaining fallback messages
 - Informs users that their input is being logged for learning
 
+### 🤖 Neural Avatar Interface (v4.0)
+- Advanced neural network visualization (`neural-interface.html`)
+- Face-structured neural network with eyes, mouth, nose, and facial outline
+- Interactive controls (Intensity adjustment, Reset, Pulse toggle)
+- Energy wave animations and pulsing outer ring with dots
+- Real-time statistics display (Synchronization, Power, Stability)
+- Dynamic neuron movements with intelligent connection rendering
+- Gradient effects and multi-color neural pathways
+- Automated binary data stream updates
+
 ## Project Structure
 
 ```
 VoBee-AI-Assistant/
 ├── index.html              # Main HTML entry point
+├── neural-interface.html   # Neural interface avatar page
 ├── manifest.json           # PWA manifest
 ├── sw.js                   # Service Worker for offline support
 ├── css/
