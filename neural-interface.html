@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vobio Neural Interface v3</title>
+    <title>Vobio Neural Avatar</title>
     <style>
-        /* --- ZÁKLADNÍ NASTAVENÍ --- */
         body {
             background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 50%, #0a0e1a 100%);
             display: flex;
@@ -14,239 +13,733 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            font-family: 'Courier New', monospace; /* Změna na technický font */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
             overflow: hidden;
+            position: relative;
         }
 
-        /* --- POZADÍ A EFEKTY --- */
         body::before {
             content: '';
             position: absolute;
             width: 100%;
             height: 100%;
             background: radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.03) 0%, transparent 50%);
-            animation: bgPulse 4s infinite;
+            animation: backgroundPulse 4s ease-in-out infinite;
         }
 
-        @keyframes bgPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
 
-        /* --- STYLY PRO AVATARA --- */
         .avatar-container {
             position: relative;
-            width: 400px;
-            height: 400px;
+            width: 500px;
+            height: 500px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 40px; /* Místo pro statistiky */
+            z-index: 1;
         }
 
-        .photo-frame {
+        .neural-avatar-canvas {
             position: absolute;
-            width: 280px;
-            height: 280px;
-            border-radius: 50%;
-            overflow: hidden;
-            z-index: 3;
-            border: 3px solid rgba(0, 255, 255, 0.6);
-            box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
-            background: #000;
-        }
-
-        .photo-frame img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            border-radius: 50%;
+            z-index: 3;
+            box-shadow: 
+                0 0 60px rgba(0, 255, 255, 0.5),
+                0 0 120px rgba(0, 255, 255, 0.3),
+                inset 0 0 40px rgba(0, 0, 0, 0.7);
+            border: 4px solid rgba(0, 255, 255, 0.6);
+            animation: neuralGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes neuralGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 60px rgba(0, 255, 255, 0.5),
+                    0 0 120px rgba(0, 255, 255, 0.3),
+                    inset 0 0 40px rgba(0, 0, 0, 0.7);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 90px rgba(0, 255, 255, 0.8),
+                    0 0 180px rgba(0, 255, 255, 0.4),
+                    inset 0 0 40px rgba(0, 0, 0, 0.7);
+                transform: scale(1.02);
+            }
         }
 
         .outer-ring {
             position: absolute;
-            width: 380px;
-            height: 380px;
+            width: 520px;
+            height: 520px;
             border-radius: 50%;
-            border: 1px dashed rgba(0, 255, 255, 0.3);
-            animation: spin 30s linear infinite;
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            z-index: 1;
+            animation: ringRotate 30s linear infinite, ringPulse 4s ease-in-out infinite;
         }
-        
-        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .neural-layer {
+        @keyframes ringRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes ringPulse {
+            0%, 100% { 
+                border-color: rgba(0, 255, 255, 0.3);
+                box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            }
+            50% { 
+                border-color: rgba(0, 255, 255, 0.6);
+                box-shadow: 0 0 60px rgba(0, 255, 255, 0.4);
+            }
+        }
+
+        .ring-dot {
             position: absolute;
-            width: 400px;
-            height: 400px;
-            z-index: 2;
+            width: 10px;
+            height: 10px;
+            background: #00ffff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #00ffff;
+            animation: dotPulse 3s ease-in-out infinite;
         }
-        canvas { position: absolute; top: 0; left: 0; }
 
-        /* --- NOVÉ: STYLY PRO STATISTIKY --- */
+        @keyframes dotPulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% { 
+                transform: scale(1.8);
+                opacity: 1;
+            }
+        }
+
+        .ring-dot:nth-child(1) { top: 0; left: 50%; margin-left: -5px; animation-delay: 0s; }
+        .ring-dot:nth-child(2) { top: 50%; right: 0; margin-top: -5px; animation-delay: 0.8s; }
+        .ring-dot:nth-child(3) { bottom: 0; left: 50%; margin-left: -5px; animation-delay: 1.6s; }
+        .ring-dot:nth-child(4) { top: 50%; left: 0; margin-top: -5px; animation-delay: 2.4s; }
+
+        .energy-wave {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 255, 255, 0.2);
+            z-index: 0;
+            animation: waveExpand 4s ease-out infinite;
+        }
+
+        @keyframes waveExpand {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.4;
+            }
+            100% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        .energy-wave:nth-child(2) { animation-delay: 1.3s; }
+        .energy-wave:nth-child(3) { animation-delay: 2.6s; }
+
         .status-container {
+            margin-top: 60px;
             text-align: center;
-            z-index: 10;
-            background: rgba(0, 20, 40, 0.6);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            width: 300px;
+            z-index: 1;
         }
 
         .status-text {
+            font-family: 'Courier New', Courier, monospace;
             color: #00ffff;
-            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            font-size: 22px;
+            animation: pulse 2s infinite;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            margin-bottom: 15px;
+        }
+
+        .status-subtext {
+            font-size: 14px;
+            color: #64748b;
+            letter-spacing: 3px;
+            margin-top: 8px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 50px;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #64748b;
+            justify-content: center;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .stat-value {
+            color: #00ffff;
             font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 28px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        }
+
+        .stat-label {
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-        .status-subtext {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-        }
-
-        .stat-label { flex: 1; text-align: left; margin-left: 10px; color: #aaa; }
-        .stat-value { width: 40px; text-align: right; color: #fff; font-weight: bold; }
-
         .stat-bar {
-            width: 100px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
+            width: 80px;
+            height: 4px;
+            background: rgba(100, 116, 139, 0.3);
+            margin-top: 8px;
+            border-radius: 2px;
             overflow: hidden;
         }
 
         .stat-bar-fill {
             height: 100%;
-            background: #00ffff;
-            box-shadow: 0 0 10px #00ffff;
-            transition: width 0.5s ease;
+            background: linear-gradient(90deg, #00ffff, #00cccc);
+            border-radius: 2px;
+            animation: barPulse 3s ease-in-out infinite;
         }
 
-        /* Data stream v pozadí */
+        @keyframes barPulse {
+            0%, 100% { width: 60%; }
+            50% { width: 100%; }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
         .data-stream {
             position: absolute;
-            color: rgba(0, 255, 255, 0.15);
-            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: rgba(0, 255, 255, 0.4);
             z-index: 0;
+            animation: streamFlow 20s linear infinite;
+        }
+
+        @keyframes streamFlow {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(100vh) translateX(100px); opacity: 0; }
+        }
+
+        .controls {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+            z-index: 1;
+        }
+
+        .control-btn {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00ffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
         }
     </style>
 </head>
 <body>
-    <div class="data-stream" style="top: 50px; left: 10%;">01001000 01000101 01001100 01001100</div>
-    <div class="data-stream" style="top: 100px; right: 10%;">01010110 01001111 01000010 01001001</div>
-    <div class="data-stream" style="bottom: 50px; left: 20%;">SYSTEM: ONLINE</div>
+    <div class="data-stream" style="top: -50px; left: 10%;">01001000 01000101 01001100 01001100 01001111</div>
+    <div class="data-stream" style="top: -100px; left: 80%; animation-delay: 7s;">01010110 01001111 01000010 01001001 01001111</div>
+    <div class="data-stream" style="top: -150px; left: 40%; animation-delay: 14s;">01001110 01000101 01010101 01010010 01000001 01001100</div>
 
     <div class="avatar-container">
-        <div class="outer-ring"></div>
+        <div class="energy-wave"></div>
+        <div class="energy-wave"></div>
+        <div class="energy-wave"></div>
         
-        <div class="neural-layer">
-            <canvas id="neuralCanvas"></canvas>
+        <div class="outer-ring">
+            <div class="ring-dot"></div>
+            <div class="ring-dot"></div>
+            <div class="ring-dot"></div>
+            <div class="ring-dot"></div>
         </div>
         
-        <div class="photo-frame">
-            <img src="jan.png" alt="Jan Vobora" onerror="this.src='https://via.placeholder.com/280/000000/00FFFF?text=FOTO+CHYBI'">
-        </div>
+        <canvas id="neuralAvatar" class="neural-avatar-canvas"></canvas>
     </div>
 
     <div class="status-container">
-        <div class="status-text">Neuronové Rozhraní</div>
-        <div class="status-subtext">Vobio Neural Avatar v3.2.1</div>
+        <div class="status-text">Neuronový Avatar Aktivní</div>
+        <div class="status-subtext">Vobio Neural Interface v4.0</div>
         
         <div class="stats">
             <div class="stat-item">
-                <div class="stat-bar"><div class="stat-bar-fill" style="width: 98%" id="bar-sync"></div></div>
+                <div class="stat-value" id="sync-value">98%</div>
                 <div class="stat-label">Synchronizace</div>
-                <div class="stat-value" id="val-sync">98%</div>
+                <div class="stat-bar"><div class="stat-bar-fill"></div></div>
             </div>
             <div class="stat-item">
-                <div class="stat-bar"><div class="stat-bar-fill" style="width: 100%"></div></div>
+                <div class="stat-value" id="power-value">100%</div>
                 <div class="stat-label">Napájení</div>
-                <div class="stat-value">100%</div> <!-- Power remains at 100% to indicate optimal operation -->
+                <div class="stat-bar"><div class="stat-bar-fill" style="width: 100%"></div></div>
             </div>
             <div class="stat-item">
-                <div class="stat-bar"><div class="stat-bar-fill" style="width: 87%" id="bar-stab"></div></div>
+                <div class="stat-value" id="stability-value">87%</div>
                 <div class="stat-label">Stabilita</div>
-                <div class="stat-value" id="val-stab">87%</div>
+                <div class="stat-bar"><div class="stat-bar-fill" style="width: 87%"></div></div>
             </div>
         </div>
     </div>
 
-    <script>
-        // --- GRAFIKA SÍTĚ (CANVAS) ---
-        const canvas = document.getElementById('neuralCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 400;
-        canvas.height = 400;
+    <div class="controls">
+        <button class="control-btn" id="intensity-btn">Intenzita ↑</button>
+        <button class="control-btn" id="reset-btn">Resetovat</button>
+        <button class="control-btn" id="pulse-btn">Pulzovat</button>
+    </div>
 
-        const nodes = [];
-        // Vytvoření uzlů
-        for (let i = 0; i < 20; i++) {
-            nodes.push({
-                x: Math.random() * 400,
-                y: Math.random() * 400,
-                radius: Math.random() * 2 + 1,
-                vx: (Math.random() - 0.5) * 1,
-                vy: (Math.random() - 0.5) * 1
-            });
+    <script>
+        // Hlavní canvas pro neuronového avatara
+        const canvas = document.getElementById('neuralAvatar');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 500;
+        canvas.height = 500;
+
+        // Načtení obrázku avatara
+        const avatarImage = new Image();
+        avatarImage.src = 'https://i.ibb.co/qNgQ8Kq/professional-headshot.jpg';
+        avatarImage.crossOrigin = "anonymous";
+
+        // Proměnné pro neuronovou síť avatara
+        let neurons = [];
+        let connections = [];
+        let intensity = 1;
+        let isPulsing = true;
+
+        // Barvy pro efekty
+        const colors = {
+            primary: '#00ffff',
+            secondary: '#00cccc',
+            accent: '#ff00ff',
+            highlight: '#ffff00'
+        };
+
+        // Vytvoření neuronů tvořících obličej
+        function createFaceNeurons() {
+            neurons = [];
+            
+            // Očnice (oko) - levá
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                neurons.push({
+                    x: 200 + Math.cos(angle) * 25,
+                    y: 220 + Math.sin(angle) * 25,
+                    radius: Math.random() * 2 + 1,
+                    speedX: 0,
+                    speedY: 0,
+                    pulse: Math.random() * Math.PI * 2,
+                    pulseSpeed: 0.05 + Math.random() * 0.03,
+                    color: colors.primary,
+                    connectionStrength: 0.9,
+                    originalX: 200 + Math.cos(angle) * 25,
+                    originalY: 220 + Math.sin(angle) * 25,
+                    type: 'eye'
+                });
+            }
+            
+            // Očnice (oko) - pravá
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                neurons.push({
+                    x: 300 + Math.cos(angle) * 25,
+                    y: 220 + Math.sin(angle) * 25,
+                    radius: Math.random() * 2 + 1,
+                    speedX: 0,
+                    speedY: 0,
+                    pulse: Math.random() * Math.PI * 2,
+                    pulseSpeed: 0.05 + Math.random() * 0.03,
+                    color: colors.primary,
+                    connectionStrength: 0.9,
+                    originalX: 300 + Math.cos(angle) * 25,
+                    originalY: 220 + Math.sin(angle) * 25,
+                    type: 'eye'
+                });
+            }
+            
+            // Ústa
+            for (let i = 0; i < 12; i++) {
+                const t = i / 11;
+                const x = 200 + t * 100;
+                const y = 320 + Math.sin(t * Math.PI) * 15;
+                neurons.push({
+                    x: x,
+                    y: y,
+                    radius: Math.random() * 1.5 + 0.8,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.5,
+                    pulse: Math.random() * Math.PI * 2,
+                    pulseSpeed: 0.03 + Math.random() * 0.02,
+                    color: colors.secondary,
+                    connectionStrength: 0.7,
+                    originalX: x,
+                    originalY: y,
+                    type: 'mouth'
+                });
+            }
+            
+            // Obrys obličeje (elipsa)
+            for (let i = 0; i < 36; i++) {
+                const angle = (i / 36) * Math.PI * 2;
+                const radiusX = 120;
+                const radiusY = 150;
+                neurons.push({
+                    x: 250 + Math.cos(angle) * radiusX,
+                    y: 250 + Math.sin(angle) * radiusY,
+                    radius: Math.random() * 1.2 + 0.6,
+                    speedX: 0,
+                    speedY: 0,
+                    pulse: Math.random() * Math.PI * 2,
+                    pulseSpeed: 0.02 + Math.random() * 0.02,
+                    color: colors.primary,
+                    connectionStrength: 0.5,
+                    originalX: 250 + Math.cos(angle) * radiusX,
+                    originalY: 250 + Math.sin(angle) * radiusY,
+                    type: 'face'
+                });
+            }
+            
+            // Nos
+            for (let i = 0; i < 6; i++) {
+                const y = 240 + i * 8;
+                neurons.push({
+                    x: 250,
+                    y: y,
+                    radius: Math.random() * 1 + 0.5,
+                    speedX: 0,
+                    speedY: 0,
+                    pulse: Math.random() * Math.PI * 2,
+                    pulseSpeed: 0.04 + Math.random() * 0.02,
+                    color: colors.accent,
+                    connectionStrength: 0.8,
+                    originalX: 250,
+                    originalY: y,
+                    type: 'nose'
+                });
+            }
+            
+            // Čelo
+            for (let i = 0; i < 15; i++) {
+                const x = 180 + i * 5;
+                const y = 180;
+                neurons.push({
+                    x: x,
+                    y: y,
+                    radius: Math.random() * 1 + 0.5,
+                    speedX: 0,
+                    speedY: 0,
+                    pulse: Math.random() * Math.PI * 2,
+                    pulseSpeed: 0.03 + Math.random() * 0.02,
+                    color: colors.primary,
+                    connectionStrength: 0.4,
+                    originalX: x,
+                    originalY: y,
+                    type: 'forehead'
+                });
+            }
+            
+            // Brada
+            for (let i = 0; i < 8; i++) {
+                const x = 220 + i * 5;
+                const y = 380;
+                neurons.push({
+                    x: x,
+                    y: y,
+                    radius: Math.random() * 1 + 0.5,
+                    speedX: 0,
+                    speedY: 0,
+                    pulse: Math.random() * Math.PI * 2,
+                    pulseSpeed: 0.03 + Math.random() * 0.02,
+                    color: colors.secondary,
+                    connectionStrength: 0.6,
+                    originalX: x,
+                    originalY: y,
+                    type: 'chin'
+                });
+            }
+            
+            // Náhodné neurony uvnitř obličeje pro detail
+            for (let i = 0; i < 60; i++) {
+                neurons.push({
+                    x: 180 + Math.random() * 140,
+                    y: 180 + Math.random() * 140,
+                    radius: Math.random() * 0.8 + 0.3,
+                    speedX: (Math.random() - 0.5) * 0.3,
+                    speedY: (Math.random() - 0.5) * 0.3,
+                    pulse: Math.random() * Math.PI * 2,
+                    pulseSpeed: 0.02 + Math.random() * 0.02,
+                    color: Math.random() > 0.5 ? colors.primary : colors.secondary,
+                    connectionStrength: 0.3 + Math.random() * 0.4,
+                    originalX: 180 + Math.random() * 140,
+                    originalY: 180 + Math.random() * 140,
+                    type: 'internal'
+                });
+            }
         }
 
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ffff';
-            ctx.strokeStyle = 'rgba(0, 255, 255, 0.15)';
-
-            nodes.forEach((node, i) => {
-                node.x += node.vx;
-                node.y += node.vy;
-
-                // Odraz od stěn
-                if (node.x < 0 || node.x > 400) node.vx *= -1;
-                if (node.y < 0 || node.y > 400) node.vy *= -1;
-
-                // Kreslení bodu
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Kreslení čar
-                for (let j = i + 1; j < nodes.length; j++) {
-                    const node2 = nodes[j];
-                    const dist = Math.sqrt((node.x - node2.x)**2 + (node.y - node2.y)**2);
-                    if (dist < 100) {
-                        ctx.beginPath();
-                        ctx.moveTo(node.x, node.y);
-                        ctx.lineTo(node2.x, node2.y);
-                        ctx.stroke();
+        // Vytvoření spojení mezi neurony
+        function createConnections() {
+            connections = [];
+            
+            for (let i = 0; i < neurons.length; i++) {
+                for (let j = i + 1; j < neurons.length; j++) {
+                    const neuronA = neurons[i];
+                    const neuronB = neurons[j];
+                    
+                    // Vzdálenost mezi neurony
+                    const dx = neuronA.x - neuronB.x;
+                    const dy = neuronA.y - neuronB.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Různé prahové vzdálenosti podle typu neuronu
+                    let maxDistance = 100;
+                    
+                    if (neuronA.type === neuronB.type) {
+                        maxDistance = 50; // Stejný typ - kratší spojení
+                    }
+                    
+                    // Zvyš pravděpodobnost spojení pro některé typy
+                    let connectionProbability = neuronA.connectionStrength * neuronB.connectionStrength;
+                    
+                    if (distance < maxDistance && Math.random() < connectionProbability) {
+                        connections.push({
+                            from: i,
+                            to: j,
+                            strength: 1 - distance / maxDistance,
+                            pulseOffset: Math.random() * Math.PI * 2
+                        });
                     }
                 }
-            });
-            requestAnimationFrame(animate);
+            }
         }
-        animate();
 
-        // --- SIMULACE "ŽIVOTA" (STATISTIKY) ---
+        // Funkce pro vykreslení
+        function drawNeuralAvatar() {
+            // Vyčištění canvasu s průhledným pozadím
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Vykreslení základního obrázku (průhledný)
+            if (avatarImage.complete) {
+                ctx.globalAlpha = 0.1;
+                ctx.drawImage(avatarImage, 50, 50, 400, 400);
+                ctx.globalAlpha = 1;
+            }
+            
+            // Aktualizace neuronů
+            neurons.forEach(neuron => {
+                // Pokud má neuron rychlost, pohybuj ho
+                if (neuron.speedX !== 0 || neuron.speedY !== 0) {
+                    neuron.x += neuron.speedX * intensity;
+                    neuron.y += neuron.speedY * intensity;
+                    
+                    // Omezení pohybu v okolí původní pozice
+                    const maxDistance = 20;
+                    const dx = neuron.x - neuron.originalX;
+                    const dy = neuron.y - neuron.originalY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > maxDistance) {
+                        neuron.speedX *= -0.8;
+                        neuron.speedY *= -0.8;
+                    }
+                    
+                    // Náhodné změny směru
+                    if (Math.random() < 0.01) {
+                        neuron.speedX = (Math.random() - 0.5) * 0.5 * intensity;
+                        neuron.speedY = (Math.random() - 0.5) * 0.5 * intensity;
+                    }
+                }
+                
+                // Pulzování
+                neuron.pulse += neuron.pulseSpeed * (isPulsing ? intensity : 0.3);
+                if (neuron.pulse > Math.PI * 2) neuron.pulse -= Math.PI * 2;
+            });
+            
+            // Vykreslení spojení
+            connections.forEach(conn => {
+                const fromNeuron = neurons[conn.from];
+                const toNeuron = neurons[conn.to];
+                
+                // Pulzující průhlednost
+                const pulseValue = Math.sin((fromNeuron.pulse + conn.pulseOffset) * 2) * 0.5 + 0.5;
+                const alpha = 0.05 + pulseValue * 0.15 * intensity;
+                
+                // Barva spojení podle typu neuronů
+                let strokeColor = colors.primary;
+                if (fromNeuron.type === 'mouth' || toNeuron.type === 'mouth') {
+                    strokeColor = colors.secondary;
+                } else if (fromNeuron.type === 'nose' || toNeuron.type === 'nose') {
+                    strokeColor = colors.accent;
+                }
+                
+                // Gradient pro spojení
+                const gradient = ctx.createLinearGradient(
+                    fromNeuron.x, fromNeuron.y,
+                    toNeuron.x, toNeuron.y
+                );
+                
+                gradient.addColorStop(0, `${strokeColor}${Math.floor(alpha * 255).toString(16).padStart(2, '0')}`);
+                gradient.addColorStop(1, `${colors.primary}00`);
+                
+                ctx.beginPath();
+                ctx.moveTo(fromNeuron.x, fromNeuron.y);
+                ctx.lineTo(toNeuron.x, toNeuron.y);
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = conn.strength * 1.5 * intensity;
+                ctx.stroke();
+            });
+            
+            // Vykreslení neuronů
+            neurons.forEach(neuron => {
+                // Pulzující velikost
+                const pulseSize = Math.sin(neuron.pulse) * neuron.radius * 0.5 * intensity + neuron.radius;
+                
+                // Vnější záře
+                const gradient = ctx.createRadialGradient(
+                    neuron.x, neuron.y, 0,
+                    neuron.x, neuron.y, pulseSize * 3
+                );
+                
+                gradient.addColorStop(0, `${neuron.color}${Math.floor(0.8 * intensity * 255).toString(16).padStart(2, '0')}`);
+                gradient.addColorStop(1, `${neuron.color}00`);
+                
+                ctx.beginPath();
+                ctx.arc(neuron.x, neuron.y, pulseSize * 3, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // Vnitřní jádro neuronu
+                ctx.beginPath();
+                ctx.arc(neuron.x, neuron.y, pulseSize, 0, Math.PI * 2);
+                ctx.fillStyle = neuron.color;
+                ctx.fill();
+                
+                // Centrální bod
+                ctx.beginPath();
+                ctx.arc(neuron.x, neuron.y, pulseSize * 0.3, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+            });
+            
+            // Celkové pulzování avatara
+            const globalPulse = Math.sin(Date.now() * 0.001) * 0.1 + 0.9;
+            canvas.style.filter = `brightness(${globalPulse}) contrast(${1 + intensity * 0.2})`;
+            
+            requestAnimationFrame(drawNeuralAvatar);
+        }
+
+        // Inicializace
+        avatarImage.onload = function() {
+            createFaceNeurons();
+            createConnections();
+            drawNeuralAvatar();
+        };
+
+        // Pokud se obrázek nenačte, použijeme náhradní neurony
+        avatarImage.onerror = function() {
+            createFaceNeurons();
+            createConnections();
+            drawNeuralAvatar();
+        };
+
+        // Kontrolní tlačítka
+        document.getElementById('intensity-btn').addEventListener('click', function() {
+            intensity = intensity === 1 ? 1.5 : intensity === 1.5 ? 2 : 1;
+            this.textContent = `Intenzita ${intensity === 1 ? '↑' : intensity === 1.5 ? '↑↑' : '↑↑↑'}`;
+            
+            // Animace statistik
+            const syncValue = document.getElementById('sync-value');
+            syncValue.textContent = `${Math.min(98 + intensity * 10, 100)}%`;
+            
+            const stabilityValue = document.getElementById('stability-value');
+            stabilityValue.textContent = `${Math.max(87 - intensity * 5, 70)}%`;
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            intensity = 1;
+            isPulsing = true;
+            document.getElementById('intensity-btn').textContent = 'Intenzita ↑';
+            createFaceNeurons();
+            createConnections();
+            
+            // Reset statistik
+            document.getElementById('sync-value').textContent = '98%';
+            document.getElementById('power-value').textContent = '100%';
+            document.getElementById('stability-value').textContent = '87%';
+        });
+
+        document.getElementById('pulse-btn').addEventListener('click', function() {
+            isPulsing = !isPulsing;
+            this.textContent = isPulsing ? 'Pulzovat' : 'Zastavit pulz';
+        });
+
+        // Dynamické datové proudy
+        function generateBinaryString(length) {
+            let binary = '';
+            for (let i = 0; i < length; i++) {
+                binary += Math.round(Math.random()) ? '1' : '0';
+            }
+            return binary.match(/.{1,8}/g).join(' ');
+        }
+
+        // Periodická aktualizace datových proudů
         setInterval(() => {
-            // Náhodná změna synchronizace
-            const sync = Math.floor(Math.random() * 5) + 95; // 95-99%
-            document.getElementById('val-sync').innerText = sync + "%";
-            document.getElementById('bar-sync').style.width = sync + "%";
+            const streams = document.querySelectorAll('.data-stream');
+            streams.forEach(stream => {
+                stream.textContent = generateBinaryString(48);
+            });
+        }, 4000);
 
-            // Náhodná změna stability
-            const stab = Math.floor(Math.random() * 15) + 80; // 80-95%
-            document.getElementById('val-stab').innerText = stab + "%";
-            document.getElementById('bar-stab').style.width = stab + "%";
-        }, 2000);
-
+        // Animace statistik
+        let statIndex = 0;
+        const syncStats = ['98%', '97%', '99%', '98%', '100%'];
+        const stabilityStats = ['87%', '85%', '90%', '86%', '87%'];
+        
+        setInterval(() => {
+            const syncElement = document.getElementById('sync-value');
+            const stabilityElement = document.getElementById('stability-value');
+            
+            if (intensity === 1) { // Pouze pokud není zvýšená intenzita
+                syncElement.textContent = syncStats[statIndex % syncStats.length];
+                stabilityElement.textContent = stabilityStats[statIndex % stabilityStats.length];
+                statIndex++;
+            }
+        }, 3000);
     </script>
 </body>
 </html>

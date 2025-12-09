@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vobio Neural Interface v3</title>
+    <style>
+        /* --- ZÁKLADNÍ NASTAVENÍ --- */
+        body {
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 50%, #0a0e1a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Courier New', monospace; /* Změna na technický font */
+            color: white;
+            overflow: hidden;
+        }
+
+        /* --- POZADÍ A EFEKTY --- */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.03) 0%, transparent 50%);
+            animation: bgPulse 4s infinite;
+        }
+
+        @keyframes bgPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+        /* --- STYLY PRO AVATARA --- */
+        .avatar-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px; /* Místo pro statistiky */
+        }
+
+        .photo-frame {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            overflow: hidden;
+            z-index: 3;
+            border: 3px solid rgba(0, 255, 255, 0.6);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+            background: #000;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .outer-ring {
+            position: absolute;
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            border: 1px dashed rgba(0, 255, 255, 0.3);
+            animation: spin 30s linear infinite;
+        }
+        
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .neural-layer {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            z-index: 2;
+        }
+        canvas { position: absolute; top: 0; left: 0; }
+
+        /* --- NOVÉ: STYLY PRO STATISTIKY --- */
+        .status-container {
+            text-align: center;
+            z-index: 10;
+            background: rgba(0, 20, 40, 0.6);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            width: 300px;
+        }
+
+        .status-text {
+            color: #00ffff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .status-subtext {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+
+        .stat-label { flex: 1; text-align: left; margin-left: 10px; color: #aaa; }
+        .stat-value { width: 40px; text-align: right; color: #fff; font-weight: bold; }
+
+        .stat-bar {
+            width: 100px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            transition: width 0.5s ease;
+        }
+
+        /* Data stream v pozadí */
+        .data-stream {
+            position: absolute;
+            color: rgba(0, 255, 255, 0.15);
+            font-size: 14px;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="data-stream" style="top: 50px; left: 10%;">01001000 01000101 01001100 01001100</div>
+    <div class="data-stream" style="top: 100px; right: 10%;">01010110 01001111 01000010 01001001</div>
+    <div class="data-stream" style="bottom: 50px; left: 20%;">SYSTEM: ONLINE</div>
+
+    <div class="avatar-container">
+        <div class="outer-ring"></div>
+        
+        <div class="neural-layer">
+            <canvas id="neuralCanvas"></canvas>
+        </div>
+        
+        <div class="photo-frame">
+            <img src="jan.png" alt="Jan Vobora" onerror="this.src='https://via.placeholder.com/280/000000/00FFFF?text=FOTO+CHYBI'">
+        </div>
+    </div>
+
+    <div class="status-container">
+        <div class="status-text">Neuronové Rozhraní</div>
+        <div class="status-subtext">Vobio Neural Avatar v3.2.1</div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-bar"><div class="stat-bar-fill" style="width: 98%" id="bar-sync"></div></div>
+                <div class="stat-label">Synchronizace</div>
+                <div class="stat-value" id="val-sync">98%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-bar"><div class="stat-bar-fill" style="width: 100%"></div></div>
+                <div class="stat-label">Napájení</div>
+                <div class="stat-value">100%</div> <!-- Power remains at 100% to indicate optimal operation -->
+            </div>
+            <div class="stat-item">
+                <div class="stat-bar"><div class="stat-bar-fill" style="width: 87%" id="bar-stab"></div></div>
+                <div class="stat-label">Stabilita</div>
+                <div class="stat-value" id="val-stab">87%</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- GRAFIKA SÍTĚ (CANVAS) ---
+        const canvas = document.getElementById('neuralCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 400;
+        canvas.height = 400;
+
+        const nodes = [];
+        // Vytvoření uzlů
+        for (let i = 0; i < 20; i++) {
+            nodes.push({
+                x: Math.random() * 400,
+                y: Math.random() * 400,
+                radius: Math.random() * 2 + 1,
+                vx: (Math.random() - 0.5) * 1,
+                vy: (Math.random() - 0.5) * 1
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ffff';
+            ctx.strokeStyle = 'rgba(0, 255, 255, 0.15)';
+
+            nodes.forEach((node, i) => {
+                node.x += node.vx;
+                node.y += node.vy;
+
+                // Odraz od stěn
+                if (node.x < 0 || node.x > 400) node.vx *= -1;
+                if (node.y < 0 || node.y > 400) node.vy *= -1;
+
+                // Kreslení bodu
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Kreslení čar
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const node2 = nodes[j];
+                    const dist = Math.sqrt((node.x - node2.x)**2 + (node.y - node2.y)**2);
+                    if (dist < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(node.x, node.y);
+                        ctx.lineTo(node2.x, node2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- SIMULACE "ŽIVOTA" (STATISTIKY) ---
+        setInterval(() => {
+            // Náhodná změna synchronizace
+            const sync = Math.floor(Math.random() * 5) + 95; // 95-99%
+            document.getElementById('val-sync').innerText = sync + "%";
+            document.getElementById('bar-sync').style.width = sync + "%";
+
+            // Náhodná změna stability
+            const stab = Math.floor(Math.random() * 15) + 80; // 80-95%
+            document.getElementById('val-stab').innerText = stab + "%";
+            document.getElementById('bar-stab').style.width = stab + "%";
+        }, 2000);
+
+    </script>
+</body>
+</html>
