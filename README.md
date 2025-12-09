@@ -39,11 +39,19 @@ A creative, friendly AI chatbot Progressive Web App (PWA) with pseudo-learning c
 - 10+ entertaining fallback messages
 - Informs users that their input is being logged for learning
 
+### 🤖 Neural Interface
+- Interactive neural network visualization (`neural-interface.html`)
+- Animated avatar with cyberpunk aesthetic
+- Real-time statistics display (Synchronization, Power, Stability)
+- Dynamic neural nodes with connecting lines
+- Rotating outer ring and glowing effects
+
 ## Project Structure
 
 ```
 VoBee-AI-Assistant/
 ├── index.html              # Main HTML entry point
+├── neural-interface.html   # Neural interface avatar page
 ├── manifest.json           # PWA manifest
 ├── sw.js                   # Service Worker for offline support
 ├── css/
