@@ -31,6 +31,8 @@ jobs:
   initialize:
     name: Initialize Super Swarm Deployment
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       deployment_id: ${{ steps.generate_id.outputs.deployment_id }}
       bot_count: ${{ steps.config.outputs.bot_count }}
@@ -106,6 +108,8 @@ jobs:
     name: Deploy Bot Swarm (Runner ${{ matrix.runner_id }})
     needs: initialize
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     strategy:
       max-parallel: 20
@@ -290,6 +294,8 @@ jobs:
     name: Monitor & Aggregate Results
     needs: [initialize, deploy-bots]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     if: always()
     
     steps:
