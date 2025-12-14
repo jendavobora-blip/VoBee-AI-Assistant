@@ -760,6 +760,8 @@ jobs:
     name: Video Generation Workflow Complete
     needs: [initialize-video-engine, generate-videos]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     if: always()
     
     steps:
