@@ -514,7 +514,7 @@ jobs:
           - **Avg Compute Multiplier**: ${{ steps.aggregate.outputs.avg_compute_multiplier }}x
           
           ## Level 18 Bot Capabilities
-          - ✅ Enhanced computational power (${{{ steps.aggregate.outputs.avg_compute_multiplier }}}x multiplier)
+          - ✅ Enhanced computational power (${{ steps.aggregate.outputs.avg_compute_multiplier }}x multiplier)
           - ✅ Zero-downtime deployment and monitoring
           - ✅ Distributed workload management across ${{ steps.aggregate.outputs.runner_count }} runners
           - ✅ Advanced health monitoring (${{ steps.aggregate.outputs.total_health_checks }} checks performed)
@@ -527,7 +527,7 @@ jobs:
           - **Parallel Execution**: Matrix strategy with up to 20 concurrent runners
           - **Scalability**: Dynamic bot allocation with Level 18 optimization
           - **Reliability**: Zero-downtime deployment with continuous health monitoring
-          - **Performance**: Enhanced compute resources with ${{{ steps.aggregate.outputs.avg_compute_multiplier }}}x multiplier
+          - **Performance**: Enhanced compute resources with ${{ steps.aggregate.outputs.avg_compute_multiplier }}x multiplier
           - **Monitoring**: Comprehensive logging with health check validation
           
           ## Distributed Workflow

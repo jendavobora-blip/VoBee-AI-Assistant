@@ -79,9 +79,10 @@ jobs:
           
           echo "🤖 Analyzing code patterns for AI suggestions..."
           
-          cat > analysis-results/code-analysis.json << 'EOF'
+          TIMESTAMP=$(date -Iseconds)
+          cat > analysis-results/code-analysis.json << EOF
           {
-            "timestamp": "$(date -Iseconds)",
+            "timestamp": "$TIMESTAMP",
             "analysis_type": "code_generation",
             "suggestions": [
               {

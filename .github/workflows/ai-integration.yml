@@ -252,7 +252,19 @@ jobs:
         run: |
           mkdir -p integration-reports
           
-          cat > integration-reports/integration-${{ needs.orchestrate.outputs.integration_id }}.md << 'EOFREPORT'
+          # Determine overall status
+          CODE_GEN_STATUS="${{ needs.code-generation.result }}"
+          TEST_GEN_STATUS="${{ needs.test-generation.result }}"
+          CODE_EXPLAIN_STATUS="${{ needs.code-explanation.result }}"
+          
+          # Check if all core features succeeded
+          if [ "$CODE_GEN_STATUS" = "success" ] && [ "$TEST_GEN_STATUS" = "success" ] && [ "$CODE_EXPLAIN_STATUS" = "success" ]; then
+            OVERALL_STATUS="✅ All core features completed successfully!"
+          else
+            OVERALL_STATUS="⚠️ Some features completed with issues - review logs"
+          fi
+          
+          cat > integration-reports/integration-${{ needs.orchestrate.outputs.integration_id }}.md << EOFREPORT
           # AI Features Integration Report
           
           ## Integration Information
@@ -264,9 +276,9 @@ jobs:
           ## Features Executed
           
           ### ✅ Completed Features
-          - **Code Generation**: ${{ needs.code-generation.result }}
-          - **Test Generation**: ${{ needs.test-generation.result }}
-          - **Code Explanation**: ${{ needs.code-explanation.result }}
+          - **Code Generation**: ${CODE_GEN_STATUS}
+          - **Test Generation**: ${TEST_GEN_STATUS}
+          - **Code Explanation**: ${CODE_EXPLAIN_STATUS}
           - **Video Generation**: ${{ needs.video-generation.result || 'skipped' }}
           - **Bot Deployment**: ${{ needs.bot-deployment.result || 'skipped' }}
           
@@ -307,7 +319,7 @@ jobs:
           
           ## Integration Status
           
-          ${{ needs.code-generation.result == 'success' && needs.test-generation.result == 'success' && needs.code-explanation.result == 'success' && '✅ All core features completed successfully!' || '⚠️ Some features completed with issues - review logs' }}
+          ${OVERALL_STATUS}
           
           ---
           

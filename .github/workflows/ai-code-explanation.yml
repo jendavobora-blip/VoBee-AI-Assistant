@@ -42,7 +42,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       
-      - name: Analyze code complexity
+      - name: Create complexity analyzer
         id: analyze
         run: |
           mkdir -p complexity-analysis
@@ -50,7 +50,8 @@ jobs:
           echo "🔍 Analyzing code complexity for explanation generation..."
           
           # Create complexity analyzer
-          cat > complexity-analysis/analyzer.py << 'EOFPY'
+          TIMESTAMP=$(date -Iseconds)
+          cat > complexity-analysis/analyzer.py << 'EOF_PYTHON'
           #!/usr/bin/env python3
           import os
           import json
@@ -129,7 +130,7 @@ jobs:
           
           if __name__ == '__main__':
               count = main()
-          EOFPY
+          EOF_PYTHON
           
           python3 complexity-analysis/analyzer.py
           
