@@ -89,17 +89,19 @@ VoBee-AI-Assistant/
 │       ├── ai-test-generation.yml    # Automated Test Generation
 │       ├── ai-code-explanation.yml   # Code Explanation & Documentation
 │       ├── ai-video-generator.yml    # AI Video Generation (Dual Mode)
+│       ├── ai-integration.yml        # CI/CD Integration Orchestration
 │       └── README.md                 # Workflows documentation
-├── index.html              # Main HTML entry point
-├── manifest.json           # PWA manifest
-├── sw.js                   # Service Worker for offline support
 ├── css/
 │   └── styles.css          # Responsive styles
+├── icons/
+│   └── icon-192.svg        # App icon
 ├── js/
 │   ├── chatbot.js          # Main chatbot logic and UI controller
 │   └── response-patterns.js # Response templates and keyword mappings
-└── icons/
-    └── icon-192.svg        # App icon
+├── index.html              # Main HTML entry point
+├── manifest.json           # PWA manifest
+├── sw.js                   # Service Worker for offline support
+└── README.md               # Project documentation
 ```
 
 ## Architecture

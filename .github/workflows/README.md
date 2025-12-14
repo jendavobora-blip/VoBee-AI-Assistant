@@ -418,10 +418,10 @@ The deployed bots provide:
 
 Configure these secrets in your GitHub repository settings:
 
-- `LUCRE_API_KEY`: API key for Lucre service integration
-- `FANVUE_TOKENS`: Authentication tokens for Fanvue services
+- `LUCRE_API_KEY`: (Optional) API key for Lucre service integration - Used for advanced bot authentication and service connections
+- `FANVUE_TOKENS`: (Optional) Authentication tokens for Fanvue services - Used for bot service integrations
 
-> **Note**: The workflow will warn if secrets are not configured but will continue execution.
+> **Note**: These secrets are optional and primarily used for production bot deployments. The workflows will run with warnings if secrets are not configured but will continue to function. You can safely ignore these for testing and development purposes.
 
 ## Manual Execution
 

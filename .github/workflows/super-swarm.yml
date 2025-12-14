@@ -89,8 +89,14 @@ jobs:
             MATRIX_SIZE=1
           fi
           
-          # Level 18 performance multiplier
-          COMPUTE_MULTIPLIER=$(awk "BEGIN {printf \"%.2f\", $PERFORMANCE_LEVEL / 10}")
+          # Level 18 performance multiplier - fixed mapping for consistency
+          case $PERFORMANCE_LEVEL in
+            15) COMPUTE_MULTIPLIER=1.5 ;;
+            16) COMPUTE_MULTIPLIER=1.6 ;;
+            17) COMPUTE_MULTIPLIER=1.7 ;;
+            18) COMPUTE_MULTIPLIER=1.8 ;;
+            *) COMPUTE_MULTIPLIER=1.8 ;;
+          esac
           
           echo "bot_count=$BOT_COUNT" >> $GITHUB_OUTPUT
           echo "matrix_size=$MATRIX_SIZE" >> $GITHUB_OUTPUT
