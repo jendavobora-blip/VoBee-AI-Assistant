@@ -24,7 +24,6 @@ on:
 
 env:
   BOT_COUNT: 20000
-  MAX_PARALLEL_RUNNERS: 20
   DEPLOYMENT_MODE: auto-scale
 
 jobs:
@@ -354,7 +353,18 @@ jobs:
         run: |
           mkdir -p reports
           
-          cat > reports/deployment-${{ needs.initialize.outputs.deployment_id }}.md << 'EOFREPORT'
+          TOTAL_SUCCESS=${{ steps.aggregate.outputs.total_success }}
+          TOTAL_FAILED=${{ steps.aggregate.outputs.total_failed }}
+          TOTAL_BOTS=$((TOTAL_SUCCESS + TOTAL_FAILED))
+          
+          # Calculate success rate safely
+          if [ $TOTAL_BOTS -gt 0 ]; then
+            SUCCESS_RATE=$(awk "BEGIN {printf \"%.2f\", ($TOTAL_SUCCESS / $TOTAL_BOTS) * 100}")
+          else
+            SUCCESS_RATE="0.00"
+          fi
+          
+          cat > reports/deployment-${{ needs.initialize.outputs.deployment_id }}.md << EOFREPORT
           # Super Swarm Deployment Report
           
           ## Deployment Information
@@ -364,9 +374,9 @@ jobs:
           - **Active Runners**: ${{ steps.aggregate.outputs.runner_count }}
           
           ## Performance Metrics
-          - **Successfully Deployed**: ${{ steps.aggregate.outputs.total_success }}
-          - **Failed Deployments**: ${{ steps.aggregate.outputs.total_failed }}
-          - **Success Rate**: $(awk "BEGIN {printf \"%.2f\", (${{ steps.aggregate.outputs.total_success }} / (${{ steps.aggregate.outputs.total_success }} + ${{ steps.aggregate.outputs.total_failed }})) * 100}")%
+          - **Successfully Deployed**: $TOTAL_SUCCESS
+          - **Failed Deployments**: $TOTAL_FAILED
+          - **Success Rate**: ${SUCCESS_RATE}%
           
           ## Bot Capabilities
           - ✅ Compute resources for large data operations
@@ -376,7 +386,7 @@ jobs:
           - ✅ Centralized logging and monitoring
           
           ## Architecture
-          - **Parallel Execution**: Matrix strategy with up to 256 concurrent runners
+          - **Parallel Execution**: Matrix strategy with up to 20 concurrent runners
           - **Scalability**: Dynamic bot allocation across distributed runners
           - **Reliability**: Fault-tolerant deployment with individual bot tracking
           - **Monitoring**: Comprehensive logging with artifact preservation

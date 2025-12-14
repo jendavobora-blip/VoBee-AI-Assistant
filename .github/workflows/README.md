@@ -41,7 +41,7 @@ The deployed bots provide:
    - Calculates optimal matrix size for parallel execution
 
 2. **Deploy-Bots Job**
-   - Uses matrix strategy for parallel execution (up to 256 concurrent runners)
+   - Uses matrix strategy for parallel execution (up to 20 concurrent runners)
    - Each runner manages a subset of bots
    - Implements batch processing for resource management
    - Generates individual bot logs and metrics
@@ -220,11 +220,13 @@ schedule:
 
 ### Changing Parallel Runners
 
-Adjust the maximum parallel runners:
+Adjust the maximum parallel runners based on your account limits:
 
 ```yaml
 strategy:
-  max-parallel: 256  # Reduce for slower deployments
+  max-parallel: 20  # Default (safe for most accounts)
+  # Free/Pro/Team: 20 concurrent jobs
+  # Enterprise: Can increase up to 180+
 ```
 
 ### Batch Size Configuration
