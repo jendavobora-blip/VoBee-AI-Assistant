@@ -14,6 +14,9 @@ The **Super Swarm** workflow is a high-performance GitHub Actions workflow desig
 ### 1. Automated Triggers
 
 - **Scheduled Execution**: Runs automatically every 5 minutes using cron schedule (`*/5 * * * *`)
+  - ⚠️ **WARNING**: Running every 5 minutes can consume significant GitHub Actions quota
+  - For production use, consider less frequent schedules (hourly, daily, etc.)
+  - Monitor your GitHub Actions usage to avoid quota exhaustion
 - **Manual Trigger**: Can be triggered manually via `workflow_dispatch` with customizable parameters:
   - `bot_count`: Number of bots to deploy (default: 20,000)
   - `deployment_mode`: Deployment mode (auto-scale, fixed, or test)
@@ -51,7 +54,10 @@ The deployed bots provide:
 
 ### 4. Scalability
 
-- **Parallel Execution**: Up to 256 concurrent GitHub Actions runners
+- **Parallel Execution**: Up to 20 concurrent GitHub Actions runners (configurable based on account limits)
+  - ⚠️ Free GitHub accounts typically support 20 concurrent jobs
+  - Paid accounts can support up to 180 concurrent jobs
+  - Enterprise accounts may have higher limits
 - **Dynamic Allocation**: Bots are automatically distributed across available runners
 - **Batch Processing**: Bots are spawned in batches of 100 to optimize resource usage
 - **Fault Tolerance**: Individual bot failures don't affect overall deployment
@@ -232,10 +238,21 @@ BATCH_SIZE=100  # Adjust based on runner capacity
 ## Best Practices
 
 1. **Start Small**: Test with smaller bot counts before scaling to 20,000
-2. **Monitor Resources**: Watch GitHub Actions usage and quotas
+2. **Monitor Resources**: Watch GitHub Actions usage and quotas carefully
+   - Check your account's concurrent job limits
+   - Monitor minute usage to avoid quota exhaustion
+   - Consider disabling or adjusting the schedule if quota runs low
 3. **Review Logs**: Regularly check deployment reports for issues
 4. **Optimize Secrets**: Ensure API keys have appropriate rate limits
 5. **Schedule Wisely**: Adjust cron schedule based on actual needs
+   - For testing: Use manual triggers or hourly schedules
+   - For production: Consider daily or weekly schedules
+   - Avoid running every 5 minutes unless absolutely necessary
+6. **Account Limits**: Be aware of your GitHub account tier limitations
+   - Free: 20 concurrent jobs, 2,000 minutes/month
+   - Pro: 20 concurrent jobs, 3,000 minutes/month
+   - Team: 20 concurrent jobs, 10,000 minutes/month
+   - Enterprise: Up to 180+ concurrent jobs, 50,000+ minutes/month
 
 ## Security Considerations
 

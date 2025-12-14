@@ -24,7 +24,7 @@ on:
 
 env:
   BOT_COUNT: 20000
-  MAX_PARALLEL_RUNNERS: 256
+  MAX_PARALLEL_RUNNERS: 20
   DEPLOYMENT_MODE: auto-scale
 
 jobs:
@@ -36,6 +36,7 @@ jobs:
       deployment_id: ${{ steps.generate_id.outputs.deployment_id }}
       bot_count: ${{ steps.config.outputs.bot_count }}
       matrix_size: ${{ steps.config.outputs.matrix_size }}
+      matrix_json: ${{ steps.matrix.outputs.matrix_json }}
     
     steps:
       - name: Checkout repository
@@ -53,13 +54,33 @@ jobs:
         run: |
           BOT_COUNT="${{ github.event.inputs.bot_count || env.BOT_COUNT }}"
           # Calculate optimal matrix size for parallel execution
+          # Limited to practical GitHub Actions limits
           MATRIX_SIZE=$(( BOT_COUNT / 100 ))
-          if [ $MATRIX_SIZE -gt 256 ]; then
-            MATRIX_SIZE=256
+          if [ $MATRIX_SIZE -gt 20 ]; then
+            MATRIX_SIZE=20
+          fi
+          if [ $MATRIX_SIZE -lt 1 ]; then
+            MATRIX_SIZE=1
           fi
           echo "bot_count=$BOT_COUNT" >> $GITHUB_OUTPUT
           echo "matrix_size=$MATRIX_SIZE" >> $GITHUB_OUTPUT
           echo "📊 Configuring $BOT_COUNT bots across $MATRIX_SIZE parallel runners"
+      
+      - name: Generate matrix
+        id: matrix
+        run: |
+          MATRIX_SIZE=${{ steps.config.outputs.matrix_size }}
+          # Generate JSON array for matrix
+          MATRIX_JSON="["
+          for i in $(seq 1 $MATRIX_SIZE); do
+            if [ $i -gt 1 ]; then
+              MATRIX_JSON="${MATRIX_JSON},"
+            fi
+            MATRIX_JSON="${MATRIX_JSON}${i}"
+          done
+          MATRIX_JSON="${MATRIX_JSON}]"
+          echo "matrix_json=$MATRIX_JSON" >> $GITHUB_OUTPUT
+          echo "Generated matrix: $MATRIX_JSON"
       
       - name: Validate environment
         run: |
@@ -88,10 +109,10 @@ jobs:
     runs-on: ubuntu-latest
     
     strategy:
-      max-parallel: 256
+      max-parallel: 20
       fail-fast: false
       matrix:
-        runner_id: ${{ fromJson(format('[{0}]', join(range(1, fromJson(needs.initialize.outputs.matrix_size) + 1), ','))) }}
+        runner_id: ${{ fromJson(needs.initialize.outputs.matrix_json) }}
     
     env:
       LUCRE_API_KEY: ${{ secrets.LUCRE_API_KEY }}
@@ -237,8 +258,8 @@ jobs:
           SUMMARY_FILE="logs/swarm/${{ env.DEPLOYMENT_ID }}/runner-${{ env.RUNNER_ID }}/summary.json"
           
           if [ -f "$SUMMARY_FILE" ]; then
-            SUCCESS_COUNT=$(cat $SUMMARY_FILE | grep -o '"success_count": [0-9]*' | grep -o '[0-9]*')
-            FAILED_COUNT=$(cat $SUMMARY_FILE | grep -o '"failed_count": [0-9]*' | grep -o '[0-9]*')
+            SUCCESS_COUNT=$(jq -r '.success_count // 0' "$SUMMARY_FILE")
+            FAILED_COUNT=$(jq -r '.failed_count // 0' "$SUMMARY_FILE")
             
             echo "success_count=$SUCCESS_COUNT" >> $GITHUB_OUTPUT
             echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
@@ -294,8 +315,8 @@ jobs:
           # Process all summary files
           for summary in aggregated-logs/bot-logs-runner-*/summary.json; do
             if [ -f "$summary" ]; then
-              SUCCESS=$(cat "$summary" | grep -o '"success_count": [0-9]*' | grep -o '[0-9]*' || echo "0")
-              FAILED=$(cat "$summary" | grep -o '"failed_count": [0-9]*' | grep -o '[0-9]*' || echo "0")
+              SUCCESS=$(jq -r '.success_count // 0' "$summary")
+              FAILED=$(jq -r '.failed_count // 0' "$summary")
               
               TOTAL_SUCCESS=$((TOTAL_SUCCESS + SUCCESS))
               TOTAL_FAILED=$((TOTAL_FAILED + FAILED))
@@ -307,6 +328,14 @@ jobs:
           echo "total_failed=$TOTAL_FAILED" >> $GITHUB_OUTPUT
           echo "runner_count=$RUNNER_COUNT" >> $GITHUB_OUTPUT
           
+          # Calculate success rate safely
+          TOTAL_BOTS=$((TOTAL_SUCCESS + TOTAL_FAILED))
+          if [ $TOTAL_BOTS -gt 0 ]; then
+            SUCCESS_RATE=$(awk "BEGIN {printf \"%.2f\", ($TOTAL_SUCCESS / $TOTAL_BOTS) * 100}")
+          else
+            SUCCESS_RATE="0.00"
+          fi
+          
           echo ""
           echo "═══════════════════════════════════════════════════"
           echo "🎯 SUPER SWARM DEPLOYMENT SUMMARY"
@@ -317,7 +346,7 @@ jobs:
           echo "───────────────────────────────────────────────────"
           echo "✅ Successfully Deployed: $TOTAL_SUCCESS"
           echo "❌ Failed: $TOTAL_FAILED"
-          echo "📈 Success Rate: $(awk "BEGIN {printf \"%.2f\", ($TOTAL_SUCCESS / ($TOTAL_SUCCESS + $TOTAL_FAILED)) * 100}")%"
+          echo "📈 Success Rate: ${SUCCESS_RATE}%"
           echo "═══════════════════════════════════════════════════"
           echo ""
       
@@ -367,21 +396,41 @@ jobs:
       
       - name: Performance analysis
         run: |
+          TOTAL_BOTS=${{ needs.initialize.outputs.bot_count }}
+          RUNNER_COUNT=${{ steps.aggregate.outputs.runner_count }}
+          TOTAL_SUCCESS=${{ steps.aggregate.outputs.total_success }}
+          
           echo "🔍 Performance Analysis"
           echo "Bot deployment efficiency metrics:"
-          echo "  - Bots per runner: $(( ${{ needs.initialize.outputs.bot_count }} / ${{ steps.aggregate.outputs.runner_count }} ))"
-          echo "  - Total runners used: ${{ steps.aggregate.outputs.runner_count }}"
-          echo "  - Deployment success rate: $(awk "BEGIN {printf \"%.2f\", (${{ steps.aggregate.outputs.total_success }} / ${{ needs.initialize.outputs.bot_count }}) * 100}")%"
+          
+          if [ $RUNNER_COUNT -gt 0 ]; then
+            BOTS_PER_RUNNER=$(( TOTAL_BOTS / RUNNER_COUNT ))
+            echo "  - Bots per runner: $BOTS_PER_RUNNER"
+          fi
+          
+          echo "  - Total runners used: $RUNNER_COUNT"
+          
+          if [ $TOTAL_BOTS -gt 0 ]; then
+            SUCCESS_RATE=$(awk "BEGIN {printf \"%.2f\", ($TOTAL_SUCCESS / $TOTAL_BOTS) * 100}")
+            echo "  - Deployment success rate: ${SUCCESS_RATE}%"
+          fi
       
       - name: Check deployment health
         run: |
-          SUCCESS_RATE=$(awk "BEGIN {printf \"%.0f\", (${{ steps.aggregate.outputs.total_success }} / ${{ needs.initialize.outputs.bot_count }}) * 100}")
+          TOTAL_BOTS=${{ needs.initialize.outputs.bot_count }}
+          TOTAL_SUCCESS=${{ steps.aggregate.outputs.total_success }}
           
-          if [ $SUCCESS_RATE -lt 95 ]; then
-            echo "⚠️  Warning: Deployment success rate ($SUCCESS_RATE%) is below threshold (95%)"
-            echo "Consider investigating runner logs for issues"
+          if [ $TOTAL_BOTS -gt 0 ]; then
+            SUCCESS_RATE=$(awk "BEGIN {printf \"%.0f\", ($TOTAL_SUCCESS / $TOTAL_BOTS) * 100}")
+            
+            if [ $SUCCESS_RATE -lt 95 ]; then
+              echo "⚠️  Warning: Deployment success rate (${SUCCESS_RATE}%) is below threshold (95%)"
+              echo "Consider investigating runner logs for issues"
+            else
+              echo "✅ Deployment health is optimal (${SUCCESS_RATE}% success rate)"
+            fi
           else
-            echo "✅ Deployment health is optimal ($SUCCESS_RATE% success rate)"
+            echo "⚠️  Warning: No bots were configured for deployment"
           fi
       
       - name: Cleanup and finalize
