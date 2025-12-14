@@ -13,4 +13,7 @@ COPY . .
 
 EXPOSE 5004
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:5004/health')"
+
 CMD ["python", "main.py"]

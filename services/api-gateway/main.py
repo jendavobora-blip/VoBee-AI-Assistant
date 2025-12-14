@@ -3,7 +3,7 @@ API Gateway for AI Orchestration System
 Provides unified interface for all AI services
 """
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
@@ -98,8 +98,8 @@ async def get_status():
     return status
 
 # Image Generation endpoints
-@app.post("/api/v1/generate/image")
-async def generate_image(request: ImageGenerationRequest, background_tasks: BackgroundTasks):
+@app.route('/api/v1/generate/image')
+async def generate_image(request: ImageGenerationRequest):
     """Generate 3D/4D images with HDR and PBR rendering"""
     try:
         async with httpx.AsyncClient() as client:

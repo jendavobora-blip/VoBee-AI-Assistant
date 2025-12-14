@@ -14,7 +14,6 @@ import os
 import logging
 from datetime import datetime, timedelta
 from typing import Optional, List, Dict
-import requests
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,8 +33,9 @@ class LSTMPredictor(nn.Module):
         self.fc = nn.Linear(hidden_size, output_size)
     
     def forward(self, x):
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
+        device = x.device
+        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
+        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
         
         out, _ = self.lstm(x, (h0, c0))
         out = self.fc(out[:, -1, :])
@@ -58,8 +58,8 @@ class CryptoPredictor:
     def load_models(self):
         """Load prediction models"""
         try:
-            # Initialize LSTM model
-            self.models['lstm'] = LSTMPredictor()
+            # Initialize LSTM model and move to device
+            self.models['lstm'] = LSTMPredictor().to(self.device)
             logger.info("Crypto prediction models loaded successfully")
         except Exception as e:
             logger.error(f"Error loading models: {e}")
