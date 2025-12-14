@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-orchestration
+  labels:
+    name: ai-orchestration
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-config
+  namespace: ai-orchestration
+data:
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  POSTGRES_HOST: "postgres-service"
+  POSTGRES_DB: "orchestrator_db"
+  POSTGRES_USER: "orchestrator"
+  IMAGE_SERVICE_URL: "http://image-generation-service:5000"
+  VIDEO_SERVICE_URL: "http://video-generation-service:5001"
+  CRYPTO_SERVICE_URL: "http://crypto-prediction-service:5002"
+  ORCHESTRATOR_URL: "http://orchestrator-service:5003"
+  FRAUD_SERVICE_URL: "http://fraud-detection-service:5004"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ai-secrets
+  namespace: ai-orchestration
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "change_me_in_production"
+  COINGECKO_API_KEY: "your_coingecko_api_key"
+  BINANCE_API_KEY: "your_binance_api_key"
+  BINANCE_API_SECRET: "your_binance_api_secret"
+  OPENAI_API_KEY: "your_openai_api_key"
+  STABILITY_API_KEY: "your_stability_api_key"
+  RUNWAY_API_KEY: "your_runway_api_key"
