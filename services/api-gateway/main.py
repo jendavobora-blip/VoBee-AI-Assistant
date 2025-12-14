@@ -98,7 +98,7 @@ async def get_status():
     return status
 
 # Image Generation endpoints
-@app.route('/api/v1/generate/image')
+@app.post('/api/v1/generate/image')
 async def generate_image(request: ImageGenerationRequest):
     """Generate 3D/4D images with HDR and PBR rendering"""
     try:

@@ -23,17 +23,17 @@ class TaskOrchestrator:
     """Main orchestration engine for managing AI tasks"""
     
     def __init__(self):
-        self.redis_host = os.getenv('REDIS_HOST', 'redis')
+        self.redis_host = os.getenv('REDIS_HOST', 'redis-service')
         self.redis_port = int(os.getenv('REDIS_PORT', 6379))
         self.redis_client = None
         self.connect_redis()
         
         # Service endpoints
         self.services = {
-            'image_generation': os.getenv('IMAGE_SERVICE_URL', 'http://image-generation:5000'),
-            'video_generation': os.getenv('VIDEO_SERVICE_URL', 'http://video-generation:5001'),
-            'crypto_prediction': os.getenv('CRYPTO_SERVICE_URL', 'http://crypto-prediction:5002'),
-            'fraud_detection': os.getenv('FRAUD_SERVICE_URL', 'http://fraud-detection:5004'),
+            'image_generation': os.getenv('IMAGE_SERVICE_URL', 'http://image-generation-service:5000'),
+            'video_generation': os.getenv('VIDEO_SERVICE_URL', 'http://video-generation-service:5001'),
+            'crypto_prediction': os.getenv('CRYPTO_SERVICE_URL', 'http://crypto-prediction-service:5002'),
+            'fraud_detection': os.getenv('FRAUD_SERVICE_URL', 'http://fraud-detection-service:5004'),
         }
         
         logger.info("Task Orchestrator initialized successfully")
