@@ -60,6 +60,9 @@ tmp/
 temp/
 *.tmp
 
+# Test results
+tests/test-results.json
+
 # OS
 .DS_Store
 Thumbs.db
@@ -79,3 +82,13 @@ Thumbs.db
 # Redis dumps
 dump.rdb
 appendonly.aof
+
+# Node modules
+node_modules/
+package-lock.json
+yarn.lock
+
+# Mobile build artifacts
+android/
+ios/
+.capacitor/

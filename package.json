@@ -1,0 +1,59 @@
+{
+  "name": "vobee-ai-assistant",
+  "version": "1.0.0",
+  "description": "VoBee AI Assistant - Advanced AI chatbot with 3D/4D generation and crypto prediction",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server -p 8080 -c-1",
+    "serve": "npx http-server -p 8080",
+    "mobile:init": "npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/ios @capacitor/app @capacitor/splash-screen @capacitor/status-bar @capacitor/keyboard",
+    "mobile:add:android": "npx cap add android",
+    "mobile:add:ios": "npx cap add ios",
+    "mobile:sync": "npx cap sync",
+    "mobile:build:android": "npx cap sync android && cd android && (./gradlew assembleDebug || echo 'Error: gradlew not found. Please add Android platform first with: npm run mobile:add:android')",
+    "mobile:build:android:release": "npx cap sync android && cd android && (./gradlew assembleRelease || echo 'Error: gradlew not found. Please add Android platform first with: npm run mobile:add:android')",
+    "mobile:build:ios": "npx cap sync ios && (cd ios/App && xcodebuild || echo 'Error: Xcode not found or iOS platform not added. Please run: npm run mobile:add:ios')",
+    "mobile:run:android": "npx cap run android",
+    "mobile:run:ios": "npx cap run ios",
+    "mobile:open:android": "npx cap open android",
+    "mobile:open:ios": "npx cap open ios",
+    "test:quality": "node tests/run-quality-tests.js",
+    "test:all": "npm run test:quality",
+    "optimize": "node tests/run-optimization.js",
+    "deploy:web": "echo 'Web deployment ready - serve current directory'",
+    "deploy:android": "npm run mobile:build:android:release",
+    "deploy:ios": "npm run mobile:build:ios"
+  },
+  "keywords": [
+    "ai",
+    "chatbot",
+    "pwa",
+    "mobile",
+    "assistant",
+    "3d-generation",
+    "crypto-prediction",
+    "machine-learning"
+  ],
+  "author": "VoBee Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@capacitor/cli": "^5.5.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^5.5.0",
+    "@capacitor/app": "^5.0.6",
+    "@capacitor/core": "^5.5.0",
+    "@capacitor/ios": "^5.5.0",
+    "@capacitor/keyboard": "^5.0.6",
+    "@capacitor/splash-screen": "^5.0.6",
+    "@capacitor/status-bar": "^5.0.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jendavobora-blip/VoBee-AI-Assistant.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jendavobora-blip/VoBee-AI-Assistant/issues"
+  },
+  "homepage": "https://github.com/jendavobora-blip/VoBee-AI-Assistant"
+}
