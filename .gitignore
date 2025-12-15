@@ -79,3 +79,13 @@ Thumbs.db
 # Redis dumps
 dump.rdb
 appendonly.aof
+
+# Test results and coverage
+tests/results/
+tests/.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+coverage.xml
+*.cover

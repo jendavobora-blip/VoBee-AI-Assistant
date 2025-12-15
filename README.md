@@ -283,7 +283,31 @@ console.log(queries);
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Detailed system architecture and component descriptions
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Step-by-step deployment guide for all environments
+- [QA_TESTING.md](QA_TESTING.md) - Comprehensive QA testing guide (stress, load, functional tests)
+- [tests/README.md](tests/README.md) - Detailed testing framework documentation
 - API Documentation - Available at `http://localhost:8000/docs` when running
+
+## Quality Assurance Testing
+
+Comprehensive QA testing framework for ensuring system robustness and scalability:
+
+### Test Categories
+- 🔥 **Stress Testing**: Up to 50,000 operations to test system limits
+- ✅ **Functional Testing**: Validates all API endpoints and features
+- 📊 **Load Testing**: Tests with 1000+ concurrent users
+- 🎯 **Edge Cases**: Security, error handling, and boundary testing
+
+### Quick Start
+```bash
+cd tests
+pip install -r requirements.txt
+python run_tests.py quick          # Quick validation
+python demo.py                     # Interactive demo
+python run_tests.py stress         # Full stress test (50,000 ops)
+python run_tests.py all            # Run all tests
+```
+
+For detailed information, see [QA_TESTING.md](QA_TESTING.md).
 
 ## Monitoring & Observability
 
