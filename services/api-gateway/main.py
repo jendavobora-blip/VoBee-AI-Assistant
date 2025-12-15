@@ -180,6 +180,215 @@ async def orchestrate_tasks(request: OrchestrationRequest):
         logger.error(f"Orchestration failed: {e}")
         raise HTTPException(status_code=500, detail="Orchestration service error")
 
+# L20 Supreme Brain endpoints
+
+@app.post("/api/v1/l20/strategize")
+async def l20_strategize(objective: str, constraints: Optional[Dict[str, Any]] = None):
+    """High-level strategic planning using L20 Supreme Brain"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['orchestrator']}/l20/strategize",
+                json={"objective": objective, "constraints": constraints or {}},
+                timeout=120.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"L20 strategize failed: {e}")
+        raise HTTPException(status_code=500, detail="L20 strategize service error")
+
+@app.post("/api/v1/l20/prioritize")
+async def l20_prioritize(tasks: List[Dict[str, Any]]):
+    """Intelligent task prioritization using L20 Supreme Brain"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['orchestrator']}/l20/prioritize",
+                json={"tasks": tasks},
+                timeout=60.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"L20 prioritize failed: {e}")
+        raise HTTPException(status_code=500, detail="L20 prioritize service error")
+
+@app.post("/api/v1/l20/coordinate")
+async def l20_coordinate(domains: List[str], task_specs: Dict[str, Any]):
+    """Cross-domain coordination using L20 Supreme Brain"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['orchestrator']}/l20/coordinate",
+                json={"domains": domains, "task_specs": task_specs},
+                timeout=600.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"L20 coordinate failed: {e}")
+        raise HTTPException(status_code=500, detail="L20 coordinate service error")
+
+@app.post("/api/v1/l20/optimize-resources")
+async def l20_optimize_resources(available_resources: Dict[str, Any], pending_tasks: List[Dict[str, Any]]):
+    """Optimize resource allocation using L20 Supreme Brain"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['orchestrator']}/l20/optimize-resources",
+                json={"available_resources": available_resources, "pending_tasks": pending_tasks},
+                timeout=60.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"L20 optimize-resources failed: {e}")
+        raise HTTPException(status_code=500, detail="L20 optimize-resources service error")
+
+@app.get("/api/v1/l20/metrics")
+async def l20_metrics():
+    """Get L20 Supreme Brain metrics"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{SERVICES['orchestrator']}/l20/metrics",
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"L20 metrics failed: {e}")
+        raise HTTPException(status_code=500, detail="L20 metrics service error")
+
+# Master Intelligence endpoints
+
+@app.post("/api/v1/intelligence/{intelligence_type}/execute")
+async def execute_intelligence(intelligence_type: str, task: Dict[str, Any]):
+    """Execute specific Master Intelligence task"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['orchestrator']}/intelligence/{intelligence_type}/execute",
+                json=task,
+                timeout=300.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Intelligence execution failed: {e}")
+        raise HTTPException(status_code=500, detail="Intelligence execution service error")
+
+@app.get("/api/v1/intelligence/{intelligence_type}/metrics")
+async def get_intelligence_metrics(intelligence_type: str):
+    """Get metrics for specific Master Intelligence"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{SERVICES['orchestrator']}/intelligence/{intelligence_type}/metrics",
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Intelligence metrics failed: {e}")
+        raise HTTPException(status_code=500, detail="Intelligence metrics service error")
+
+@app.get("/api/v1/intelligence/list")
+async def list_intelligences():
+    """List all available Master Intelligences"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{SERVICES['orchestrator']}/intelligence/list",
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"List intelligences failed: {e}")
+        raise HTTPException(status_code=500, detail="List intelligences service error")
+
+# AI Swarm endpoints
+
+@app.post("/api/v1/swarm/dispatch")
+async def swarm_dispatch(tasks: List[Dict[str, Any]]):
+    """Dispatch micro-tasks to AI swarm"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['orchestrator']}/swarm/dispatch",
+                json={"tasks": tasks},
+                timeout=300.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Swarm dispatch failed: {e}")
+        raise HTTPException(status_code=500, detail="Swarm dispatch service error")
+
+@app.get("/api/v1/swarm/status")
+async def swarm_status():
+    """Get AI swarm status"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{SERVICES['orchestrator']}/swarm/status",
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Swarm status failed: {e}")
+        raise HTTPException(status_code=500, detail="Swarm status service error")
+
+@app.get("/api/v1/swarm/metrics")
+async def swarm_metrics():
+    """Get AI swarm performance metrics"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{SERVICES['orchestrator']}/swarm/metrics",
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Swarm metrics failed: {e}")
+        raise HTTPException(status_code=500, detail="Swarm metrics service error")
+
+@app.post("/api/v1/swarm/scale")
+async def swarm_scale(target_size: int):
+    """Scale AI swarm to target size"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['orchestrator']}/swarm/scale",
+                json={"target_size": target_size},
+                timeout=60.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Swarm scale failed: {e}")
+        raise HTTPException(status_code=500, detail="Swarm scale service error")
+
+@app.post("/api/v1/swarm/optimize")
+async def swarm_optimize():
+    """Optimize swarm configuration"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['orchestrator']}/swarm/optimize",
+                json={},
+                timeout=60.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Swarm optimize failed: {e}")
+        raise HTTPException(status_code=500, detail="Swarm optimize service error")
+
 # Fraud Detection endpoints
 @app.post("/api/v1/fraud/analyze")
 async def analyze_fraud(data: Dict[str, Any]):

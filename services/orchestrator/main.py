@@ -1,6 +1,7 @@
 """
 Orchestrator Service
 Coordinates all AI services, manages task queues, and handles workflows
+Includes L20 Supreme Brain orchestration system
 """
 
 from flask import Flask, request, jsonify
@@ -12,6 +13,21 @@ from typing import List, Dict, Any
 import requests
 import os
 from uuid import uuid4
+
+# Import L20 components
+from supreme_brain import SupremeBrain
+from master_intelligences import (
+    ProductContentIntelligence,
+    MarketingIntelligence,
+    WebAppBuilderIntelligence,
+    AdvancedMediaIntelligence
+)
+from swarm_coordinator import SwarmCoordinator
+from security_utils import (
+    SecurityValidator,
+    sanitize_user_input,
+    rate_limiter
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -36,7 +52,21 @@ class TaskOrchestrator:
             'fraud_detection': os.getenv('FRAUD_SERVICE_URL', 'http://fraud-detection-service:5004'),
         }
         
-        logger.info("Task Orchestrator initialized successfully")
+        # Initialize L20 Supreme Brain and components
+        self.supreme_brain = SupremeBrain(self)
+        
+        # Initialize Master Intelligences (L18 subsystems)
+        self.intelligences = {
+            'product_content': ProductContentIntelligence(self),
+            'marketing': MarketingIntelligence(self),
+            'web_app_builder': WebAppBuilderIntelligence(self),
+            'advanced_media': AdvancedMediaIntelligence(self)
+        }
+        
+        # Initialize AI Swarm Coordinator
+        self.swarm_coordinator = SwarmCoordinator(self)
+        
+        logger.info("Task Orchestrator with L20 Supreme Brain initialized successfully")
     
     def connect_redis(self):
         """Connect to Redis for task queue management"""
@@ -267,6 +297,326 @@ def list_services():
     return jsonify({
         "services": orchestrator.services
     })
+
+# L20 Supreme Brain endpoints
+
+@app.route('/l20/strategize', methods=['POST'])
+def l20_strategize():
+    """High-level strategic planning endpoint"""
+    try:
+        # Rate limiting
+        client_id = request.remote_addr
+        if not rate_limiter.check_rate_limit(client_id, 'l20_strategize'):
+            return jsonify({"error": "Rate limit exceeded"}), 429
+        
+        data = request.get_json()
+        
+        # Input validation
+        if not data or 'objective' not in data:
+            return jsonify({"error": "Objective is required"}), 400
+        
+        # Sanitize input
+        sanitized_data = sanitize_user_input(data)
+        
+        objective = SecurityValidator.sanitize_string(sanitized_data['objective'], 1000)
+        constraints = sanitized_data.get('constraints', {})
+        
+        # Validate constraints
+        if constraints:
+            SecurityValidator.validate_dict_size(constraints, 50)
+        
+        strategy = orchestrator.supreme_brain.strategize(objective, constraints)
+        
+        return jsonify(strategy), 200
+        
+    except ValueError as e:
+        logger.error(f"Validation error in strategize: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error in strategize endpoint: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/l20/prioritize', methods=['POST'])
+def l20_prioritize():
+    """Intelligent task prioritization endpoint"""
+    try:
+        # Rate limiting
+        client_id = request.remote_addr
+        if not rate_limiter.check_rate_limit(client_id, 'default'):
+            return jsonify({"error": "Rate limit exceeded"}), 429
+        
+        data = request.get_json()
+        
+        if not data or 'tasks' not in data:
+            return jsonify({"error": "Tasks list is required"}), 400
+        
+        # Sanitize and validate tasks
+        sanitized_tasks = SecurityValidator.sanitize_tasks(data['tasks'])
+        
+        prioritized_tasks = orchestrator.supreme_brain.prioritize_tasks(sanitized_tasks)
+        
+        return jsonify({
+            "prioritized_tasks": prioritized_tasks,
+            "total_tasks": len(prioritized_tasks)
+        }), 200
+        
+    except ValueError as e:
+        logger.error(f"Validation error in prioritize: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error in prioritize endpoint: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/l20/coordinate', methods=['POST'])
+def l20_coordinate():
+    """Cross-domain coordination endpoint"""
+    try:
+        # Rate limiting
+        client_id = request.remote_addr
+        if not rate_limiter.check_rate_limit(client_id, 'l20_coordinate'):
+            return jsonify({"error": "Rate limit exceeded"}), 429
+        
+        data = request.get_json()
+        
+        if not data or 'domains' not in data:
+            return jsonify({"error": "Domains list is required"}), 400
+        
+        # Sanitize input
+        sanitized_data = sanitize_user_input(data)
+        
+        domains = sanitized_data['domains']
+        task_specs = sanitized_data.get('task_specs', {})
+        
+        # Validate domains
+        if not isinstance(domains, list):
+            return jsonify({"error": "Domains must be a list"}), 400
+        
+        SecurityValidator.validate_list_size(domains, 20)
+        
+        coordination_plan = orchestrator.supreme_brain.coordinate_cross_domain(domains, task_specs)
+        
+        return jsonify(coordination_plan), 200
+        
+    except ValueError as e:
+        logger.error(f"Validation error in coordinate: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error in coordinate endpoint: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/l20/optimize-resources', methods=['POST'])
+def l20_optimize_resources():
+    """Resource optimization endpoint"""
+    try:
+        # Rate limiting
+        client_id = request.remote_addr
+        if not rate_limiter.check_rate_limit(client_id, 'default'):
+            return jsonify({"error": "Rate limit exceeded"}), 429
+        
+        data = request.get_json()
+        
+        # Sanitize input
+        sanitized_data = sanitize_user_input(data)
+        
+        available_resources = sanitized_data.get('available_resources', {
+            'cpu': 64,
+            'memory': 256000,
+            'gpu': 4
+        })
+        pending_tasks = sanitized_data.get('pending_tasks', [])
+        
+        # Validate resources
+        SecurityValidator.validate_resource_values(available_resources)
+        
+        # Validate tasks
+        if pending_tasks:
+            pending_tasks = SecurityValidator.sanitize_tasks(pending_tasks)
+        
+        allocation_plan = orchestrator.supreme_brain.optimize_resource_allocation(
+            available_resources, pending_tasks
+        )
+        
+        return jsonify(allocation_plan), 200
+        
+    except ValueError as e:
+        logger.error(f"Validation error in optimize-resources: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error in optimize-resources endpoint: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/l20/metrics', methods=['GET'])
+def l20_metrics():
+    """Get L20 Supreme Brain metrics"""
+    try:
+        metrics = orchestrator.supreme_brain.get_metrics()
+        return jsonify(metrics), 200
+    except Exception as e:
+        logger.error(f"Error in metrics endpoint: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# Master Intelligence endpoints
+
+@app.route('/intelligence/<intelligence_type>/execute', methods=['POST'])
+def execute_intelligence(intelligence_type: str):
+    """Execute specific Master Intelligence task"""
+    try:
+        # Rate limiting
+        client_id = request.remote_addr
+        if not rate_limiter.check_rate_limit(client_id, 'intelligence_execute'):
+            return jsonify({"error": "Rate limit exceeded"}), 429
+        
+        # Validate intelligence type
+        if not SecurityValidator.validate_intelligence_type(intelligence_type):
+            return jsonify({
+                "error": f"Unknown intelligence type: {intelligence_type}",
+                "available": list(orchestrator.intelligences.keys())
+            }), 400
+        
+        data = request.get_json()
+        
+        # Sanitize input
+        sanitized_data = sanitize_user_input(data)
+        
+        intelligence = orchestrator.intelligences[intelligence_type]
+        result = intelligence.execute(sanitized_data)
+        
+        return jsonify(result), 200
+        
+    except ValueError as e:
+        logger.error(f"Validation error executing {intelligence_type} intelligence: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error executing {intelligence_type} intelligence: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/intelligence/<intelligence_type>/metrics', methods=['GET'])
+def get_intelligence_metrics(intelligence_type: str):
+    """Get metrics for specific Master Intelligence"""
+    try:
+        if intelligence_type not in orchestrator.intelligences:
+            return jsonify({
+                "error": f"Unknown intelligence type: {intelligence_type}"
+            }), 400
+        
+        intelligence = orchestrator.intelligences[intelligence_type]
+        metrics = intelligence.get_metrics()
+        
+        return jsonify(metrics), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting {intelligence_type} metrics: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/intelligence/list', methods=['GET'])
+def list_intelligences():
+    """List all available Master Intelligences"""
+    intelligences = {}
+    for name, intelligence in orchestrator.intelligences.items():
+        intelligences[name] = {
+            'name': intelligence.name,
+            'metrics': intelligence.get_metrics()
+        }
+    
+    return jsonify({
+        "intelligences": intelligences,
+        "count": len(intelligences)
+    })
+
+# AI Swarm endpoints
+
+@app.route('/swarm/dispatch', methods=['POST'])
+def swarm_dispatch():
+    """Dispatch micro-tasks to AI swarm"""
+    try:
+        # Rate limiting
+        client_id = request.remote_addr
+        if not rate_limiter.check_rate_limit(client_id, 'swarm_dispatch'):
+            return jsonify({"error": "Rate limit exceeded"}), 429
+        
+        data = request.get_json()
+        
+        if not data or 'tasks' not in data:
+            return jsonify({"error": "Tasks list is required"}), 400
+        
+        # Sanitize and validate tasks
+        sanitized_tasks = SecurityValidator.sanitize_tasks(data['tasks'])
+        
+        result = orchestrator.swarm_coordinator.dispatch_micro_tasks(sanitized_tasks)
+        
+        return jsonify(result), 200
+        
+    except ValueError as e:
+        logger.error(f"Validation error in swarm dispatch: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error in swarm dispatch: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/swarm/status', methods=['GET'])
+def swarm_status():
+    """Get AI swarm status"""
+    try:
+        status = orchestrator.swarm_coordinator.get_swarm_status()
+        return jsonify(status), 200
+    except Exception as e:
+        logger.error(f"Error getting swarm status: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/swarm/metrics', methods=['GET'])
+def swarm_metrics():
+    """Get AI swarm performance metrics"""
+    try:
+        metrics = orchestrator.swarm_coordinator.get_performance_metrics()
+        return jsonify(metrics), 200
+    except Exception as e:
+        logger.error(f"Error getting swarm metrics: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/swarm/scale', methods=['POST'])
+def swarm_scale():
+    """Scale AI swarm to target size"""
+    try:
+        # Rate limiting
+        client_id = request.remote_addr
+        if not rate_limiter.check_rate_limit(client_id, 'default'):
+            return jsonify({"error": "Rate limit exceeded"}), 429
+        
+        data = request.get_json()
+        
+        if not data or 'target_size' not in data:
+            return jsonify({"error": "Target size is required"}), 400
+        
+        target_size = data['target_size']
+        
+        # Validate target size
+        if not isinstance(target_size, int) or target_size < 10 or target_size > 1000000:
+            return jsonify({"error": "Target size must be between 10 and 1,000,000"}), 400
+        
+        orchestrator.swarm_coordinator.scale_swarm(target_size)
+        
+        return jsonify({
+            "status": "success",
+            "message": f"Swarm scaled to {target_size} bots",
+            "current_status": orchestrator.swarm_coordinator.get_swarm_status()
+        }), 200
+        
+    except ValueError as e:
+        logger.error(f"Validation error scaling swarm: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error scaling swarm: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/swarm/optimize', methods=['POST'])
+def swarm_optimize():
+    """Optimize swarm configuration"""
+    try:
+        result = orchestrator.swarm_coordinator.optimize_swarm()
+        return jsonify(result), 200
+    except Exception as e:
+        logger.error(f"Error optimizing swarm: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003, debug=False)
