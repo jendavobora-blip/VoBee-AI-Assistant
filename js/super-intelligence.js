@@ -319,10 +319,25 @@ class SuperIntelligenceChatbot extends VoBeeChatbot {
             this.awaitingConfirmation = false;
             
             try {
-                const result = await this.supremeBrain.confirmAndExecute(this.pendingTask.understanding.originalInput);
+                // Extract the understanding from pending task
+                const understanding = this.pendingTask.understanding;
+                
+                // Execute the task directly
+                const executionResult = await this.supremeBrain.executeTask(understanding);
+                const task = {
+                    id: Date.now(),
+                    input: understanding.originalInput,
+                    understanding: understanding,
+                    result: executionResult,
+                    status: 'completed'
+                };
+                
+                const report = this.supremeBrain.generateReport(task);
+                await this.supremeBrain.logTask(task);
+                
                 this.pendingTask = null;
                 
-                const successMessage = '✅ Task executed!\n\n' + result.report;
+                const successMessage = '✅ Task executed!\n\n' + report;
                 await this.saveMessage('user', input);
                 await this.saveMessage('bot', successMessage);
                 

@@ -340,8 +340,8 @@ class VoBeeChatbot {
     }
 }
 
-// Create global chatbot instance
-const vobee = new VoBeeChatbot();
+// Don't create global instance here - will be created in index.html
+// const vobee = new VoBeeChatbot();
 
 /**
  * UI Controller for the chatbot interface
@@ -541,11 +541,11 @@ class ChatUI {
     }
 }
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', async () => {
-    const chatUI = new ChatUI(vobee);
-    await chatUI.init();
-});
+// Don't auto-initialize - will be handled by enhanced-ui.js
+// document.addEventListener('DOMContentLoaded', async () => {
+//     const chatUI = new ChatUI(vobee);
+//     await chatUI.init();
+// });
 
 // Export for testing
 if (typeof module !== 'undefined' && module.exports) {
