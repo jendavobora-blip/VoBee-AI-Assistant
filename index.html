@@ -66,6 +66,7 @@
 
     <!-- Scripts -->
     <script src="js/response-patterns.js"></script>
+    <script src="js/ai-optimization.js"></script>
     <script src="js/chatbot.js"></script>
     
     <!-- Service Worker Registration -->
@@ -113,6 +114,19 @@
             console.log('VoBee installed successfully!');
             installPrompt.classList.remove('show');
         });
+
+        // Initialize AI Optimization System
+        let aiOptimizer;
+        if (typeof AIOptimization !== 'undefined') {
+            aiOptimizer = new AIOptimization();
+            aiOptimizer.init().then(() => {
+                console.log('✓ AI Optimization System active');
+                // Start background learning (runs every 30 minutes)
+                aiOptimizer.startBackgroundLearning(30);
+            }).catch(err => {
+                console.error('AI Optimization initialization error:', err);
+            });
+        }
     </script>
 </body>
 </html>
