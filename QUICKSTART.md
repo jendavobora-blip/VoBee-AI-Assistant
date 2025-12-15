@@ -1,8 +1,70 @@
 # Quick Start Guide
 
-This guide will help you get the AI Orchestration System up and running in minutes.
+This guide will help you get VoBee AI Assistant up and running in minutes.
 
-## Prerequisites
+## ✨ What's New
+
+VoBee now includes:
+- 🤖 **AI-Level Quality Assurance** - Autonomous testing and validation
+- 🧠 **Intelligent Optimization** - Automatic caching and learning
+- 📱 **Mobile Ready** - Native Android and iOS apps
+- ⚡ **Background Learning** - Continuous self-improvement
+- 📊 **Real-time Metrics** - Performance monitoring dashboard
+
+## 🧪 Test the New Features
+
+```bash
+# Clone and navigate
+git clone https://github.com/jendavobora-blip/VoBee-AI-Assistant.git
+cd VoBee-AI-Assistant
+
+# Install dependencies (for testing)
+npm install
+
+# Run AI quality tests
+npm run test:quality
+
+# Run optimization tests
+npm run optimize
+```
+
+## 🚀 Three Ways to Run VoBee
+
+### Option 1: Web App (Fastest - No Installation Required)
+
+```bash
+# Clone the repository
+git clone https://github.com/jendavobora-blip/VoBee-AI-Assistant.git
+cd VoBee-AI-Assistant
+
+# Start web server
+python3 -m http.server 8080
+# OR
+npx http-server -p 8080
+```
+
+Open http://localhost:8080 in your browser and start chatting!
+
+### Option 2: Mobile App (Android/iOS)
+
+See [MOBILE_DEPLOYMENT.md](MOBILE_DEPLOYMENT.md) for complete guide.
+
+```bash
+# Install dependencies
+npm install
+
+# Build for Android
+npm run mobile:build:android
+
+# Build for iOS (macOS only)
+npm run mobile:build:ios
+```
+
+### Option 3: Full AI System with Backend Services
+
+### Option 3: Full AI System with Backend Services
+
+## Prerequisites (for Full System)
 
 - Docker Desktop installed and running
 - Docker Compose installed

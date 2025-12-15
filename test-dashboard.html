@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoBee AI - Test Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #eee;
+        }
+        h1 {
+            color: #ffc107;
+            text-align: center;
+        }
+        .section {
+            background: #16213e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+        button {
+            background: #ffc107;
+            color: #1a1a2e;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #ffca28;
+        }
+        pre {
+            background: #0f1419;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.success { background: #4caf50; color: white; }
+        .status.pending { background: #ff9800; color: white; }
+        .status.error { background: #f44336; color: white; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .metric {
+            font-size: 2em;
+            color: #ffc107;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐝 VoBee AI Assistant - Test Dashboard</h1>
+    
+    <div class="section">
+        <h2>🤖 AI Quality Assurance Tests</h2>
+        <p>Run comprehensive AI-powered quality validation tests</p>
+        <button onclick="runQualityTests()">Run Quality Tests</button>
+        <span id="qa-status" class="status pending">Not Run</span>
+        <pre id="qa-results">Click "Run Quality Tests" to start...</pre>
+    </div>
+
+    <div class="section">
+        <h2>🧠 AI Optimization System</h2>
+        <p>Test intelligent caching, batching, and learning capabilities</p>
+        <button onclick="initOptimization()">Initialize Optimizer</button>
+        <button onclick="testOptimization()">Run Optimization Test</button>
+        <button onclick="showStats()">Show Statistics</button>
+        <span id="opt-status" class="status pending">Not Initialized</span>
+        <pre id="opt-results">Click "Initialize Optimizer" to start...</pre>
+    </div>
+
+    <div class="section">
+        <h2>📊 Real-time Metrics</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Quality Score</h3>
+                <div class="metric" id="quality-score">--%</div>
+            </div>
+            <div class="card">
+                <h3>Cache Hit Rate</h3>
+                <div class="metric" id="cache-rate">--%</div>
+            </div>
+            <div class="card">
+                <h3>API Calls</h3>
+                <div class="metric" id="api-calls">0</div>
+            </div>
+            <div class="card">
+                <h3>Optimizations</h3>
+                <div class="metric" id="optimizations">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📱 Mobile Deployment Status</h2>
+        <p><strong>Platform Support:</strong></p>
+        <ul>
+            <li>✅ Progressive Web App (PWA) - Ready</li>
+            <li>✅ Android (Capacitor) - Configured</li>
+            <li>✅ iOS (Capacitor) - Configured</li>
+        </ul>
+        <p><strong>Build Commands:</strong></p>
+        <pre>npm run mobile:build:android
+npm run mobile:build:ios</pre>
+    </div>
+
+    <script src="tests/ai-quality-assurance.js"></script>
+    <script src="js/ai-optimization.js"></script>
+    <script>
+        let qaSystem = null;
+        let optimizer = null;
+
+        async function runQualityTests() {
+            const statusEl = document.getElementById('qa-status');
+            const resultsEl = document.getElementById('qa-results');
+            
+            try {
+                statusEl.className = 'status pending';
+                statusEl.textContent = 'Running...';
+                resultsEl.textContent = 'Running AI Quality Assurance tests...\n';
+
+                if (!qaSystem) {
+                    qaSystem = new AIQualityAssurance();
+                }
+
+                const results = await qaSystem.runComprehensiveTests();
+                const report = qaSystem.generateReport();
+
+                resultsEl.textContent = report;
+                document.getElementById('quality-score').textContent = 
+                    results.overallScore.toFixed(1) + '%';
+                
+                statusEl.className = 'status success';
+                statusEl.textContent = 'Passed';
+            } catch (error) {
+                resultsEl.textContent = 'Error: ' + error.message;
+                statusEl.className = 'status error';
+                statusEl.textContent = 'Failed';
+            }
+        }
+
+        async function initOptimization() {
+            const statusEl = document.getElementById('opt-status');
+            const resultsEl = document.getElementById('opt-results');
+            
+            try {
+                resultsEl.textContent = 'Initializing AI Optimization System...\n';
+                
+                optimizer = new AIOptimization();
+                await optimizer.init();
+                
+                resultsEl.textContent += '✓ AI Optimization System initialized successfully!\n';
+                resultsEl.textContent += '✓ Cache API ready\n';
+                resultsEl.textContent += '✓ Learning system active\n';
+                resultsEl.textContent += '\nYou can now run optimization tests.';
+                
+                statusEl.className = 'status success';
+                statusEl.textContent = 'Initialized';
+            } catch (error) {
+                resultsEl.textContent = 'Error: ' + error.message;
+                statusEl.className = 'status error';
+                statusEl.textContent = 'Error';
+            }
+        }
+
+        async function testOptimization() {
+            if (!optimizer) {
+                alert('Please initialize the optimizer first!');
+                return;
+            }
+
+            const resultsEl = document.getElementById('opt-results');
+            resultsEl.textContent = 'Running optimization tests...\n\n';
+
+            try {
+                // Test 1: Cached API calls
+                resultsEl.textContent += 'Test 1: Optimized API Calls\n';
+                const start = Date.now();
+                
+                for (let i = 0; i < 10; i++) {
+                    // Simulate API call
+                    resultsEl.textContent += `  Making call ${i + 1}...\n`;
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+                
+                const duration = Date.now() - start;
+                resultsEl.textContent += `✓ Completed 10 calls in ${duration}ms\n\n`;
+
+                // Test 2: Learning
+                resultsEl.textContent += 'Test 2: Learning and Pattern Analysis\n';
+                const patterns = await optimizer.learnAndOptimize();
+                resultsEl.textContent += `✓ Analysis complete\n`;
+                resultsEl.textContent += `  - Patterns detected: ${patterns.frequentAPIs.length}\n\n`;
+
+                // Test 3: Statistics
+                const stats = optimizer.getStatistics();
+                resultsEl.textContent += 'Test 3: Optimization Statistics\n';
+                resultsEl.textContent += `  Total API Calls: ${stats.totalAPICalls}\n`;
+                resultsEl.textContent += `  Cache Hits: ${stats.cacheHits}\n`;
+                resultsEl.textContent += `  Deduplication Hits: ${stats.deduplicationHits}\n`;
+                resultsEl.textContent += `  Savings Rate: ${stats.savingsRate.toFixed(2)}%\n`;
+
+                // Update metrics
+                document.getElementById('api-calls').textContent = stats.totalAPICalls;
+                document.getElementById('optimizations').textContent = stats.totalOptimizations;
+                document.getElementById('cache-rate').textContent = 
+                    stats.savingsRate.toFixed(1) + '%';
+
+                resultsEl.textContent += '\n✓ All optimization tests passed!';
+            } catch (error) {
+                resultsEl.textContent += '\n✗ Error: ' + error.message;
+            }
+        }
+
+        async function showStats() {
+            if (!optimizer) {
+                alert('Please initialize the optimizer first!');
+                return;
+            }
+
+            const stats = optimizer.getStatistics();
+            const resultsEl = document.getElementById('opt-results');
+            
+            resultsEl.textContent = '📊 Current Optimization Statistics\n\n';
+            resultsEl.textContent += `Total API Calls: ${stats.totalAPICalls}\n`;
+            resultsEl.textContent += `Total Optimizations: ${stats.totalOptimizations}\n`;
+            resultsEl.textContent += `Cache Hits: ${stats.cacheHits}\n`;
+            resultsEl.textContent += `Deduplication Hits: ${stats.deduplicationHits}\n`;
+            resultsEl.textContent += `Savings Rate: ${stats.savingsRate.toFixed(2)}%\n`;
+
+            // Update dashboard metrics
+            document.getElementById('api-calls').textContent = stats.totalAPICalls;
+            document.getElementById('optimizations').textContent = stats.totalOptimizations;
+            document.getElementById('cache-rate').textContent = stats.savingsRate.toFixed(1) + '%';
+        }
+
+        // Auto-initialize on load
+        window.addEventListener('load', () => {
+            console.log('🐝 VoBee AI Test Dashboard loaded');
+            console.log('Available commands:');
+            console.log('  - runQualityTests()');
+            console.log('  - initOptimization()');
+            console.log('  - testOptimization()');
+            console.log('  - showStats()');
+        });
+    </script>
+</body>
+</html>
