@@ -24,11 +24,15 @@
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <div class="logo">🐝</div>
+                <div class="logo">🧠</div>
                 <div>
-                    <h1>VoBee AI</h1>
-                    <p>Your Friendly Assistant</p>
+                    <h1>VoBee Super-Intelligence</h1>
+                    <p>Your Personal AI Assistant System</p>
                 </div>
+            </div>
+            <div class="system-status" id="system-status">
+                <span class="status-indicator" title="System active">●</span>
+                <span class="status-text">Supreme Brain Active</span>
             </div>
         </header>
 
@@ -41,10 +45,13 @@
 
         <!-- Input Area -->
         <footer class="input-container">
+            <button id="voice-button" class="btn btn-voice" aria-label="Voice input" title="Voice input">
+                🎤
+            </button>
             <input 
                 type="text" 
                 id="user-input" 
-                placeholder="Type your message..." 
+                placeholder="Type your message or use voice..." 
                 aria-label="Type your message"
                 autocomplete="off"
             >
@@ -53,6 +60,9 @@
             </button>
             <button id="clear-button" class="btn btn-clear" aria-label="Clear chat history">
                 Clear
+            </button>
+            <button id="preview-button" class="btn btn-preview" aria-label="Device preview" title="Device preview">
+                📱
             </button>
         </footer>
     </div>
@@ -66,10 +76,19 @@
 
     <!-- Scripts -->
     <script src="js/response-patterns.js"></script>
+    <script src="js/sub-systems.js"></script>
+    <script src="js/supreme-brain.js"></script>
+    <script src="js/voice-interface.js"></script>
+    <script src="js/device-preview.js"></script>
     <script src="js/chatbot.js"></script>
+    <script src="js/super-intelligence.js"></script>
+    <script src="js/enhanced-ui.js"></script>
     
     <!-- Service Worker Registration -->
     <script>
+        // Create global super-intelligence instance
+        const vobee = new SuperIntelligenceChatbot();
+
         // Register service worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
