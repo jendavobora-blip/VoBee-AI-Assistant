@@ -204,6 +204,44 @@ services:
       - ./data/outputs:/app/content
     restart: unless-stopped
 
+  # Health Monitor Service - Auto-Healing
+  health-monitor:
+    build:
+      context: ./services/health-monitor
+      dockerfile: Dockerfile
+    ports:
+      - "5006:5006"
+    environment:
+      - HEALTH_CHECK_INTERVAL=30
+      - MAX_FAILURES_BEFORE_RECOVERY=3
+      - RECOVERY_TIMEOUT=60
+      - ELASTICSEARCH_ENABLED=true
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Self-Evolution Service - Performance Optimization
+  self-evolution:
+    build:
+      context: ./services/self-evolution
+      dockerfile: Dockerfile
+    ports:
+      - "5007:5007"
+    environment:
+      - ANALYSIS_WINDOW_HOURS=24
+      - OPTIMIZATION_THRESHOLD=0.15
+      - AUTO_APPLY_OPTIMIZATIONS=false
+      - ELASTICSEARCH_ENABLED=true
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - ai-network
+    restart: unless-stopped
+
 networks:
   ai-network:
     driver: bridge

@@ -52,6 +52,14 @@ A complete AI orchestration system featuring:
 - Security scanning with Trivy
 - Prometheus-compatible metrics
 
+### 🔄 Auto-Healing & Self-Evolution
+- **Health Monitor** with automatic service recovery
+- **Self-Evolution** engine for performance optimization
+- ML-based usage pattern analysis
+- Automatic inefficiency detection and resolution
+- Comprehensive error logging and rollback capabilities
+- See [AUTO_HEALING_EVOLUTION.md](AUTO_HEALING_EVOLUTION.md) for details
+
 ### 🚀 CDN & Output Management
 - Nginx-based CDN with caching and compression
 - Fast content delivery for generated media
@@ -79,6 +87,8 @@ VoBee-AI-Assistant/
 │   ├── orchestrator/       # Task orchestration (port 5003)
 │   ├── fraud-detection/    # ML fraud detection (port 5004)
 │   ├── auto-scaler/        # Resource auto-scaling (port 5005)
+│   ├── health-monitor/     # Auto-healing service (port 5006)
+│   ├── self-evolution/     # Performance optimization (port 5007)
 │   └── cdn/                # Nginx CDN (port 8080)
 ├── kubernetes/             # K8s manifests
 │   ├── 00-namespace-config.yaml
