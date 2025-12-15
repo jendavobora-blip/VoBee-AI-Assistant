@@ -4,7 +4,7 @@
  * Enables PWA functionality with offline support and caching
  */
 
-const CACHE_NAME = 'vobee-cache-v2';
+const CACHE_NAME = 'vobee-cache-v3';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -15,6 +15,9 @@ const urlsToCache = [
     '/js/supreme-brain.js',
     '/js/voice-interface.js',
     '/js/device-preview.js',
+    '/js/security.js',
+    '/js/gpu-orchestration.js',
+    '/js/testing-automation.js',
     '/js/super-intelligence.js',
     '/js/enhanced-ui.js',
     '/manifest.json',

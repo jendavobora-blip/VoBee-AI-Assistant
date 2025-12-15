@@ -20,6 +20,10 @@ class SuperIntelligenceChatbot extends VoBeeChatbot {
         this.supremeBrain = null;
         this.voiceInterface = null;
         this.devicePreview = null;
+        this.securityManager = null;
+        this.gpuEngine = null;
+        this.fitnessTest = null;
+        this.moduleDocking = null;
         
         // Enhanced features
         this.mode = 'standard'; // 'standard' or 'supreme'
@@ -45,9 +49,95 @@ class SuperIntelligenceChatbot extends VoBeeChatbot {
         // Initialize Device Preview
         this.devicePreview = new DevicePreview();
         
+        // Initialize Security Manager
+        this.securityManager = new SecurityManager();
+        
+        // Initialize GPU Orchestration Engine
+        this.gpuEngine = new GPUOrchestrationEngine();
+        
+        // Initialize Fitness Testing
+        this.fitnessTest = new FitnessTest();
+        this.setupFitnessChecks();
+        
+        // Initialize Module Docking
+        this.moduleDocking = new ModuleDocking();
+        this.registerCoreModules();
+        
         console.log('🧠 Super-Intelligence System initialized!');
         console.log('Available subsystems:', this.supremeBrain.getSubSystems());
         console.log('Voice support:', this.voiceInterface.getStatus());
+        console.log('Security:', this.securityManager.getStatus());
+        console.log('GPU:', this.gpuEngine.getStatus());
+        
+        // Start fitness monitoring
+        this.fitnessTest.startContinuousMonitoring(300000); // Every 5 minutes
+    }
+
+    /**
+     * Setup fitness checks for system health monitoring
+     */
+    setupFitnessChecks() {
+        // Check database connectivity
+        this.fitnessTest.registerCheck('Database', async () => {
+            return this.db !== null;
+        }, 10);
+        
+        // Check Supreme Brain
+        this.fitnessTest.registerCheck('Supreme Brain', async () => {
+            return this.supremeBrain && this.supremeBrain.getSubSystems().length > 0;
+        }, 10);
+        
+        // Check subsystems
+        this.fitnessTest.registerCheck('Subsystems', async () => {
+            return this.supremeBrain.subSystems.size >= 5;
+        }, 8);
+        
+        // Check voice interface
+        this.fitnessTest.registerCheck('Voice Interface', async () => {
+            return this.voiceInterface && this.voiceInterface.isSupported.full;
+        }, 5);
+        
+        // Check security
+        this.fitnessTest.registerCheck('Security', async () => {
+            return this.securityManager && this.securityManager.hasOwner();
+        }, 7);
+        
+        // Check GPU engine
+        this.fitnessTest.registerCheck('GPU Engine', async () => {
+            return this.gpuEngine !== null;
+        }, 6);
+    }
+
+    /**
+     * Register core modules for docking
+     */
+    registerCoreModules() {
+        // Register Supreme Brain module
+        this.moduleDocking.registerModule('SupremeBrain', {
+            version: '1.0.0',
+            init: () => Promise.resolve(),
+            cleanup: () => Promise.resolve()
+        });
+        
+        // Register Voice module
+        this.moduleDocking.registerModule('VoiceInterface', {
+            version: '1.0.0',
+            dependencies: [],
+            init: () => Promise.resolve(),
+            cleanup: () => Promise.resolve()
+        });
+        
+        // Register Security module
+        this.moduleDocking.registerModule('Security', {
+            version: '1.0.0',
+            init: () => Promise.resolve(),
+            cleanup: () => Promise.resolve()
+        });
+        
+        // Dock all core modules
+        this.moduleDocking.dockModule('SupremeBrain');
+        this.moduleDocking.dockModule('VoiceInterface');
+        this.moduleDocking.dockModule('Security');
     }
 
     /**
@@ -289,6 +379,14 @@ class SuperIntelligenceChatbot extends VoBeeChatbot {
         } else if (cmd === '/mode standard') {
             this.mode = 'standard';
             return '🐝 Switched to Standard mode. Using pattern-based responses.';
+        } else if (cmd === '/security status') {
+            return this.getSecurityStatus();
+        } else if (cmd === '/gpu status') {
+            return this.getGPUStatus();
+        } else if (cmd === '/fitness') {
+            return await this.getFitnessReport();
+        } else if (cmd === '/modules') {
+            return this.getModulesStatus();
         }
         
         return 'Unknown command. Type /help for available commands.';
@@ -311,6 +409,10 @@ class SuperIntelligenceChatbot extends VoBeeChatbot {
 /preview off - Disable device preview
 /mode supreme - Switch to Supreme Brain mode
 /mode standard - Switch to Standard chatbot mode
+/security status - Show security and privacy status
+/gpu status - Show GPU orchestration status
+/fitness - Run system fitness check
+/modules - Show module docking status
 
 You can also just chat naturally! The system will automatically
 use the appropriate intelligence subsystem based on your request.
@@ -325,6 +427,8 @@ use the appropriate intelligence subsystem based on your request.
         const brainStatus = this.supremeBrain.getStatus();
         const voiceStatus = this.voiceInterface.getStatus();
         const previewStatus = this.devicePreview.getStatus();
+        const securityStatus = this.securityManager.getStatus();
+        const gpuStatus = this.gpuEngine.getStatus();
         
         return `
 🧠 System Status:
@@ -332,7 +436,7 @@ use the appropriate intelligence subsystem based on your request.
 Supreme Brain: Active
 Version: ${brainStatus.version}
 Mode: ${this.mode}
-Owner: ${brainStatus.owner || 'Not set'}
+Owner: ${securityStatus.owner || 'Not set'}
 Requires Approval: ${brainStatus.requiresApproval ? 'Yes' : 'No'}
 
 Subsystems: ${brainStatus.subSystems.length} active
@@ -344,7 +448,119 @@ Speaking: ${voiceStatus.speaking ? 'Yes' : 'No'}
 
 Device Preview: ${previewStatus.previewMode ? 'Active' : 'Inactive'}
 Current Device: ${previewStatus.currentDevice}
+
+Security Level: ${securityStatus.securityLevel}
+Authenticated: ${securityStatus.isAuthenticated ? 'Yes' : 'No'}
+
+GPU Available: ${gpuStatus.gpuAvailable ? 'Yes' : 'No'}
+Meta-Processing: ${gpuStatus.metaProcessing.enabled ? 'Enabled' : 'Disabled'}
         `.trim();
+    }
+
+    /**
+     * Get security status
+     * @returns {string} Security status
+     */
+    getSecurityStatus() {
+        const status = this.securityManager.getStatus();
+        
+        return `
+🔒 Security & Privacy Status:
+
+Owner Registered: ${status.hasOwner ? 'Yes' : 'No'}
+Authenticated: ${status.isAuthenticated ? 'Yes' : 'No'}
+Current Owner: ${status.owner || 'None'}
+Security Level: ${status.securityLevel}
+Encryption: ${status.encryptionEnabled ? 'Enabled' : 'Disabled'}
+Pending Approvals: ${status.pendingApprovals}
+Access Log Entries: ${status.accessLogSize}
+        `.trim();
+    }
+
+    /**
+     * Get GPU status
+     * @returns {string} GPU status
+     */
+    getGPUStatus() {
+        const status = this.gpuEngine.getStatus();
+        const stats = status.statistics;
+        
+        return `
+⚡ GPU Orchestration Engine Status:
+
+GPU Available: ${status.gpuAvailable ? 'Yes' : 'No'}
+${status.gpuAvailable ? `Vendor: ${status.gpuInfo.vendor}
+Renderer: ${status.gpuInfo.renderer}` : ''}
+
+Meta-Processing: ${status.metaProcessing.enabled ? 'Enabled' : 'Disabled'}
+Optimization Level: ${status.metaProcessing.optimizationLevel}
+Analysis Depth: ${status.metaProcessing.analysisDepth}
+
+Tasks Processed: ${stats.totalTasks}
+Completed: ${stats.completed}
+Failed: ${stats.failed}
+Queued: ${stats.queued}
+Active: ${stats.activeTask || 'None'}
+
+Average Processing Time: ${stats.averageProcessingTime.toFixed(2)}ms
+        `.trim();
+    }
+
+    /**
+     * Get fitness report
+     * @returns {Promise<string>} Fitness report
+     */
+    async getFitnessReport() {
+        const report = await this.fitnessTest.runFitnessCheck();
+        
+        let result = `
+🏃 System Fitness Report:
+
+Overall Score: ${report.score.toFixed(1)}% ${report.passed ? '✅' : '⚠️'}
+Status: ${report.passed ? 'Healthy' : 'Needs Attention'}
+Timestamp: ${report.timestamp}
+
+Individual Checks:
+`;
+        
+        for (const check of report.checks) {
+            const icon = check.passed ? '✅' : '❌';
+            result += `${icon} ${check.name} (Weight: ${check.weight})`;
+            if (check.error) {
+                result += ` - Error: ${check.error}`;
+            }
+            result += '\n';
+        }
+        
+        return result.trim();
+    }
+
+    /**
+     * Get modules status
+     * @returns {string} Modules status
+     */
+    getModulesStatus() {
+        const status = this.moduleDocking.getStatus();
+        
+        let result = `
+🔌 Module Docking Status:
+
+Total Modules: ${status.totalModules}
+Docked Modules: ${status.dockedModules}
+
+Modules:
+`;
+        
+        for (const module of status.modules) {
+            const icon = module.status === 'docked' ? '🟢' : '⚪';
+            result += `${icon} ${module.name} v${module.version} - ${module.status}`;
+            if (module.dependencies.length > 0) {
+                result += ` (depends on: ${module.dependencies.join(', ')})`;
+            }
+            result += '\n';
+        }
+        
+        return result.trim();
     }
 
     /**
@@ -427,7 +643,14 @@ complex tasks autonomously under Supreme Brain coordination.
             },
             supremeBrain: this.supremeBrain.getStatus(),
             voice: this.voiceInterface.getStatus(),
-            preview: this.devicePreview.getStatus()
+            preview: this.devicePreview.getStatus(),
+            security: this.securityManager.getStatus(),
+            gpu: this.gpuEngine.getStatus(),
+            fitness: {
+                score: this.fitnessTest.getFitnessScore(),
+                lastCheck: this.fitnessTest.lastCheck
+            },
+            modules: this.moduleDocking.getStatus()
         };
     }
 }

@@ -1,7 +1,7 @@
 {
-    "name": "VoBee AI Assistant",
-    "short_name": "VoBee",
-    "description": "Your friendly AI chatbot assistant with creative responses and learning capabilities",
+    "name": "VoBee Super-Intelligence Assistant",
+    "short_name": "VoBee AI",
+    "description": "Personal super-intelligence system with hierarchical AI, voice interface, and multi-device support",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#1a1a2e",
@@ -21,7 +21,7 @@
             "purpose": "any"
         }
     ],
-    "categories": ["entertainment", "utilities", "productivity"],
+    "categories": ["productivity", "utilities", "business"],
     "lang": "en",
     "dir": "ltr"
 }
