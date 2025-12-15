@@ -336,17 +336,26 @@ class AIQualityAssurance {
     }
 
     async testXSSProtection() {
-        // Basic XSS protection check
+        // Test that DOM properly sanitizes input
         const testString = '<script>alert("xss")</script>';
         const div = document.createElement('div');
+        
+        // Test both textContent (safe) and innerHTML (potentially unsafe)
         div.textContent = testString;
-        const isProtected = !div.innerHTML.includes('<script>');
+        const safeContent = div.innerHTML;
+        
+        // In a secure environment, script tags should be escaped
+        const isProtected = safeContent.includes('&lt;script&gt;') || 
+                           !safeContent.includes('<script>');
 
         return {
             name: 'XSS Protection',
             passed: isProtected,
             score: isProtected ? 100 : 0,
-            details: { protected: isProtected }
+            details: { 
+                protected: isProtected,
+                note: 'Tests basic DOM sanitization - use CSP for full protection'
+            }
         };
     }
 

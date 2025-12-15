@@ -76,10 +76,15 @@ class AIOptimization {
             const transaction = db.transaction(['learningData'], 'readwrite');
             const store = transaction.objectStore('learningData');
             
-            await store.put({
-                id: 'main',
-                data: this.learningData,
-                timestamp: Date.now()
+            return new Promise((resolve, reject) => {
+                const request = store.put({
+                    id: 'main',
+                    data: this.learningData,
+                    timestamp: Date.now()
+                });
+
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
             });
         } catch (error) {
             console.error('Failed to save learning data:', error);
@@ -197,8 +202,8 @@ class AIOptimization {
     /**
      * Queue request for batching or immediate execution
      */
-    async queueRequest(url, options, cacheKey) {
-        const promise = new Promise(async (resolve, reject) => {
+    queueRequest(url, options, cacheKey) {
+        return new Promise((resolve, reject) => {
             const request = { url, options, cacheKey, resolve, reject };
             this.requestQueue.push(request);
 
@@ -206,8 +211,6 @@ class AIOptimization {
                 this.processQueue();
             }
         });
-
-        return promise;
     }
 
     /**

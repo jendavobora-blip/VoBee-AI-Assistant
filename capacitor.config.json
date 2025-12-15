@@ -5,7 +5,7 @@
   "server": {
     "androidScheme": "https",
     "iosScheme": "https",
-    "hostname": "vobee.app"
+    "hostname": "localhost"
   },
   "plugins": {
     "SplashScreen": {
