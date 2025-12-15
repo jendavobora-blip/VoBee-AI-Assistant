@@ -1,0 +1,13 @@
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-xdist==3.5.0
+pytest-timeout==2.2.0
+aiohttp==3.9.1
+httpx==0.25.1
+faker==20.1.0
+locust==2.19.1
+psutil==5.9.6
+redis==5.0.1
+requests==2.31.0
+pydantic==2.5.0
