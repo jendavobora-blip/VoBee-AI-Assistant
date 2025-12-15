@@ -1,0 +1,214 @@
+version: '3.8'
+
+services:
+  # API Gateway - Main entry point for all services
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+    depends_on:
+      - image-generation
+      - video-generation
+      - crypto-prediction
+      - orchestrator
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Image Generation Service (Stable Diffusion / DALL-E)
+  image-generation:
+    build:
+      context: ./services/image-generation
+      dockerfile: Dockerfile
+    environment:
+      - GPU_ENABLED=true
+      - MODEL_TYPE=stable-diffusion
+      - HDR_ENABLED=true
+      - PBR_RENDERING=true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - ai-network
+    volumes:
+      - ./data/models:/app/models
+      - ./data/outputs/images:/app/outputs
+    restart: unless-stopped
+
+  # Video Generation Service (Runway ML Gen-2 / NeRF)
+  video-generation:
+    build:
+      context: ./services/video-generation
+      dockerfile: Dockerfile
+    environment:
+      - GPU_ENABLED=true
+      - NERF_ENABLED=true
+      - VIDEO_QUALITY=8K
+      - FRAME_RATE=60
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - ai-network
+    volumes:
+      - ./data/models:/app/models
+      - ./data/outputs/videos:/app/outputs
+    restart: unless-stopped
+
+  # Crypto Prediction Service (LSTM/Transformer)
+  crypto-prediction:
+    build:
+      context: ./services/crypto-prediction
+      dockerfile: Dockerfile
+    environment:
+      - COINGECKO_API_KEY=${COINGECKO_API_KEY}
+      - BINANCE_API_KEY=${BINANCE_API_KEY}
+      - BINANCE_API_SECRET=${BINANCE_API_SECRET}
+      - MODEL_TYPE=transformer
+      - PREDICTION_INTERVAL=1h
+    networks:
+      - ai-network
+    volumes:
+      - ./data/models:/app/models
+      - ./data/crypto-data:/app/data
+    restart: unless-stopped
+
+  # Main Orchestrator Service
+  orchestrator:
+    build:
+      context: ./services/orchestrator
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=orchestrator_db
+      - POSTGRES_USER=orchestrator
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Auto-Scaler Service
+  auto-scaler:
+    build:
+      context: ./services/auto-scaler
+      dockerfile: Dockerfile
+    environment:
+      - METRICS_INTERVAL=30
+      - SCALE_UP_THRESHOLD=80
+      - SCALE_DOWN_THRESHOLD=20
+    networks:
+      - ai-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+  # Fraud Detection Service
+  fraud-detection:
+    build:
+      context: ./services/fraud-detection
+      dockerfile: Dockerfile
+    environment:
+      - MODEL_PATH=/app/models/fraud-detection
+      - ALERT_THRESHOLD=0.75
+    networks:
+      - ai-network
+    volumes:
+      - ./data/models:/app/models
+    restart: unless-stopped
+
+  # Redis for caching and task queue
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - ai-network
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  # PostgreSQL for persistent data storage
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=orchestrator_db
+      - POSTGRES_USER=orchestrator
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    networks:
+      - ai-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # ElasticSearch for logging and monitoring
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    networks:
+      - ai-network
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+
+  # Kibana for visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # CDN Service for content delivery
+  cdn-service:
+    build:
+      context: ./services/cdn
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - CACHE_ENABLED=true
+      - COMPRESSION_ENABLED=true
+    networks:
+      - ai-network
+    volumes:
+      - ./data/outputs:/app/content
+    restart: unless-stopped
+
+networks:
+  ai-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  postgres-data:
+  elasticsearch-data:

@@ -1,0 +1,169 @@
+name: Build and Deploy AI Orchestration System
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'services/**'
+      - 'kubernetes/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/orchestration-ci-cd.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}/ai-orchestration
+
+jobs:
+  build-services:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    strategy:
+      matrix:
+        service:
+          - api-gateway
+          - image-generation
+          - video-generation
+          - crypto-prediction
+          - orchestrator
+          - auto-scaler
+          - fraud-detection
+          - cdn
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/${{ matrix.service }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  test-services:
+    name: Test Services
+    runs-on: ubuntu-latest
+    needs: build-services
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest requests
+      
+      - name: Run health check tests
+        run: |
+          echo "Health check tests would run here"
+          # In production, add actual tests
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    needs: build-services
+    permissions:
+      contents: read
+      security-events: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  deploy-kubernetes:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: [build-services, test-services]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Configure kubectl
+        run: |
+          echo "Kubectl configuration would happen here"
+          # In production, configure actual Kubernetes cluster
+      
+      - name: Deploy to cluster
+        run: |
+          echo "Deployment steps:"
+          echo "1. kubectl apply -f kubernetes/"
+          echo "2. Wait for rollout completion"
+          echo "3. Verify services are healthy"
+          # In production, add actual deployment commands
+      
+      - name: Verify deployment
+        run: |
+          echo "Verification would run here"
+          # Check pod status, service endpoints, etc.
+
+  notify:
+    name: Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: [deploy-kubernetes]
+    if: always()
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Send notification
+        run: |
+          echo "Deployment completed"
+          echo "Status: ${{ needs.deploy-kubernetes.result }}"
