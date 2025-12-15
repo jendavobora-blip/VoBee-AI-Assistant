@@ -4,6 +4,9 @@ A complete AI orchestration system featuring:
 - **Creative AI chatbot** PWA with pseudo-learning capabilities
 - **3D/4D image and video generation** (Stable Diffusion, DALL-E, NeRF, Runway ML Gen-2)
 - **Cryptocurrency prediction** with LSTM/Transformer models
+- **Advanced compression** using Brotli, Zstandard (Zstd), and LZ4 algorithms
+- **Bot swarm orchestration** for up to 50,000 bots with L20 tier management
+- **Marketing intelligence** with dynamic product promotion and analytics
 - **Kubernetes-based** distributed infrastructure with GPU acceleration
 - **Auto-scaling** and fraud detection capabilities
 - **CDN pipeline** for fast content delivery
@@ -46,6 +49,29 @@ A complete AI orchestration system featuring:
 - **GitHub Actions** CI/CD pipeline
 - Auto-scaling based on resource metrics
 
+### 🤖 Bot Swarm Orchestration
+- **Up to 50,000 concurrent bots** for mass-action coordination
+- **L20 tier orchestration** for advanced business products
+- Scalable bot task distribution and load balancing
+- Real-time bot health monitoring and recovery
+- Swarm group management for coordinated operations
+
+### 💾 Advanced Compression
+- **Brotli compression** - Best ratio for text/web content (20-30% better than gzip)
+- **Zstandard (Zstd)** - Fast with great ratio, ideal for large files
+- **LZ4 compression** - Ultra-fast, minimal CPU overhead for real-time streaming
+- Memory-efficient streaming compression for large datasets
+- Automatic algorithm selection based on priority (ratio/balanced/speed)
+- Benchmark comparison across all algorithms
+
+### 📊 Marketing Intelligence
+- **Dynamic product promotion** with mass-customized campaigns
+- **Product bundling** for L20 orchestration tier
+- Real-time marketing analytics and performance metrics
+- **Dashboard configuration management** with rollback capability
+- **Owner approval priority** for dashboard changes
+- Promotion performance tracking and ROI calculation
+
 ### 🔐 Security & Monitoring
 - **Fraud detection** models for network and crypto analysis
 - **ElasticSearch + Kibana** for real-time monitoring
@@ -76,9 +102,11 @@ VoBee-AI-Assistant/
 │   ├── image-generation/   # Stable Diffusion, DALL-E (port 5000)
 │   ├── video-generation/   # Runway ML, NeRF (port 5001)
 │   ├── crypto-prediction/  # LSTM/Transformer (port 5002)
-│   ├── orchestrator/       # Task orchestration (port 5003)
+│   ├── orchestrator/       # Task & bot orchestration (port 5003)
 │   ├── fraud-detection/    # ML fraud detection (port 5004)
 │   ├── auto-scaler/        # Resource auto-scaling (port 5005)
+│   ├── compression/        # Advanced compression (port 5006)
+│   ├── marketing-intelligence/ # Marketing & PR intelligence (port 5007)
 │   └── cdn/                # Nginx CDN (port 8080)
 ├── kubernetes/             # K8s manifests
 │   ├── 00-namespace-config.yaml
@@ -237,6 +265,55 @@ curl -X POST http://localhost:8000/api/v1/orchestrate \
       }
     ],
     "priority": "high"
+  }'
+```
+
+### Compress Data
+```bash
+curl -X POST http://localhost:8000/api/v1/compress \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": "SGVsbG8gV29ybGQh...",
+    "algorithm": "auto",
+    "priority": "balanced"
+  }'
+```
+
+### Create Bot Swarm
+```bash
+curl -X POST http://localhost:8000/api/v1/swarms \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "marketing-swarm",
+    "count": 1000,
+    "tier": "L20",
+    "capabilities": ["data_processing", "analytics", "promotion"]
+  }'
+```
+
+### Create Product Promotion
+```bash
+curl -X POST http://localhost:8000/api/v1/marketing/promotions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Summer Sale 2024",
+    "description": "30% off all products",
+    "product_ids": ["prod-123", "prod-456"],
+    "discount_percent": 30,
+    "target_audience": "all"
+  }'
+```
+
+### Create Product Bundle (L20 Tier)
+```bash
+curl -X POST http://localhost:8000/api/v1/marketing/bundles \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Enterprise AI Bundle",
+    "product_ids": ["ai-gen-1", "bot-orchestration", "analytics-pro"],
+    "bundle_price": 9999.99,
+    "discount_percent": 25,
+    "tier": "L20"
   }'
 ```
 

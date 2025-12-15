@@ -12,27 +12,28 @@ This is a complete orchestration system integrating multiple AI functionalities 
 │                     (Load Balanced - Port 8000)                  │
 └───────────────────────┬─────────────────────────────────────────┘
                         │
-        ┌───────────────┼───────────────┐
-        │               │               │
-┌───────▼──────┐ ┌─────▼──────┐ ┌─────▼──────────┐
-│   Image      │ │   Video    │ │    Crypto      │
-│ Generation   │ │ Generation │ │  Prediction    │
-│  (GPU A100)  │ │ (GPU A100) │ │  (LSTM/Trans)  │
-└──────────────┘ └────────────┘ └────────────────┘
-        │               │               │
-        └───────────────┼───────────────┘
+        ┌───────────────┼───────────────┬─────────────┐
+        │               │               │             │
+┌───────▼──────┐ ┌─────▼──────┐ ┌─────▼──────┐ ┌────▼──────────┐
+│   Image      │ │   Video    │ │   Crypto   │ │  Compression  │
+│ Generation   │ │ Generation │ │ Prediction │ │  (Advanced)   │
+│  (GPU A100)  │ │ (GPU A100) │ │ (LSTM/Tr)  │ │ Brotli/Zstd   │
+└──────────────┘ └────────────┘ └────────────┘ └───────────────┘
+        │               │               │             │
+        └───────────────┼───────────────┴─────────────┘
                         │
-                ┌───────▼────────┐
-                │ Orchestrator   │
-                │  (Redis/PG)    │
-                └────────────────┘
+              ┌─────────▼──────────┐
+              │   Orchestrator     │
+              │ (Redis/PG/Bots)    │
+              │ 50K Bot Swarm L20  │
+              └─────────┬──────────┘
                         │
-        ┌───────────────┼───────────────┐
-        │               │               │
-┌───────▼──────┐ ┌─────▼──────┐ ┌─────▼──────────┐
-│    Fraud     │ │    Auto    │ │      CDN       │
-│  Detection   │ │   Scaler   │ │   (Nginx)      │
-└──────────────┘ └────────────┘ └────────────────┘
+        ┌───────────────┼───────────────┬─────────────┐
+        │               │               │             │
+┌───────▼──────┐ ┌─────▼──────┐ ┌─────▼──────┐ ┌────▼──────────┐
+│    Fraud     │ │    Auto    │ │    CDN     │ │  Marketing    │
+│  Detection   │ │   Scaler   │ │  (Nginx)   │ │ Intelligence  │
+└──────────────┘ └────────────┘ └────────────┘ └───────────────┘
         │
 ┌───────▼────────────────────────────────────────┐
 │   Monitoring (ElasticSearch + Kibana)          │
@@ -103,6 +104,40 @@ This is a complete orchestration system integrating multiple AI functionalities 
 - **Scaling Thresholds**: Configurable up/down thresholds
 - **Integration**: Kubernetes HPA
 - **Port**: 5005
+
+#### Advanced Compression Service
+- **Algorithms**: Brotli, Zstandard (Zstd), LZ4
+- **Features**:
+  - Brotli: Best compression ratio (20-30% better than gzip)
+  - Zstd: Fast compression with excellent ratio (2-3x faster than Brotli)
+  - LZ4: Ultra-fast compression/decompression (10x+ faster than gzip)
+  - Memory-efficient streaming compression
+  - Automatic algorithm selection based on priority
+  - Real-time benchmarking
+- **Port**: 5006
+
+#### Bot Swarm Orchestration
+- **Capacity**: Up to 50,000 concurrent bots
+- **Tiers**: Standard, Advanced, L20
+- **Features**:
+  - Individual bot creation and management
+  - Swarm group creation for mass-action coordination
+  - Task distribution across swarms
+  - Real-time bot health monitoring
+  - Per-bot and per-swarm statistics
+  - L20 tier for advanced business products
+- **Integration**: Part of Orchestrator service (port 5003)
+
+#### Marketing Intelligence Service
+- **Features**:
+  - Product catalog management
+  - Dynamic promotion creation and tracking
+  - Product bundling for L20 orchestration
+  - Marketing analytics and ROI calculation
+  - Dashboard configuration management
+  - Rollback capability with owner approval priority
+  - Mass-customized promotion systems
+- **Port**: 5007
 
 #### Google Cloud Platform Integration
 - **Cloud Run**: Serverless deployment option
@@ -250,6 +285,53 @@ kubectl get svc -n ai-orchestration
 
 #### Fraud Detection
 - `POST /api/v1/fraud/analyze` - Analyze transaction
+
+#### Compression
+- `POST /api/v1/compress` - Compress data
+  ```json
+  {
+    "data": "base64_encoded_data",
+    "algorithm": "brotli|zstd|lz4|auto",
+    "priority": "ratio|balanced|speed"
+  }
+  ```
+- `POST /api/v1/decompress` - Decompress data
+- `GET /api/v1/compression/stats` - Get compression statistics
+
+#### Bot Orchestration
+- `POST /api/v1/bots` - Create a bot
+  ```json
+  {
+    "name": "bot-worker-1",
+    "tier": "L20",
+    "capabilities": ["processing", "analytics"]
+  }
+  ```
+- `POST /api/v1/swarms` - Create a bot swarm
+  ```json
+  {
+    "name": "processing-swarm",
+    "count": 5000,
+    "tier": "L20",
+    "capabilities": ["data_processing"]
+  }
+  ```
+- `GET /api/v1/bots/stats` - Get bot orchestration statistics
+
+#### Marketing Intelligence
+- `POST /api/v1/marketing/products` - Create product
+- `POST /api/v1/marketing/promotions` - Create promotion
+- `POST /api/v1/marketing/bundles` - Create product bundle (L20 tier)
+  ```json
+  {
+    "name": "Enterprise Bundle",
+    "product_ids": ["prod-1", "prod-2"],
+    "bundle_price": 9999.99,
+    "tier": "L20"
+  }
+  ```
+- `GET /api/v1/marketing/analytics` - Get marketing analytics
+- `POST /api/v1/marketing/dashboard/change-request` - Request dashboard change
 
 ## Resource Requirements
 
