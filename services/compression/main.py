@@ -14,6 +14,7 @@ from datetime import datetime
 from typing import Optional, Dict, Any
 import base64
 import os
+import time
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -332,7 +333,6 @@ def benchmark_algorithms():
         results = {}
         
         # Benchmark Brotli
-        import time
         start = time.time()
         brotli_compressed = compressor.compress_brotli(data, quality=11)
         brotli_time = time.time() - start
