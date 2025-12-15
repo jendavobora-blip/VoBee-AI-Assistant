@@ -16,6 +16,8 @@ services:
       - video-generation
       - crypto-prediction
       - orchestrator
+      - compression
+      - marketing-intelligence
     networks:
       - ai-network
     restart: unless-stopped
@@ -132,6 +134,28 @@ services:
       - ai-network
     volumes:
       - ./data/models:/app/models
+    restart: unless-stopped
+
+  # Compression Service (Brotli, Zstandard, LZ4)
+  compression:
+    build:
+      context: ./services/compression
+      dockerfile: Dockerfile
+    environment:
+      - LOG_LEVEL=info
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Marketing Intelligence Service
+  marketing-intelligence:
+    build:
+      context: ./services/marketing-intelligence
+      dockerfile: Dockerfile
+    environment:
+      - LOG_LEVEL=info
+    networks:
+      - ai-network
     restart: unless-stopped
 
   # Redis for caching and task queue
