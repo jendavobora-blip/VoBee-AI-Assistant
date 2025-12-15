@@ -1,0 +1,121 @@
+# VoBee AI Assistant - Apache Configuration
+# This file enables proper PWA functionality on Apache servers
+
+# Enable rewrite engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # Force HTTPS (recommended for PWA)
+    # Uncomment these lines to force HTTPS
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Service Worker - Must not be cached to ensure updates work
+<Files "sw.js">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "public, max-age=0, must-revalidate"
+        Header set Service-Worker-Allowed "/"
+    </IfModule>
+</Files>
+
+# Manifest file - Ensure it's not cached too long
+<Files "manifest.json">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "public, max-age=0, must-revalidate"
+    </IfModule>
+</Files>
+
+# Enable compression for better performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/manifest+json
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE image/x-icon
+</IfModule>
+
+# Browser caching for static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    
+    # Fonts
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+    
+    # HTML should have minimal cache
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# MIME types
+<IfModule mod_mime.c>
+    # JavaScript
+    AddType application/javascript js
+    AddType application/json json
+    
+    # Manifest
+    AddType application/manifest+json webmanifest
+    
+    # Fonts
+    AddType font/woff woff
+    AddType font/woff2 woff2
+    
+    # Images
+    AddType image/svg+xml svg
+    AddType image/x-icon ico
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # XSS protection
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Referrer policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Feature policy (optional - restrict features)
+    # Header always set Feature-Policy "microphone 'none'; camera 'none'; geolocation 'self'"
+</IfModule>
+
+# Error documents (optional)
+# ErrorDocument 404 /index.html
+
+# Directory listing (disable for security)
+Options -Indexes
+
+# Protect hidden files
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Allow access to .well-known directory (for SSL certificates, etc.)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/.well-known/
+</IfModule>
