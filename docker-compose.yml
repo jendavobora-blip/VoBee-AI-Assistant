@@ -204,6 +204,59 @@ services:
       - ./data/outputs:/app/content
     restart: unless-stopped
 
+  # Supreme General Intelligence Service
+  supreme-general-intelligence:
+    build:
+      context: ./services/supreme-general-intelligence
+      dockerfile: Dockerfile
+    ports:
+      - "5010:5010"
+    environment:
+      - DATABASE_URL=postgresql://orchestrator:${POSTGRES_PASSWORD}@postgres:5432/orchestrator_db
+      - OWNER_SECRET=${OWNER_SECRET}
+      - ORCHESTRATOR_URL=http://orchestrator:5003
+      - SPY_ORCHESTRATION_URL=http://spy-orchestration:5006
+    depends_on:
+      - postgres
+      - orchestrator
+      - spy-orchestration
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Spy-Orchestration Pipeline Service
+  spy-orchestration:
+    build:
+      context: ./services/spy-orchestration
+      dockerfile: Dockerfile
+    ports:
+      - "5006:5006"
+    environment:
+      - DATABASE_URL=postgresql://orchestrator:${POSTGRES_PASSWORD}@postgres:5432/orchestrator_db
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    depends_on:
+      - postgres
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Self-Healing Service
+  self-healing:
+    build:
+      context: ./services/self-healing
+      dockerfile: Dockerfile
+    ports:
+      - "5007:5007"
+    environment:
+      - HEALTH_CHECK_INTERVAL=30
+      - FAILURE_THRESHOLD=3
+      - REPAIR_TIMEOUT=300
+    networks:
+      - ai-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
 networks:
   ai-network:
     driver: bridge

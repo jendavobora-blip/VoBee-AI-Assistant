@@ -35,6 +35,9 @@ jobs:
           - auto-scaler
           - fraud-detection
           - cdn
+          - supreme-general-intelligence
+          - spy-orchestration
+          - self-healing
     
     steps:
       - name: Checkout code
