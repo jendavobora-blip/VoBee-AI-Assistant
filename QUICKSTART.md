@@ -1,6 +1,48 @@
 # Quick Start Guide
 
-This guide will help you get the AI Orchestration System up and running in minutes.
+Get started with VoBee AI Assistant in just minutes! Choose the option that works best for you.
+
+## Option 1: Web App Only (Fastest - 30 seconds!)
+
+Perfect for trying out the chatbot PWA without any complex setup.
+
+### Using Python (Recommended)
+```bash
+# Clone the repository
+git clone https://github.com/jendavobora-blip/VoBee-AI-Assistant.git
+cd VoBee-AI-Assistant
+
+# Start local server
+python3 -m http.server 8080
+```
+
+### Using Node.js
+```bash
+# After cloning
+npx serve -s . -l 8080
+```
+
+### Using PHP
+```bash
+# After cloning
+php -S localhost:8080
+```
+
+**Then open `http://localhost:8080` in your browser!**
+
+### Install as PWA
+1. Open the app in Chrome/Edge/Safari
+2. Look for the install prompt or icon in the address bar
+3. Click "Install" to add to your home screen/desktop
+4. Enjoy the app-like experience!
+
+**📱 For deployment to production, see [WEB_APP_GUIDE.md](WEB_APP_GUIDE.md)**
+
+---
+
+## Option 2: Full AI Orchestration System
+
+For advanced features like image/video generation and crypto predictions.
 
 ## Prerequisites
 

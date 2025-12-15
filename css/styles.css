@@ -268,9 +268,26 @@ html, body {
 }
 
 /* Responsive design */
+@media (max-width: 1024px) and (min-width: 769px) {
+    /* Tablet landscape */
+    .app-container {
+        max-width: 700px;
+        padding: 15px;
+    }
+
+    .header h1 {
+        font-size: 1.6rem;
+    }
+
+    .message {
+        max-width: 75%;
+    }
+}
+
 @media (max-width: 768px) {
     .app-container {
         padding: 0;
+        max-width: 100%;
     }
 
     .header {
@@ -296,34 +313,181 @@ html, body {
     .input-container {
         border-radius: 0;
         padding: 10px;
+        gap: 8px;
     }
 
     #user-input {
         padding: 12px 15px;
+        font-size: 16px; /* Prevents zoom on iOS */
     }
 
     .btn {
         padding: 12px 18px;
+        font-size: 0.95rem;
     }
 
     .btn-clear {
         padding: 12px 15px;
     }
+
+    .install-prompt {
+        bottom: 80px;
+        width: 90%;
+        max-width: 400px;
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 480px) {
     .header-content {
-        flex-direction: column;
-        text-align: center;
         gap: 10px;
+    }
+
+    .header h1 {
+        font-size: 1.2rem;
+    }
+
+    .header p {
+        font-size: 0.8rem;
+    }
+
+    .logo {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
     }
 
     .message {
         max-width: 90%;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
+
+    .input-container {
+        padding: 8px;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    #user-input {
+        flex: 1 1 100%;
+        margin-bottom: 5px;
+        font-size: 16px; /* Prevents zoom on iOS */
     }
 
     .btn-send {
+        flex: 1;
         padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+
+    .btn-clear {
+        flex: 1;
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+
+    .install-prompt {
+        bottom: 70px;
+        padding: 12px 20px;
+        font-size: 0.85rem;
+    }
+
+    .install-prompt button {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 360px) {
+    .header {
+        padding: 10px;
+    }
+
+    .header h1 {
+        font-size: 1.1rem;
+    }
+
+    .chat-messages {
+        padding: 15px 10px;
+    }
+
+    .message {
+        font-size: 0.9rem;
+    }
+}
+
+/* Landscape mobile optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+    .header {
+        padding: 10px 15px;
+    }
+
+    .header-content {
+        gap: 10px;
+    }
+
+    .header h1 {
+        font-size: 1.2rem;
+    }
+
+    .header p {
+        display: none; /* Hide subtitle in landscape */
+    }
+
+    .logo {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+
+    .chat-messages {
+        padding: 10px;
+    }
+
+    .input-container {
+        padding: 8px;
+    }
+
+    #user-input {
+        padding: 10px 15px;
+    }
+
+    .btn {
+        padding: 10px 15px;
+    }
+}
+
+/* Large desktop screens */
+@media (min-width: 1200px) {
+    .app-container {
+        max-width: 900px;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .message {
+        max-width: 70%;
+    }
+}
+
+/* Ultra-wide screens */
+@media (min-width: 1920px) {
+    .app-container {
+        max-width: 1000px;
+    }
+
+    .chat-messages {
+        padding: 25px;
+    }
+
+    .message {
+        max-width: 65%;
+        padding: 14px 20px;
+        font-size: 1.05rem;
     }
 }
 
@@ -374,4 +538,137 @@ html, body {
 #user-input:focus-visible {
     outline: 3px solid var(--primary-color);
     outline-offset: 2px;
+}
+
+/* Touch optimization for mobile devices */
+@media (hover: none) and (pointer: coarse) {
+    /* Optimize for touch */
+    .btn {
+        min-height: 44px; /* Apple's recommended touch target size */
+        min-width: 44px;
+    }
+
+    #user-input {
+        min-height: 44px;
+    }
+
+    /* Remove hover effects on touch devices */
+    .btn-send:hover {
+        background: var(--primary-color);
+        transform: none;
+    }
+
+    .btn-clear:hover {
+        background: transparent;
+    }
+
+    /* Active states for touch feedback */
+    .btn-send:active {
+        background: var(--primary-dark);
+        transform: scale(0.97);
+    }
+
+    .btn-clear:active {
+        background: rgba(255, 193, 7, 0.1);
+    }
+
+    /* Prevent text selection on buttons */
+    .btn {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --user-message-bg: #ffdd57;
+        --user-message-text: #000000;
+        --bot-message-bg: #1a3a5c;
+        --bot-message-text: #ffffff;
+    }
+
+    .btn {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Dark mode support (respects system preference) */
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-color: #f5f5f5;
+        --chat-bg: #ffffff;
+        --bot-message-bg: #e8e8e8;
+        --bot-message-text: #2c2c2c;
+        --input-bg: #ffffff;
+        --input-text: #2c2c2c;
+        --secondary-color: #2c2c2c;
+    }
+
+    body {
+        background: var(--background-color);
+    }
+
+    #user-input {
+        background: rgba(0, 0, 0, 0.05);
+        color: var(--input-text);
+    }
+
+    #user-input::placeholder {
+        color: rgba(0, 0, 0, 0.5);
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+    }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+    .app-container {
+        padding-left: max(10px, env(safe-area-inset-left));
+        padding-right: max(10px, env(safe-area-inset-right));
+    }
+
+    .header {
+        padding-top: max(20px, env(safe-area-inset-top));
+    }
+
+    .input-container {
+        padding-bottom: max(15px, env(safe-area-inset-bottom));
+    }
+
+    @media (max-width: 768px) {
+        .app-container {
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+    }
+}
+
+/* Print styles */
+@media print {
+    .header {
+        background: white;
+        color: black;
+    }
+
+    .input-container,
+    .install-prompt {
+        display: none;
+    }
+
+    .chat-messages {
+        height: auto;
+        overflow: visible;
+    }
+
+    .message {
+        break-inside: avoid;
+    }
+
+    .typing-indicator {
+        display: none;
+    }
 }
