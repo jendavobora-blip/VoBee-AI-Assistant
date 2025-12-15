@@ -33,6 +33,8 @@ class SelfHealingMonitor:
             'fraud-detection': {'url': 'http://fraud-detection:5004', 'port': 5004},
             'auto-scaler': {'url': 'http://auto-scaler:5005', 'port': 5005},
             'spy-orchestration': {'url': 'http://spy-orchestration:5006', 'port': 5006},
+            'self-healing': {'url': 'http://self-healing:5007', 'port': 5007},
+            'worker-pool': {'url': 'http://worker-pool:5008', 'port': 5008},
             'supreme-general-intelligence': {'url': 'http://supreme-general-intelligence:5010', 'port': 5010},
         }
         

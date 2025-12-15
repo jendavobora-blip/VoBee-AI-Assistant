@@ -38,6 +38,7 @@ jobs:
           - supreme-general-intelligence
           - spy-orchestration
           - self-healing
+          - worker-pool
     
     steps:
       - name: Checkout code

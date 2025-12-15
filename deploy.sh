@@ -50,12 +50,17 @@ if ! command_exists docker; then
     exit 1
 fi
 
-if ! command_exists docker-compose; then
+# Check for docker compose (supports both v1 and v2)
+if command_exists docker-compose; then
+    DOCKER_COMPOSE="docker-compose"
+elif docker compose version >/dev/null 2>&1; then
+    DOCKER_COMPOSE="docker compose"
+else
     print_error "Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
 
-print_success "Prerequisites check passed"
+print_success "Prerequisites check passed (Docker + $DOCKER_COMPOSE)"
 
 # Step 2: Check for .env file
 print_info "Checking environment configuration..."
@@ -92,20 +97,20 @@ print_success "Base images pulled"
 # Step 5: Build services
 print_info "Building service containers..."
 
-docker-compose build --parallel
+$DOCKER_COMPOSE build --parallel
 
 print_success "Service containers built"
 
 # Step 6: Start infrastructure services first
 print_info "Starting infrastructure services (PostgreSQL, Redis, ElasticSearch)..."
 
-docker-compose up -d postgres redis elasticsearch
+$DOCKER_COMPOSE up -d postgres redis elasticsearch
 
 print_info "Waiting for database to be ready..."
 sleep 10
 
 # Check if PostgreSQL is ready
-until docker-compose exec -T postgres pg_isready -U orchestrator; do
+until $DOCKER_COMPOSE exec -T postgres pg_isready -U orchestrator; do
     print_info "Waiting for PostgreSQL..."
     sleep 2
 done
@@ -115,7 +120,7 @@ print_success "Infrastructure services started"
 # Step 7: Start all services
 print_info "Starting all services..."
 
-docker-compose up -d
+$DOCKER_COMPOSE up -d
 
 print_success "All services started"
 
@@ -173,9 +178,9 @@ else
 fi
 
 echo ""
-echo "To view logs:     docker-compose logs -f [service-name]"
-echo "To stop:          docker-compose down"
-echo "To restart:       docker-compose restart [service-name]"
+echo "To view logs:     $DOCKER_COMPOSE logs -f [service-name]"
+echo "To stop:          $DOCKER_COMPOSE down"
+echo "To restart:       $DOCKER_COMPOSE restart [service-name]"
 echo ""
 
 # Step 11: Display next steps

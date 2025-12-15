@@ -257,6 +257,19 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
+  # Worker Pool Service
+  worker-pool:
+    build:
+      context: ./services/worker-pool
+      dockerfile: Dockerfile
+    ports:
+      - "5008:5008"
+    environment:
+      - MAX_WORKERS=10
+    networks:
+      - ai-network
+    restart: unless-stopped
+
 networks:
   ai-network:
     driver: bridge
