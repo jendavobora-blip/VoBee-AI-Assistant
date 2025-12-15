@@ -106,9 +106,10 @@ function updateCache(request) {
     fetch(request)
         .then((response) => {
             if (response && response.status === 200) {
+                const responseToCache = response.clone();
                 caches.open(DYNAMIC_CACHE)
                     .then((cache) => {
-                        cache.put(request, response);
+                        cache.put(request, responseToCache);
                     });
             }
         })
