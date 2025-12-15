@@ -122,13 +122,16 @@ class SwarmCoordinator:
             ['specialized', 'data_transformation']
         ]
         
+        # Get current bot count to avoid ID collisions
+        current_count = len(self.bots)
+        
         for i in range(bot_count):
-            bot_id = f"bot_{i:06d}"
+            bot_id = f"bot_{current_count + i:06d}"
             capabilities = capability_sets[i % len(capability_sets)]
             self.bots[bot_id] = SwarmBot(bot_id, capabilities)
         
-        self.metrics['idle_bots'] = bot_count
-        logger.info(f"Swarm initialized with {bot_count} bots")
+        self.metrics['idle_bots'] += bot_count
+        logger.info(f"Swarm initialized with {bot_count} new bots (total: {len(self.bots)})")
     
     def scale_swarm(self, target_size: int):
         """
@@ -261,8 +264,8 @@ class SwarmCoordinator:
         # For now, we'll simulate execution
         
         def execute():
+            start_time = datetime.utcnow()
             try:
-                start_time = datetime.utcnow()
                 result = self._execute_micro_task(task)
                 execution_time = (datetime.utcnow() - start_time).total_seconds()
                 
@@ -281,8 +284,8 @@ class SwarmCoordinator:
             except Exception as e:
                 logger.error(f"Task execution failed: {e}")
                 
-                bot = self.bots[bot_id]
                 execution_time = (datetime.utcnow() - start_time).total_seconds()
+                bot = self.bots[bot_id]
                 bot.complete_task(success=False, execution_time=execution_time)
                 
                 task['error'] = str(e)

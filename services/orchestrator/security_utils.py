@@ -22,6 +22,8 @@ class SecurityValidator:
     MAX_TASK_COUNT = 10000
     
     # Allowed patterns
+    # Note: This list must be kept in sync with intelligences defined in orchestrator
+    # TODO: Consider dynamically loading this from orchestrator configuration
     ALLOWED_INTELLIGENCE_TYPES = [
         'product_content',
         'marketing',
@@ -298,16 +300,22 @@ def require_rate_limit(endpoint: str = 'default'):
     return decorator
 
 
-def sanitize_user_input(data: Dict[str, Any]) -> Dict[str, Any]:
+def sanitize_user_input(data: Dict[str, Any], depth: int = 0, max_depth: int = 10) -> Dict[str, Any]:
     """
-    Sanitize all user input data
+    Sanitize all user input data with circular reference protection
     
     Args:
         data: Input data dictionary
+        depth: Current recursion depth
+        max_depth: Maximum allowed recursion depth
         
     Returns:
         Sanitized data dictionary
     """
+    if depth >= max_depth:
+        logger.warning(f"Maximum recursion depth {max_depth} reached during sanitization")
+        return {}
+    
     sanitized = {}
     
     for key, value in data.items():
@@ -322,12 +330,12 @@ def sanitize_user_input(data: Dict[str, Any]) -> Dict[str, Any]:
         elif isinstance(value, list):
             SecurityValidator.validate_list_size(value)
             sanitized[safe_key] = [
-                sanitize_user_input(item) if isinstance(item, dict) else item
+                sanitize_user_input(item, depth + 1, max_depth) if isinstance(item, dict) else item
                 for item in value
             ]
         elif isinstance(value, dict):
             SecurityValidator.validate_dict_size(value)
-            sanitized[safe_key] = sanitize_user_input(value)
+            sanitized[safe_key] = sanitize_user_input(value, depth + 1, max_depth)
         elif value is None:
             sanitized[safe_key] = None
         else:

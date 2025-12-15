@@ -7,6 +7,7 @@ import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 from abc import ABC, abstractmethod
+from uuid import uuid4
 
 logger = logging.getLogger(__name__)
 
@@ -230,7 +231,6 @@ class MarketingIntelligence(MasterIntelligence):
     
     def _generate_campaign_id(self) -> str:
         """Generate unique campaign ID"""
-        from uuid import uuid4
         return f"campaign_{str(uuid4())[:8]}"
     
     def _create_channel_strategies(self, product: Dict[str, Any], channels: List[str]) -> Dict[str, Dict[str, Any]]:
@@ -375,7 +375,6 @@ class WebAppBuilderIntelligence(MasterIntelligence):
     
     def _generate_build_id(self) -> str:
         """Generate unique build ID"""
-        from uuid import uuid4
         return f"build_{str(uuid4())[:8]}"
     
     def _design_architecture(self, app_type: str, requirements: Dict[str, Any]) -> Dict[str, Any]:
