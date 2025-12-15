@@ -274,3 +274,99 @@ Use ElasticSearch + Kibana stack for centralized logging and monitoring.
 - Check GPU utilization
 - Verify CUDA version compatibility
 - Enable GPU acceleration in code
+
+---
+
+### 7. Health Monitor (Port 5006)
+**Technology**: Flask, httpx, ElasticSearch  
+**Purpose**: Auto-healing and continuous service health monitoring  
+
+**Features**:
+- Continuous health monitoring of all services
+- Automatic failure detection and recovery
+- Comprehensive error logging to ElasticSearch
+- Service statistics and history tracking
+- Manual healing trigger support
+
+**Endpoints**:
+- `GET /health` - Health check for monitor itself
+- `GET /check-services` - Check health of all services
+- `GET /service-status` - Current status of all services
+- `GET /statistics` - Health statistics
+- `GET /error-history?service=<name>` - Error history
+- `GET /recovery-history` - Recovery action history
+- `POST /trigger-heal/<service>` - Manual healing trigger
+
+**Configuration**:
+```bash
+HEALTH_CHECK_INTERVAL=30          # Seconds between checks
+MAX_FAILURES_BEFORE_RECOVERY=3    # Failures before auto-heal
+RECOVERY_TIMEOUT=60                # Seconds between recovery attempts
+ELASTICSEARCH_ENABLED=true
+ELASTICSEARCH_URL=http://elasticsearch:9200
+```
+
+**Resources**: 256Mi-512Mi RAM, 0.25-0.5 CPU
+
+---
+
+### 8. Self-Evolution (Port 5007)
+**Technology**: Flask, NumPy, ElasticSearch  
+**Purpose**: ML-based usage pattern analysis and performance optimization  
+
+**Features**:
+- Usage pattern analysis and collection
+- Automatic inefficiency detection
+- Optimization recommendation generation
+- Optional auto-apply for high-priority optimizations
+- Performance baseline capture
+- Rollback capability for problematic updates
+
+**Endpoints**:
+- `GET /health` - Health check
+- `POST /collect-usage` - Collect usage data
+- `POST /analyze` - Analyze patterns and generate recommendations
+- `GET /recommendations?status=<filter>` - Get recommendations
+- `POST /apply-optimization/<id>` - Apply optimization
+- `POST /rollback/<id>` - Rollback optimization
+- `GET /applied-optimizations` - Applied optimization history
+- `GET /rollback-history` - Rollback history
+- `GET /performance-baselines` - Performance baselines
+
+**Configuration**:
+```bash
+ANALYSIS_WINDOW_HOURS=24          # Time window for analysis
+OPTIMIZATION_THRESHOLD=0.15       # Minimum improvement threshold
+AUTO_APPLY_OPTIMIZATIONS=false    # Auto-apply high-priority optimizations
+ELASTICSEARCH_ENABLED=true
+ELASTICSEARCH_URL=http://elasticsearch:9200
+```
+
+**Resources**: 512Mi-1Gi RAM, 0.5-1 CPU
+
+**See**: [AUTO_HEALING_EVOLUTION.md](../AUTO_HEALING_EVOLUTION.md) for detailed documentation
+
+---
+
+## Updated Service Dependency Graph
+
+```
+API Gateway
+    ├── depends on → Image Generation
+    ├── depends on → Video Generation
+    ├── depends on → Crypto Prediction
+    ├── depends on → Fraud Detection
+    └── depends on → Orchestrator
+            ├── depends on → Redis
+            ├── depends on → PostgreSQL
+            └── depends on → All AI Services
+
+Health Monitor
+    ├── monitors → All Services
+    └── depends on → ElasticSearch
+
+Self-Evolution
+    ├── analyzes → All Services (usage data)
+    └── depends on → ElasticSearch
+```
+
