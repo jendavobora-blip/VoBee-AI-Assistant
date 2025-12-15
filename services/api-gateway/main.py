@@ -38,6 +38,8 @@ SERVICES = {
     "crypto_prediction": os.getenv("CRYPTO_SERVICE_URL", "http://crypto-prediction:5002"),
     "orchestrator": os.getenv("ORCHESTRATOR_URL", "http://orchestrator:5003"),
     "fraud_detection": os.getenv("FRAUD_SERVICE_URL", "http://fraud-detection:5004"),
+    "compression": os.getenv("COMPRESSION_SERVICE_URL", "http://compression:5006"),
+    "marketing": os.getenv("MARKETING_SERVICE_URL", "http://marketing-intelligence:5007"),
 }
 
 # Request models
@@ -206,6 +208,182 @@ async def get_metrics():
         "services": len(SERVICES),
         "status": "operational"
     }
+
+# Compression Service endpoints
+@app.post("/api/v1/compress")
+async def compress_data(data: Dict[str, Any]):
+    """Compress data using advanced algorithms"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['compression']}/compress",
+                json=data,
+                timeout=60.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Compression failed: {e}")
+        raise HTTPException(status_code=500, detail="Compression service error")
+
+@app.post("/api/v1/decompress")
+async def decompress_data(data: Dict[str, Any]):
+    """Decompress data"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['compression']}/decompress",
+                json=data,
+                timeout=60.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Decompression failed: {e}")
+        raise HTTPException(status_code=500, detail="Decompression service error")
+
+@app.get("/api/v1/compression/stats")
+async def get_compression_stats():
+    """Get compression statistics"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{SERVICES['compression']}/stats",
+                timeout=10.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Failed to get compression stats: {e}")
+        raise HTTPException(status_code=500, detail="Compression service error")
+
+# Bot Orchestration endpoints
+@app.post("/api/v1/bots")
+async def create_bot(bot_config: Dict[str, Any]):
+    """Create a new bot instance"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['orchestrator']}/bots",
+                json=bot_config,
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Bot creation failed: {e}")
+        raise HTTPException(status_code=500, detail="Bot orchestration service error")
+
+@app.post("/api/v1/swarms")
+async def create_swarm(swarm_config: Dict[str, Any]):
+    """Create a bot swarm for mass-action orchestration"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['orchestrator']}/swarms",
+                json=swarm_config,
+                timeout=60.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Swarm creation failed: {e}")
+        raise HTTPException(status_code=500, detail="Bot orchestration service error")
+
+@app.get("/api/v1/bots/stats")
+async def get_bot_stats():
+    """Get bot orchestration statistics"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{SERVICES['orchestrator']}/bots/stats",
+                timeout=10.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Failed to get bot stats: {e}")
+        raise HTTPException(status_code=500, detail="Bot orchestration service error")
+
+# Marketing Intelligence endpoints
+@app.post("/api/v1/marketing/products")
+async def create_product(product_data: Dict[str, Any]):
+    """Create a new product"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['marketing']}/products",
+                json=product_data,
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Product creation failed: {e}")
+        raise HTTPException(status_code=500, detail="Marketing service error")
+
+@app.post("/api/v1/marketing/promotions")
+async def create_promotion(promotion_data: Dict[str, Any]):
+    """Create a new promotion"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['marketing']}/promotions",
+                json=promotion_data,
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Promotion creation failed: {e}")
+        raise HTTPException(status_code=500, detail="Marketing service error")
+
+@app.post("/api/v1/marketing/bundles")
+async def create_bundle(bundle_data: Dict[str, Any]):
+    """Create a product bundle for L20 orchestration"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['marketing']}/bundles",
+                json=bundle_data,
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Bundle creation failed: {e}")
+        raise HTTPException(status_code=500, detail="Marketing service error")
+
+@app.get("/api/v1/marketing/analytics")
+async def get_marketing_analytics():
+    """Get marketing analytics"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                f"{SERVICES['marketing']}/analytics",
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Failed to get analytics: {e}")
+        raise HTTPException(status_code=500, detail="Marketing service error")
+
+@app.post("/api/v1/marketing/dashboard/change-request")
+async def request_dashboard_change(change_data: Dict[str, Any]):
+    """Request dashboard configuration change"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{SERVICES['marketing']}/dashboard/change-request",
+                json=change_data,
+                timeout=30.0
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Dashboard change request failed: {e}")
+        raise HTTPException(status_code=500, detail="Marketing service error")
 
 if __name__ == "__main__":
     import uvicorn
