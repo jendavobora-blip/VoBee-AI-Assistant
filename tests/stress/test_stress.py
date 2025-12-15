@@ -22,6 +22,14 @@ from utils.test_utils import (
 
 logger = logging.getLogger(__name__)
 
+# Test configuration constants
+ORCHESTRATOR_STRESS_ITERATIONS = 10000  # Reduced workload for complex operations
+VARIED_WORKLOAD_ITERATIONS = 20000     # Mixed request types
+SUSTAINED_LOAD_DURATION_SECONDS = 300  # 5 minutes
+SUSTAINED_LOAD_RPS = 50                # Requests per second
+BURST_COUNT = 10                        # Number of bursts
+BURST_SIZE = 1000                       # Requests per burst
+
 
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)  # 1 hour timeout for stress tests
@@ -66,12 +74,12 @@ class TestStressTesting:
         Stress test Orchestrator service with crypto prediction tasks
         Tests: Task queue management and workflow coordination under load
         """
-        logger.info("Starting Orchestrator stress test (10,000 requests)")
+        logger.info(f"Starting Orchestrator stress test ({ORCHESTRATOR_STRESS_ITERATIONS} requests)")
         
         url = f"{test_config['api_gateway_url']}/api/v1/orchestrate"
         
-        # Use smaller workload for complex operations
-        iterations = min(10000, test_config['stress_test_iterations'])
+        # Use configured workload for complex operations
+        iterations = min(ORCHESTRATOR_STRESS_ITERATIONS, test_config['stress_test_iterations'])
         
         orchestration_request = {
             "tasks": [
@@ -108,9 +116,9 @@ class TestStressTesting:
         Stress test with varied request types (image, video, crypto)
         Tests: System behavior with mixed workloads
         """
-        logger.info("Starting varied workload stress test (20,000 requests)")
+        logger.info(f"Starting varied workload stress test ({VARIED_WORKLOAD_ITERATIONS} requests)")
         
-        iterations = min(20000, test_config['stress_test_iterations'])
+        iterations = min(VARIED_WORKLOAD_ITERATIONS, test_config['stress_test_iterations'])
         
         # Generate varied test data
         image_data = generate_test_data('image', iterations // 4)
@@ -190,11 +198,11 @@ class TestStressTesting:
         Sustained load test over extended period
         Tests: System stability over time, memory leaks, resource cleanup
         """
-        logger.info("Starting sustained load stress test (5 minutes)")
+        logger.info(f"Starting sustained load stress test ({SUSTAINED_LOAD_DURATION_SECONDS // 60} minutes)")
         
         url = f"{test_config['api_gateway_url']}/health"
-        duration_seconds = 300  # 5 minutes
-        requests_per_second = 50
+        duration_seconds = SUSTAINED_LOAD_DURATION_SECONDS
+        requests_per_second = SUSTAINED_LOAD_RPS
         total_requests = duration_seconds * requests_per_second
         
         resource_monitor = ResourceMonitor()
@@ -256,10 +264,10 @@ class TestStressTesting:
         all_metrics.start()
         
         # Multiple bursts
-        for burst in range(10):
-            logger.info(f"Burst {burst + 1}/10")
+        for burst in range(BURST_COUNT):
+            logger.info(f"Burst {burst + 1}/{BURST_COUNT}")
             
-            burst_size = 1000
+            burst_size = BURST_SIZE
             metrics = await run_concurrent_requests(
                 url=url,
                 method='GET',

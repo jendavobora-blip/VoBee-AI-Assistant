@@ -16,6 +16,11 @@ from utils.test_utils import make_request, TestMetrics, run_concurrent_requests
 
 logger = logging.getLogger(__name__)
 
+# Test configuration constants
+MEMORY_LEAK_THRESHOLD_MB = 100  # Maximum acceptable memory growth in MB
+SEQUENTIAL_REQUEST_COUNT = 1000  # Number of sequential requests for memory leak test
+CONNECTION_CYCLE_COUNT = 100     # Number of connection open/close cycles
+
 
 @pytest.mark.asyncio
 class TestAPIEdgeCases:
@@ -147,7 +152,7 @@ class TestMemoryAndResourceEdgeCases:
         
         # Make many sequential requests
         async with aiohttp.ClientSession() as session:
-            for i in range(1000):
+            for i in range(SEQUENTIAL_REQUEST_COUNT):
                 result = await make_request(session, 'GET', url, timeout=10)
                 
                 if i % 100 == 0:
@@ -160,20 +165,20 @@ class TestMemoryAndResourceEdgeCases:
         
         logger.info(f"Memory: Initial={initial_memory:.2f}MB, Final={final_memory:.2f}MB, Growth={memory_growth:.2f}MB")
         
-        # Memory growth should be reasonable (< 100MB for 1000 requests)
-        assert memory_growth < 100, f"Potential memory leak: {memory_growth:.2f}MB growth"
+        # Memory growth should be reasonable
+        assert memory_growth < MEMORY_LEAK_THRESHOLD_MB, f"Potential memory leak: {memory_growth:.2f}MB growth"
     
     async def test_rapid_connection_cycling(self, test_config):
         """Test rapid opening and closing of connections"""
         url = f"{test_config['api_gateway_url']}/health"
         
         # Open and close many connections rapidly
-        for i in range(100):
+        for i in range(CONNECTION_CYCLE_COUNT):
             async with aiohttp.ClientSession() as session:
                 result = await make_request(session, 'GET', url, timeout=5)
             
             if i % 20 == 0:
-                logger.info(f"Connection cycle {i}/100")
+                logger.info(f"Connection cycle {i}/{CONNECTION_CYCLE_COUNT}")
         
         logger.info("✓ Rapid connection cycling handled successfully")
 

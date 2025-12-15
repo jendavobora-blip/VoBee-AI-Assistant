@@ -5,12 +5,16 @@ Utility functions for QA testing
 import time
 import psutil
 import logging
-from typing import Dict, List, Any, Callable
+from typing import Dict, List, Any, Callable, Optional
 from datetime import datetime
 import asyncio
 import aiohttp
+from faker import Faker
 
 logger = logging.getLogger(__name__)
+
+# Initialize Faker once at module level
+fake = Faker()
 
 
 class TestMetrics:
@@ -21,8 +25,8 @@ class TestMetrics:
         self.errors: List[Dict[str, Any]] = []
         self.success_count: int = 0
         self.failure_count: int = 0
-        self.start_time: float = None
-        self.end_time: float = None
+        self.start_time: Optional[float] = None
+        self.end_time: Optional[float] = None
     
     def start(self):
         """Start timing"""
@@ -253,8 +257,6 @@ def generate_test_data(data_type: str, count: int = 1) -> List[Dict[str, Any]]:
     Returns:
         List of test data dictionaries
     """
-    from faker import Faker
-    fake = Faker()
     
     generators = {
         'image': lambda: {
