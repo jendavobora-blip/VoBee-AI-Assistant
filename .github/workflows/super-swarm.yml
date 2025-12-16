@@ -25,12 +25,16 @@ on:
 env:
   BOT_COUNT: 20000
   DEPLOYMENT_MODE: auto-scale
+  # CI-specific hard guard: Disable swarm execution in CI environments
+  SWARM_EXECUTION_DISABLED: ${{ vars.SWARM_EXECUTION_DISABLED || 'true' }}
 
 jobs:
   # Initialization and setup job
   initialize:
     name: Initialize Super Swarm Deployment
     runs-on: ubuntu-latest
+    # CI hard guard: Skip this job if swarm execution is disabled
+    if: ${{ env.SWARM_EXECUTION_DISABLED != 'true' }}
     permissions:
       contents: read
     outputs:
@@ -40,6 +44,18 @@ jobs:
       matrix_json: ${{ steps.matrix.outputs.matrix_json }}
     
     steps:
+      - name: CI Environment Guard Check
+        run: |
+          echo "🔒 CI Hard Guard: Checking environment..."
+          if [ "$CI" = "true" ] || [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
+            echo "❌ Swarm execution is DISABLED in CI environment"
+            echo "   CI=$CI"
+            echo "   SWARM_EXECUTION_DISABLED=$SWARM_EXECUTION_DISABLED"
+            echo "This workflow is prevented from running in CI to avoid unintended bot deployment."
+            exit 1
+          fi
+          echo "✅ Swarm execution is allowed"
+      
       - name: Checkout repository
         uses: actions/checkout@v4
       
@@ -108,6 +124,8 @@ jobs:
     name: Deploy Bot Swarm (Runner ${{ matrix.runner_id }})
     needs: initialize
     runs-on: ubuntu-latest
+    # CI hard guard: Skip this job if swarm execution is disabled
+    if: ${{ env.SWARM_EXECUTION_DISABLED != 'true' }}
     permissions:
       contents: read
     
@@ -162,6 +180,18 @@ jobs:
           cat > scripts/swarm/bot-manager.sh << 'EOFSCRIPT'
           #!/bin/bash
           set -e
+          
+          # CI HARD GUARD: Prevent execution in CI environment
+          if [ "$CI" = "true" ] || [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
+            echo "🔒 CI HARD GUARD ACTIVATED"
+            echo "❌ Bot swarm execution is DISABLED in CI environment"
+            echo "   CI=${CI:-unset}"
+            echo "   SWARM_EXECUTION_DISABLED=${SWARM_EXECUTION_DISABLED:-unset}"
+            echo ""
+            echo "This script is prevented from running to avoid unintended bot deployment in CI."
+            echo "To enable swarm execution, set SWARM_EXECUTION_DISABLED=false"
+            exit 1
+          fi
           
           START_BOT=$1
           END_BOT=$2
@@ -294,9 +324,10 @@ jobs:
     name: Monitor & Aggregate Results
     needs: [initialize, deploy-bots]
     runs-on: ubuntu-latest
+    # CI hard guard: Skip this job if swarm execution is disabled
+    if: ${{ always() && env.SWARM_EXECUTION_DISABLED != 'true' }}
     permissions:
       contents: read
-    if: always()
     
     steps:
       - name: Checkout repository
