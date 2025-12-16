@@ -242,8 +242,16 @@ class WorkflowCoordinator:
         Returns:
             True if valid, False otherwise
         """
-        # Placeholder for validation logic
-        # Check for circular dependencies
-        # Validate step references
-        # Ensure all dependencies exist
+        # Basic validation - check all dependencies exist
+        step_ids = {step.step_id for step in template.steps}
+        
+        for step in template.steps:
+            for dep in step.dependencies:
+                if dep not in step_ids:
+                    return False
+        
+        # TODO: Add circular dependency detection
+        # TODO: Validate step parameters
+        # TODO: Ensure factory types are valid
+        
         return True
