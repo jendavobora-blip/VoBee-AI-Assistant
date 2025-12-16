@@ -13,10 +13,10 @@ The **Super Swarm** workflow is a high-performance GitHub Actions workflow desig
 
 ### 1. Automated Triggers
 
-- **Scheduled Execution**: Runs automatically every 5 minutes using cron schedule (`*/5 * * * *`)
-  - ⚠️ **WARNING**: Running every 5 minutes can consume significant GitHub Actions quota
-  - For production use, consider less frequent schedules (hourly, daily, etc.)
-  - Monitor your GitHub Actions usage to avoid quota exhaustion
+- **Scheduled Execution**: Runs automatically daily at 2:00 AM UTC using cron schedule (`0 2 * * *`)
+  - ✅ **Optimized**: Changed from running every 5 minutes to daily to conserve GitHub Actions quota
+  - For different schedules, see the customization section below
+  - Monitor your GitHub Actions usage dashboard to track consumption
 - **Manual Trigger**: Can be triggered manually via `workflow_dispatch` with customizable parameters:
   - `bot_count`: Number of bots to deploy (default: 20,000)
   - `deployment_mode`: Deployment mode (auto-scale, fixed, or test)
@@ -207,16 +207,18 @@ env:
 
 ### Modifying Schedule
 
-Edit the cron expression:
+The workflow is scheduled to run daily at 2:00 AM UTC. To modify the schedule, edit the cron expression in the workflow file:
 
 ```yaml
 schedule:
-  - cron: '*/5 * * * *'  # Every 5 minutes
-  # Examples:
-  # - cron: '0 * * * *'    # Every hour
-  # - cron: '0 0 * * *'    # Daily at midnight
-  # - cron: '0 0 * * 0'    # Weekly on Sunday
+  - cron: '0 2 * * *'  # Daily at 2:00 AM UTC (current setting)
+  # Examples for different schedules:
+  # - cron: '0 */6 * * *'  # Every 6 hours
+  # - cron: '0 0 * * 0'    # Weekly on Sunday at midnight
+  # - cron: '0 0 1 * *'    # Monthly on the 1st at midnight
 ```
+
+**Note**: The original schedule of `*/5 * * * *` (every 5 minutes) was changed to conserve GitHub Actions quota. Running every 5 minutes would consume approximately 8,640 workflow runs per month, which can quickly exhaust free tier limits.
 
 ### Changing Parallel Runners
 
@@ -243,18 +245,20 @@ BATCH_SIZE=100  # Adjust based on runner capacity
 2. **Monitor Resources**: Watch GitHub Actions usage and quotas carefully
    - Check your account's concurrent job limits
    - Monitor minute usage to avoid quota exhaustion
-   - Consider disabling or adjusting the schedule if quota runs low
+   - The workflow now runs daily instead of every 5 minutes to conserve quota
 3. **Review Logs**: Regularly check deployment reports for issues
 4. **Optimize Secrets**: Ensure API keys have appropriate rate limits
-5. **Schedule Wisely**: Adjust cron schedule based on actual needs
-   - For testing: Use manual triggers or hourly schedules
-   - For production: Consider daily or weekly schedules
-   - Avoid running every 5 minutes unless absolutely necessary
+5. **Schedule Wisely**: The default daily schedule is recommended for most use cases
+   - For testing: Use manual triggers with smaller bot counts
+   - For production: Daily schedule is optimal for balance between automation and resource usage
+   - Avoid frequent schedules (e.g., every 5 minutes) unless absolutely necessary
 6. **Account Limits**: Be aware of your GitHub account tier limitations
    - Free: 20 concurrent jobs, 2,000 minutes/month
    - Pro: 20 concurrent jobs, 3,000 minutes/month
    - Team: 20 concurrent jobs, 10,000 minutes/month
    - Enterprise: Up to 180+ concurrent jobs, 50,000+ minutes/month
+7. **Workflow Concurrency**: The workflow includes concurrency controls to prevent overlapping runs
+8. **Timeouts**: All jobs have timeout limits to prevent runaway processes
 
 ## Security Considerations
 
