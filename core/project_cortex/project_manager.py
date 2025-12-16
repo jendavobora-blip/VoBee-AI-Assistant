@@ -81,8 +81,17 @@ class ProjectManager:
         if project_id in self.projects:
             raise ValueError(f"Project '{project_id}' already exists")
         
-        # TODO: Add validation for budget_limit range
-        # TODO: Add validation for quality_preference options
+        # Validate budget limit
+        if budget_limit is not None and budget_limit <= 0:
+            raise ValueError(f"Budget limit must be positive, got: {budget_limit}")
+        
+        # Validate quality preference
+        valid_preferences = ["speed", "balanced", "quality"]
+        if quality_preference not in valid_preferences:
+            raise ValueError(
+                f"Quality preference must be one of {valid_preferences}, "
+                f"got: {quality_preference}"
+            )
         
         project = {
             "id": project_id,

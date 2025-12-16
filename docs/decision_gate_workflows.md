@@ -9,15 +9,32 @@ The Decision Gate system ensures that critical operations require explicit human
 ### Decision Lifecycle
 
 ```
-Created → Pending → [Approved/Rejected/Expired] → Executed
+                    ┌─────────┐
+                    │ Created │
+                    └────┬────┘
+                         │
+                    ┌────▼────┐
+                    │ Pending │
+                    └────┬────┘
+                         │
+           ┌─────────────┼─────────────┐
+           │             │             │
+      ┌────▼────┐   ┌───▼────┐   ┌───▼─────┐
+      │Approved │   │Rejected│   │ Expired │
+      └────┬────┘   └────────┘   └─────────┘
+           │
+      ┌────▼────┐
+      │Executed │
+      └─────────┘
 ```
 
+States:
 1. **Created**: Decision request submitted
 2. **Pending**: Awaiting human review
 3. **Approved**: Human approved, ready for execution
-4. **Rejected**: Human rejected, will not execute
-5. **Expired**: Time limit passed without approval
-6. **Executed**: Action completed (for approved decisions)
+4. **Rejected**: Human rejected, will not execute (terminal state)
+5. **Expired**: Time limit passed without approval (terminal state)
+6. **Executed**: Action completed (only for approved decisions, terminal state)
 
 ### Decision Types
 

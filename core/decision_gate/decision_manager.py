@@ -140,6 +140,17 @@ class DecisionManager:
         )
         
         # TODO: Integrate with notification system for high/critical risk decisions
+        # Priority: HIGH - Critical for production use
+        # Requirements:
+        #   - Email notifications for critical/high risk decisions
+        #   - Slack/Teams integration for team awareness
+        #   - SMS alerts for critical decisions with short expiry
+        #   - Dashboard updates for pending decision visibility
+        # Implementation notes:
+        #   - Create notification_service.py in core/decision_gate/
+        #   - Add notification preferences to decision metadata
+        #   - Support multiple notification channels
+        #   - Include decision details and approval link in notifications
         
         return decision_id
     

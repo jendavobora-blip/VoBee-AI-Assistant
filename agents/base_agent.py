@@ -63,14 +63,17 @@ class AgentGuardrails:
         """
         Check if an action requires human approval.
         
+        All agent actions require human approval as agents only produce
+        artifacts and recommendations - never autonomous execution.
+        
         Args:
             action: Action to check
             
         Returns:
-            True if approval required
+            True (all actions require approval)
         """
-        # Currently, no actions are auto-approved
         # All agent outputs are suggestions/artifacts only
+        # No actions are auto-approved - human review always required
         return True
 
 
