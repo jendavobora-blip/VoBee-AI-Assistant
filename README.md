@@ -124,6 +124,8 @@ VoBee-AI-Assistant/
 │   ├── spy-orchestration/  # Automated discovery (port 5006)
 │   ├── self-healing/       # Health monitoring (port 5007)
 │   ├── worker-pool/        # Stateless workers (port 5008)
+│   ├── application-factory/  # Intent extraction & spec generation (port 5011)
+│   ├── media-factory/      # Media processing workflows (port 5012)
 │   ├── image-generation/   # Stable Diffusion, DALL-E (port 5000)
 │   ├── video-generation/   # Runway ML, NeRF (port 5001)
 │   ├── crypto-prediction/  # LSTM/Transformer (port 5002)
@@ -138,19 +140,25 @@ VoBee-AI-Assistant/
 │   └── 03-autoscaling.yaml
 ├── docker-compose.yml      # Local development setup
 ├── ARCHITECTURE.md         # Detailed architecture docs
+├── FACTORY_PIPELINE.md     # E2E factory pipeline documentation
 └── DEPLOYMENT.md          # Deployment guide
 ```
 
 ## Architecture
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system architecture.  
-See [AUTONOMOUS_SYSTEM.md](AUTONOMOUS_SYSTEM.md) for autonomous features documentation.
+See [AUTONOMOUS_SYSTEM.md](AUTONOMOUS_SYSTEM.md) for autonomous features documentation.  
+See [FACTORY_PIPELINE.md](FACTORY_PIPELINE.md) for Application & Media Factory E2E pipeline.
 
 ### High-Level Overview
 ```
 Supreme General Intelligence (SGI) - Owner Interface
     ├── Intent Understanding & Confirmation
     └── Action Logging & Audit Trail
+         │
+         ├── Factory Pipeline (E2E)
+         │    ├── Application Factory (Intent Extraction & Spec Generation)
+         │    └── Media Factory (Image, Video, Voice Processing)
          │
          ├── Spy-Orchestration Pipeline
          │    ├── GitHub Scanner
@@ -167,7 +175,8 @@ Supreme General Intelligence (SGI) - Owner Interface
          │    ├── Task Decomposition
          │    ├── Priority Management
          │    ├── Resource Allocation
-         │    └── Cross-Domain Routing
+         │    ├── Cross-Domain Routing
+         │    └── Factory Pipeline Coordination
          │
          ├── Worker Pool
          │    ├── Crawler Workers
@@ -349,6 +358,45 @@ curl -X POST http://localhost:5008/task/execute \
       "depth": 1
     }
   }'
+```
+
+### Factory Pipeline APIs
+
+#### Application Factory - Generate Specification
+```bash
+# Generate specification from natural language input
+curl -X POST http://localhost:5011/generate-spec \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "create an image of a beautiful sunset over mountains",
+    "validate": true
+  }'
+```
+
+#### Media Factory - Process Media Task
+```bash
+# Process an image generation task
+curl -X POST http://localhost:5012/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "generate_image",
+    "parameters": {
+      "prompt": "serene lake at dawn",
+      "style": "realistic",
+      "resolution": "1024x1024"
+    }
+  }'
+```
+
+#### E2E Factory Pipeline
+```bash
+# Execute complete pipeline from natural language to media output
+curl -X POST http://localhost:5003/factory-pipeline \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "generate a video showing a flying bird in realistic style"
+  }'
+```
 ```
 
 ### AI Generation APIs

@@ -98,9 +98,39 @@ services:
       - POSTGRES_DB=orchestrator_db
       - POSTGRES_USER=orchestrator
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - APP_FACTORY_URL=http://application-factory:5011
+      - MEDIA_FACTORY_URL=http://media-factory:5012
     depends_on:
       - redis
       - postgres
+      - application-factory
+      - media-factory
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Application Factory Service
+  application-factory:
+    build:
+      context: ./services/application-factory
+      dockerfile: Dockerfile
+    ports:
+      - "5011:5011"
+    environment:
+      - LOG_LEVEL=info
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Media Factory Service
+  media-factory:
+    build:
+      context: ./services/media-factory
+      dockerfile: Dockerfile
+    ports:
+      - "5012:5012"
+    environment:
+      - LOG_LEVEL=info
     networks:
       - ai-network
     restart: unless-stopped
