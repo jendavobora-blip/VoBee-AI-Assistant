@@ -47,9 +47,8 @@ jobs:
       - name: CI Environment Guard Check
         run: |
           echo "🔒 CI Hard Guard: Checking environment..."
-          if [ "$CI" = "true" ] || [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
+          if [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
             echo "❌ Swarm execution is DISABLED in CI environment"
-            echo "   CI=$CI"
             echo "   SWARM_EXECUTION_DISABLED=$SWARM_EXECUTION_DISABLED"
             echo "This workflow is prevented from running in CI to avoid unintended bot deployment."
             exit 1
@@ -181,15 +180,14 @@ jobs:
           #!/bin/bash
           set -e
           
-          # CI HARD GUARD: Prevent execution in CI environment
-          if [ "$CI" = "true" ] || [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
+          # CI HARD GUARD: Prevent execution when swarm is disabled
+          if [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
             echo "🔒 CI HARD GUARD ACTIVATED"
-            echo "❌ Bot swarm execution is DISABLED in CI environment"
-            echo "   CI=${CI:-unset}"
+            echo "❌ Bot swarm execution is DISABLED"
             echo "   SWARM_EXECUTION_DISABLED=${SWARM_EXECUTION_DISABLED:-unset}"
             echo ""
-            echo "This script is prevented from running to avoid unintended bot deployment in CI."
-            echo "To enable swarm execution, set SWARM_EXECUTION_DISABLED=false"
+            echo "This script is prevented from running to avoid unintended bot deployment."
+            echo "To enable swarm execution, set repository variable SWARM_EXECUTION_DISABLED=false"
             exit 1
           fi
           
@@ -326,7 +324,7 @@ jobs:
     runs-on: ubuntu-latest
     # CI hard guard: Skip this job if swarm execution is disabled
     # Note: always() ensures this runs regardless of deploy-bots success/failure (when not disabled)
-    if: ${{ always() && vars.SWARM_EXECUTION_DISABLED != 'true' }}
+    if: ${{ always() && (vars.SWARM_EXECUTION_DISABLED != 'true') }}
     permissions:
       contents: read
     
