@@ -88,21 +88,32 @@ class TaskOrchestrator:
     
     def orchestrate_workflow(self, tasks: List[Dict[str, Any]], priority: str = "normal"):
         """
-        Orchestrate multiple tasks in a workflow
+        Orchestrate multiple tasks in a workflow with priority management
+        and task decomposition
         
         Args:
             tasks: List of tasks to execute
-            priority: Workflow priority (low, normal, high)
+            priority: Workflow priority (low, normal, high, critical)
         """
         try:
             workflow_id = str(uuid4())
-            logger.info(f"Orchestrating workflow {workflow_id} with {len(tasks)} tasks")
+            logger.info(f"Orchestrating workflow {workflow_id} with {len(tasks)} tasks, priority: {priority}")
+            
+            # Decompose and prioritize tasks
+            decomposed_tasks = self._decompose_tasks(tasks)
+            prioritized_tasks = self._prioritize_tasks(decomposed_tasks, priority)
+            
+            # Allocate resources based on priority
+            resource_allocation = self._allocate_resources(prioritized_tasks, priority)
             
             results = []
             
-            for task in tasks:
+            for task in prioritized_tasks:
                 task_type = task.get('type')
                 task_params = task.get('params', {})
+                task_priority = task.get('priority', priority)
+                
+                logger.info(f"Executing task {task_type} with priority {task_priority}")
                 
                 # Create and execute task
                 if task_type == 'image_generation':
@@ -118,6 +129,7 @@ class TaskOrchestrator:
                 
                 results.append({
                     'task_type': task_type,
+                    'priority': task_priority,
                     'result': result
                 })
             
@@ -125,7 +137,8 @@ class TaskOrchestrator:
                 'workflow_id': workflow_id,
                 'status': 'completed',
                 'priority': priority,
-                'tasks_executed': len(tasks),
+                'tasks_executed': len(prioritized_tasks),
+                'resource_allocation': resource_allocation,
                 'results': results,
                 'timestamp': datetime.utcnow().isoformat()
             }
@@ -146,6 +159,122 @@ class TaskOrchestrator:
         except Exception as e:
             logger.error(f"Workflow orchestration failed: {e}")
             raise
+    
+    def _decompose_tasks(self, tasks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Decompose complex tasks into simpler subtasks
+        L19 layer task decomposition
+        """
+        decomposed = []
+        
+        for task in tasks:
+            task_type = task.get('type')
+            
+            # Check if task needs decomposition
+            if task_type == 'complex_generation':
+                # Decompose into image + video generation
+                decomposed.append({
+                    'type': 'image_generation',
+                    'params': task.get('params', {}),
+                    'parent_task': task_type
+                })
+                decomposed.append({
+                    'type': 'video_generation',
+                    'params': task.get('params', {}),
+                    'parent_task': task_type
+                })
+            elif task_type == 'market_analysis':
+                # Decompose into prediction + fraud detection
+                decomposed.append({
+                    'type': 'crypto_prediction',
+                    'params': task.get('params', {}),
+                    'parent_task': task_type
+                })
+                decomposed.append({
+                    'type': 'fraud_detection',
+                    'params': task.get('params', {}),
+                    'parent_task': task_type
+                })
+            else:
+                # No decomposition needed
+                decomposed.append(task)
+        
+        logger.info(f"Task decomposition: {len(tasks)} → {len(decomposed)} tasks")
+        return decomposed
+    
+    def _prioritize_tasks(self, tasks: List[Dict[str, Any]], workflow_priority: str) -> List[Dict[str, Any]]:
+        """
+        Prioritize tasks based on type and workflow priority
+        Priority levels: critical > high > normal > low
+        """
+        priority_mapping = {
+            'critical': 4,
+            'high': 3,
+            'normal': 2,
+            'low': 1
+        }
+        
+        # Task type priority multipliers
+        type_priority = {
+            'fraud_detection': 1.5,  # Security tasks get higher priority
+            'crypto_prediction': 1.2,  # Time-sensitive
+            'image_generation': 1.0,
+            'video_generation': 0.8  # Resource-intensive, lower priority
+        }
+        
+        base_priority = priority_mapping.get(workflow_priority, 2)
+        
+        for task in tasks:
+            task_type = task.get('type')
+            type_mult = type_priority.get(task_type, 1.0)
+            task['priority_score'] = base_priority * type_mult
+            task['priority'] = workflow_priority
+        
+        # Sort by priority score (highest first)
+        prioritized = sorted(tasks, key=lambda x: x.get('priority_score', 0), reverse=True)
+        
+        logger.info(f"Tasks prioritized: {[f\"{t['type']}({t['priority_score']:.1f})\" for t in prioritized]}")
+        return prioritized
+    
+    def _allocate_resources(self, tasks: List[Dict[str, Any]], priority: str) -> Dict[str, Any]:
+        """
+        Allocate resources based on task requirements and priority
+        Returns resource allocation plan
+        """
+        allocation = {
+            'cpu': 0,
+            'memory': 0,
+            'gpu': 0,
+            'estimated_duration': 0
+        }
+        
+        # Resource requirements per task type (simplified)
+        resource_requirements = {
+            'image_generation': {'cpu': 2, 'memory': 4096, 'gpu': 1, 'duration': 30},
+            'video_generation': {'cpu': 4, 'memory': 8192, 'gpu': 1, 'duration': 120},
+            'crypto_prediction': {'cpu': 1, 'memory': 2048, 'gpu': 0, 'duration': 10},
+            'fraud_detection': {'cpu': 1, 'memory': 1024, 'gpu': 0, 'duration': 5}
+        }
+        
+        for task in tasks:
+            task_type = task.get('type')
+            requirements = resource_requirements.get(task_type, {})
+            
+            allocation['cpu'] = max(allocation['cpu'], requirements.get('cpu', 0))
+            allocation['memory'] += requirements.get('memory', 0)
+            allocation['gpu'] = max(allocation['gpu'], requirements.get('gpu', 0))
+            allocation['estimated_duration'] += requirements.get('duration', 0)
+        
+        # Apply priority modifiers
+        if priority == 'critical':
+            allocation['cpu'] = int(allocation['cpu'] * 1.5)
+            allocation['memory'] = int(allocation['memory'] * 1.5)
+        elif priority == 'high':
+            allocation['cpu'] = int(allocation['cpu'] * 1.2)
+            allocation['memory'] = int(allocation['memory'] * 1.2)
+        
+        logger.info(f"Resource allocation: CPU={allocation['cpu']}, Memory={allocation['memory']}MB, GPU={allocation['gpu']}")
+        return allocation
     
     def execute_image_generation(self, params: Dict[str, Any]):
         """Execute image generation task"""
