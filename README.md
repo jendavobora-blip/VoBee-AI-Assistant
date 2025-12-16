@@ -58,6 +58,18 @@ A complete AI orchestration system featuring:
 - Range requests for video streaming
 - Google Cloud integration (Cloud Run, BigQuery)
 
+### 📷 Custom Avatar Upload
+- Upload your own photo for the avatar
+- Click the avatar or camera icon to select an image
+- Avatar is saved persistently in IndexedDB
+- Supports common image formats (JPEG, PNG, GIF, etc.)
+
+### 🎤 Voice Recording
+- Record voice messages directly in the chat
+- Click the microphone button to start/stop recording
+- Voice messages are displayed with playback controls
+- Requires microphone permission
+
 ## Project Structure
 
 ```
@@ -128,10 +140,13 @@ Manages the user interface:
 - Event handling (send, clear)
 - Typing indicators
 - Welcome messages
+- Avatar upload and display
+- Voice recording and playback
 
 ### IndexedDB Stores
 1. **conversations**: Stores all chat messages with timestamps
 2. **unrecognized_queries**: Logs unknown inputs with occurrence counts
+3. **user_settings**: Stores user preferences including avatar image
 
 ## Quick Start
 
@@ -254,6 +269,17 @@ curl -X POST http://localhost:8000/api/v1/orchestrate \
 - GPU: 4x NVIDIA A100 (40GB VRAM each)
 - Storage: 5 TB NVMe SSD
 - Network: 10 Gbps
+
+### Customizing Your Avatar
+- Click on the bee emoji avatar in the header, or click the camera (📷) button
+- Select an image file from your device (JPEG, PNG, GIF supported)
+- Your avatar will be saved and displayed on future visits
+
+### Recording Voice Messages
+- Click the microphone (🎤) button to start recording
+- Speak your message (grant microphone permission if prompted)
+- Click the stop (⏹️) button to end recording
+- Your voice message will appear in the chat with playback controls
 
 ## Extending the Chatbot
 
