@@ -137,6 +137,139 @@ This is a complete orchestration system integrating multiple AI functionalities 
   - Fast content delivery
 - **Port**: 8080
 
+### 7. Application Factory (New)
+
+#### Overview
+The Application Factory is a new architectural layer that enables automated application generation from natural language intent. It provides a complete workflow from intent extraction to code generation.
+
+#### Core Components
+
+##### Intent Extraction Module
+- **Purpose**: Extract structured intent from natural language user inputs
+- **Features**:
+  - Keyword-based intent parsing
+  - Support for multiple intent types (create_application, add_feature, generate_component, etc.)
+  - Entity and technology extraction
+  - Modular parser framework for future ML-based parsers
+- **Capabilities**:
+  - Detect application types (web, mobile, API, microservice)
+  - Extract technology preferences (Python, JavaScript, React, Docker, etc.)
+  - Provide contextual suggestions based on detected intent
+
+##### Specification Generation Module
+- **Purpose**: Convert extracted intent into detailed functional and technical specifications
+- **Features**:
+  - Template-based specification generation
+  - Constraint validation against predefined rules
+  - Support for multiple specification types (functional, technical, API, database, UI/UX)
+  - Automated requirement generation
+- **Validation Framework**:
+  - Complexity constraints (max 10 on 1-10 scale)
+  - Scalability requirements (min 5 on 1-10 scale)
+  - Security level enforcement (low/medium/high/critical)
+  - Service count limits for microservices
+  - Test coverage requirements (min 70%)
+
+##### Architecture Scaffolding Module
+- **Purpose**: Generate high-level project architecture and structure templates
+- **Supported Patterns**:
+  - Monolith (layered architecture)
+  - Microservices (service-oriented)
+  - Serverless (function-based)
+  - Layered (N-tier)
+  - Clean Architecture
+  - Hexagonal Architecture
+  - Event-Driven
+  - MVC
+- **Features**:
+  - Directory structure generation
+  - Interface contract definition
+  - Component relationship mapping
+  - Technology stack integration
+  - Export to JSON, YAML, or Markdown
+
+##### Parallel Code Generation (Stubs)
+The Application Factory includes modular code generation stubs designed for future parallel execution:
+
+1. **Backend Generator**
+   - Frameworks: FastAPI, Flask, Django, Express, Spring Boot, .NET
+   - Generates: API endpoints, data models, business logic, configuration
+   - Output: Backend service structure with dependencies
+
+2. **Frontend Generator**
+   - Frameworks: React, Vue, Angular, Svelte
+   - Generates: Components, pages, routing, state management
+   - Output: Frontend application structure with UI components
+
+3. **Infrastructure Generator**
+   - Tools: Docker, Kubernetes, Terraform, Ansible, CloudFormation
+   - Generates: Dockerfiles, docker-compose, K8s manifests, IaC templates
+   - Output: Deployment and infrastructure configuration
+
+4. **QA Generator**
+   - Frameworks: Pytest, Jest, JUnit, Mocha
+   - Generates: Unit tests, integration tests, E2E tests
+   - Output: Complete test suite with coverage configuration
+
+5. **Documentation Generator**
+   - Formats: Markdown, HTML, PDF, OpenAPI
+   - Generates: README, API docs, architecture docs, user guides, deployment guides
+   - Output: Comprehensive project documentation
+
+#### Application Factory Service
+- **Port**: 5009
+- **Technology**: Flask with CORS support
+- **Architecture**: Modular and extensible
+
+#### API Endpoints
+
+##### Main Workflow
+- `POST /api/v1/factory/process` - Process complete application generation workflow
+  - Input: Natural language description, context, preferences
+  - Output: Complete workflow result with all generated artifacts
+  - Stages: Intent → Specification → Architecture → Code Generation
+
+##### Individual Stages
+- `POST /api/v1/factory/intent` - Extract intent from user input
+- `POST /api/v1/factory/specification` - Generate specification from intent
+- `POST /api/v1/factory/architecture` - Generate architecture from specification
+
+##### Workflow Management
+- `GET /api/v1/factory/workflow/{id}` - Get workflow status and results
+- `GET /api/v1/factory/workflows` - List all workflows
+
+##### Health Check
+- `GET /health` - Service health status
+
+#### Design Principles (MAX_SPEED Mode)
+
+1. **Structural Focus**: Emphasis on interfaces and high-level workflows over complete implementations
+2. **Modularity**: Each component is independently extensible
+3. **Stub-Based**: Code generators provide structural stubs, not full implementations
+4. **Incremental**: Designed for iterative enhancement without breaking changes
+5. **Reversible**: All changes are modular and can be rolled back
+6. **Auditable**: Clear separation of concerns with comprehensive logging
+
+#### Integration with Existing Architecture
+
+The Application Factory integrates seamlessly with existing components:
+- **Supreme General Intelligence (SGI)**: Can trigger factory workflows via confirmed actions
+- **Orchestrator**: Routes factory tasks with appropriate priority
+- **Worker Pool**: Can execute parallel code generation tasks
+- **Self-Healing**: Monitors factory service health
+
+#### Future Enhancements
+
+Deferred for future iterations:
+- ML-based intent extraction using trained models
+- Real-time code generation (beyond stubs)
+- Multi-language support for intent parsing
+- Visual architecture designer integration
+- Code optimization and refactoring engines
+- Automated deployment pipelines
+- A/B testing for generated applications
+- Template marketplace for custom patterns
+
 ## Deployment
 
 ### Prerequisites

@@ -50,8 +50,9 @@ class KeywordIntentParser(IntentParser):
                 r'\bnew\s+(web|mobile|desktop|api)\s+(app|application)\b',
             ],
             IntentType.ADD_FEATURE: [
-                r'\b(add|implement|create)\s+(a\s+|new\s+)?feature\b',
-                r'\badd\s+.+\s+to\s+the\s+(app|application|project)\b',
+                r'\b(add|implement|create)\s+(a\s+|an\s+|new\s+)?feature\b',
+                r'\badd\s+.+\s+to\s+(my\s+)?(the\s+)?(app|application|project)\b',
+                r'\b(add|implement)\s+\w+\s+(feature|functionality)\b',
             ],
             IntentType.MODIFY_ARCHITECTURE: [
                 r'\b(modify|change|update|refactor)\s+(the\s+)?architecture\b',
@@ -59,6 +60,7 @@ class KeywordIntentParser(IntentParser):
             ],
             IntentType.GENERATE_COMPONENT: [
                 r'\b(create|generate|add)\s+(a\s+|new\s+)?(component|module|service)\b',
+                r'\bgenerate\s+(a\s+|an\s+)?(rest|graphql|api|backend|frontend)\s+(api|service|component)\b',
             ],
             IntentType.REFACTOR_CODE: [
                 r'\brefactor\b',
