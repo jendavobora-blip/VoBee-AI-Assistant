@@ -170,17 +170,6 @@ jobs:
           #!/bin/bash
           set -e
           
-          # CI HARD GUARD: Prevent execution when swarm is disabled
-          if [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
-            echo "🔒 CI HARD GUARD ACTIVATED"
-            echo "❌ Bot swarm execution is DISABLED"
-            echo "   SWARM_EXECUTION_DISABLED=$SWARM_EXECUTION_DISABLED"
-            echo ""
-            echo "This script is prevented from running to avoid unintended bot deployment."
-            echo "To enable swarm execution, set repository variable SWARM_EXECUTION_DISABLED=false"
-            exit 1
-          fi
-          
           START_BOT=$1
           END_BOT=$2
           DEPLOYMENT_ID=$3
@@ -314,7 +303,7 @@ jobs:
     runs-on: ubuntu-latest
     # CI hard guard: Skip this job if swarm execution is disabled
     # Note: always() ensures this runs regardless of deploy-bots success/failure (when not disabled)
-    if: ${{ always() && (vars.SWARM_EXECUTION_DISABLED != 'true') }}
+    if: ${{ always() && vars.SWARM_EXECUTION_DISABLED != 'true' }}
     permissions:
       contents: read
     
