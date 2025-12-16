@@ -16,10 +16,29 @@ import os
 import asyncpg
 from uuid import uuid4
 from contextlib import asynccontextmanager
+import sys
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# CI/Swarm execution guard - fail fast
+def check_execution_guards():
+    """Check if execution is blocked by CI or swarm execution guards"""
+    if os.getenv('CI') == 'true' or os.getenv('GITHUB_ACTIONS') == 'true':
+        logger.error("❌ FATAL: Spy-orchestration execution blocked in CI environment")
+        logger.error("CI environment detected. Bot/spy operations are not permitted.")
+        sys.exit(1)
+    
+    if os.getenv('SWARM_EXECUTION_DISABLED') == 'true':
+        logger.error("❌ FATAL: Swarm execution explicitly disabled")
+        logger.error("SWARM_EXECUTION_DISABLED=true prevents bot/spy operations")
+        sys.exit(1)
+    
+    logger.info("✅ Execution guards passed - spy-orchestration allowed to start")
+
+# Check guards before any operations
+check_execution_guards()
 
 # Database configuration
 DATABASE_URL = os.getenv(

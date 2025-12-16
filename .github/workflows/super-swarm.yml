@@ -83,6 +83,28 @@ jobs:
           echo "matrix_json=$MATRIX_JSON" >> $GITHUB_OUTPUT
           echo "Generated matrix: $MATRIX_JSON"
       
+      - name: Check CI execution guards
+        run: |
+          echo "🛡️ Checking CI execution guards..."
+          
+          # Fail-fast if running in CI with swarm execution disabled
+          if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
+            echo "❌ ERROR: Swarm execution is blocked in CI environments"
+            echo "This workflow cannot run in GitHub Actions CI/CD"
+            echo "Environment detected: CI=true"
+            exit 1
+          fi
+          
+          # Check SWARM_EXECUTION_DISABLED environment variable
+          if [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
+            echo "❌ ERROR: Swarm execution is explicitly disabled"
+            echo "SWARM_EXECUTION_DISABLED=true"
+            echo "This safeguard prevents accidental bot/swarm execution"
+            exit 1
+          fi
+          
+          echo "✅ CI execution guards passed"
+      
       - name: Validate environment
         run: |
           echo "🔍 Validating environment configuration..."
@@ -125,6 +147,14 @@ jobs:
       TOTAL_BOTS: ${{ needs.initialize.outputs.bot_count }}
     
     steps:
+      - name: CI execution guard
+        run: |
+          # Fail-fast if running in CI
+          if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ] || [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
+            echo "❌ ERROR: Bot deployment blocked in CI environment"
+            exit 1
+          fi
+      
       - name: Checkout repository
         uses: actions/checkout@v4
       

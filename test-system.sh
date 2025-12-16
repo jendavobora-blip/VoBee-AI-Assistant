@@ -6,6 +6,28 @@
 
 set -e
 
+# CI/Swarm execution guard - fail fast for worker/bot tests
+check_execution_guards() {
+    if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ] || [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
+        echo "⚠️  WARNING: Some tests skipped due to CI execution guards"
+        if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
+            echo "CI environment detected"
+        fi
+        if [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
+            echo "Swarm execution disabled"
+        fi
+        echo "Worker pool and bot-triggering tests will be skipped"
+        return 1
+    fi
+    return 0
+}
+
+# Store guard check result
+GUARDS_ACTIVE=0
+if ! check_execution_guards; then
+    GUARDS_ACTIVE=1
+fi
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -116,35 +138,48 @@ else
 fi
 
 # Test 8: Worker Pool Status
-print_test "Testing worker pool status..."
-RESPONSE=$(curl -s http://localhost:5008/pool/status)
-if echo "$RESPONSE" | grep -q "total_workers"; then
-    print_pass "Worker pool status retrieved"
-    echo "    Total workers: $(echo $RESPONSE | grep -o '"total_workers":[0-9]*' | cut -d':' -f2)"
-    ((TESTS_PASSED++))
+if [ $GUARDS_ACTIVE -eq 1 ]; then
+    print_test "Skipping worker pool status test (guards active)..."
+    echo "    Worker pool tests skipped in CI environment"
 else
-    print_fail "Worker pool status failed"
-    ((TESTS_FAILED++))
+    print_test "Testing worker pool status..."
+    RESPONSE=$(curl -s http://localhost:5008/pool/status)
+    if echo "$RESPONSE" | grep -q "total_workers"; then
+        print_pass "Worker pool status retrieved"
+        echo "    Total workers: $(echo $RESPONSE | grep -o '"total_workers":[0-9]*' | cut -d':' -f2)"
+        ((TESTS_PASSED++))
+    else
+        print_fail "Worker pool status failed"
+        ((TESTS_FAILED++))
+    fi
 fi
 
 # Test 9: Create Worker
-print_test "Testing worker creation..."
-RESPONSE=$(curl -s -X POST http://localhost:5008/worker/create \
-    -H "Content-Type: application/json" \
-    -d '{"worker_type": "crawler"}')
-
-if echo "$RESPONSE" | grep -q "worker_id"; then
-    print_pass "Worker created successfully"
-    WORKER_ID=$(echo $RESPONSE | grep -o '"worker_id":"[^"]*"' | cut -d'"' -f4)
-    echo "    Worker ID: $WORKER_ID"
-    ((TESTS_PASSED++))
+if [ $GUARDS_ACTIVE -eq 1 ]; then
+    print_test "Skipping worker creation test (guards active)..."
+    echo "    Worker creation tests skipped in CI environment"
 else
-    print_fail "Worker creation failed"
-    ((TESTS_FAILED++))
+    print_test "Testing worker creation..."
+    RESPONSE=$(curl -s -X POST http://localhost:5008/worker/create \
+        -H "Content-Type: application/json" \
+        -d '{"worker_type": "crawler"}')
+    
+    if echo "$RESPONSE" | grep -q "worker_id"; then
+        print_pass "Worker created successfully"
+        WORKER_ID=$(echo $RESPONSE | grep -o '"worker_id":"[^"]*"' | cut -d'"' -f4)
+        echo "    Worker ID: $WORKER_ID"
+        ((TESTS_PASSED++))
+    else
+        print_fail "Worker creation failed"
+        ((TESTS_FAILED++))
+    fi
 fi
 
 # Test 10: Execute Worker Task
-if [ -n "$WORKER_ID" ]; then
+if [ $GUARDS_ACTIVE -eq 1 ]; then
+    print_test "Skipping worker task execution test (guards active)..."
+    echo "    Worker task tests skipped in CI environment"
+elif [ -n "$WORKER_ID" ]; then
     print_test "Testing worker task execution..."
     RESPONSE=$(curl -s -X POST http://localhost:5008/task/execute \
         -H "Content-Type: application/json" \
