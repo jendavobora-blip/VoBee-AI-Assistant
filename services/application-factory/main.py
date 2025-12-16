@@ -223,7 +223,7 @@ class ApplicationFactory:
             if 'min' in str(duration_str).lower():
                 return num * 60
             return num
-        except:
+        except (AttributeError, ValueError, TypeError):
             return 5  # Default 5 seconds
     
     def validate_specification(self, specification: Dict[str, Any]) -> Dict[str, Any]:

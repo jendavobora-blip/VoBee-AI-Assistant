@@ -90,7 +90,7 @@ class MediaFactory:
         
         # Simulate image generation process
         # In real implementation, this would call actual image generation models
-        image_hash = hashlib.md5(f"{prompt}{style}{resolution}".encode()).hexdigest()
+        image_hash = hashlib.sha256(f"{prompt}{style}{resolution}".encode()).hexdigest()
         
         result = {
             'task_id': task_id,
@@ -137,7 +137,7 @@ class MediaFactory:
         logger.info(f"Generating video: prompt='{prompt}', duration={duration}s, resolution={resolution}")
         
         # Simulate video generation process
-        video_hash = hashlib.md5(f"{prompt}{style}{duration}".encode()).hexdigest()
+        video_hash = hashlib.sha256(f"{prompt}{style}{duration}".encode()).hexdigest()
         
         result = {
             'task_id': task_id,

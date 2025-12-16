@@ -10,6 +10,15 @@ import sys
 import time
 from typing import Dict, Any
 
+# Test configuration
+BASE_URL = "http://localhost"
+APP_FACTORY_PORT = 5011
+MEDIA_FACTORY_PORT = 5012
+ORCHESTRATOR_PORT = 5003
+
+# Constants
+MIN_CONFIDENCE_THRESHOLD = 0.3
+
 # Colors for output
 class Colors:
     GREEN = '\033[92m'
@@ -98,7 +107,7 @@ def test_intent_extraction():
             intent_type = result.get('type')
             confidence = result.get('confidence', 0)
             
-            if intent_type == 'generate_image' and confidence > 0.3:
+            if intent_type == 'generate_image' and confidence > MIN_CONFIDENCE_THRESHOLD:
                 print_pass(f"Intent extracted: {intent_type} (confidence: {confidence:.2f})")
                 tests_passed += 1
                 return True
