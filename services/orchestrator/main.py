@@ -233,7 +233,8 @@ class TaskOrchestrator:
         # Sort by priority score (highest first)
         prioritized = sorted(tasks, key=lambda x: x.get('priority_score', 0), reverse=True)
         
-        logger.info(f"Tasks prioritized: {[f\"{t['type']}({t['priority_score']:.1f})\" for t in prioritized]}")
+        task_list = [f"{t['type']}({t['priority_score']:.1f})" for t in prioritized]
+        logger.info(f"Tasks prioritized: {task_list}")
         return prioritized
     
     def _allocate_resources(self, tasks: List[Dict[str, Any]], priority: str) -> Dict[str, Any]:

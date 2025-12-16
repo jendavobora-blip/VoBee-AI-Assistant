@@ -5,7 +5,6 @@ Features: 8K video generation, dynamic camera rendering, 60fps
 """
 
 from flask import Flask, request, jsonify
-import torch
 import os
 import logging
 from datetime import datetime
@@ -21,7 +20,7 @@ class VideoGenerator:
     """Main video generation class supporting NeRF and Gen-2"""
     
     def __init__(self):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cpu"  # Minimal mode - CPU only
         logger.info(f"Initializing Video Generator on device: {self.device}")
         self.models = {}
         self.load_models()
@@ -34,7 +33,7 @@ class VideoGenerator:
             # - Runway ML Gen-2 API integration
             # - NeRF models for 3D scene rendering
             # - Video diffusion models
-            logger.info("Video generation models loaded successfully")
+            logger.info("Video generation models loaded successfully (minimal mode)")
         except Exception as e:
             logger.error(f"Error loading models: {e}")
     

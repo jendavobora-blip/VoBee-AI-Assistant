@@ -5,13 +5,10 @@ Features: HDR, PBR rendering, personalized styles
 """
 
 from flask import Flask, request, jsonify
-import torch
 import os
 import logging
 from datetime import datetime
 from typing import Optional
-import base64
-from io import BytesIO
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -23,7 +20,7 @@ class ImageGenerator:
     """Main image generation class supporting multiple models"""
     
     def __init__(self):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cpu"  # Minimal mode - CPU only
         logger.info(f"Initializing Image Generator on device: {self.device}")
         self.models = {}
         self.load_models()
@@ -37,7 +34,7 @@ class ImageGenerator:
             # - DALL-E integration
             # - StyleGAN3
             # - DreamBooth fine-tuned models
-            logger.info("Models loaded successfully")
+            logger.info("Models loaded successfully (minimal mode)")
         except Exception as e:
             logger.error(f"Error loading models: {e}")
     
