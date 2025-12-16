@@ -4,7 +4,7 @@ Decision Gate - Individual gate with confirmation requirements
 
 from enum import Enum
 from typing import Dict, Any, Optional, List
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 
 logger = logging.getLogger(__name__)
@@ -73,7 +73,6 @@ class DecisionGate:
         
         # Set expiry if specified
         if auto_expire_minutes:
-            from datetime import timedelta
             expires = datetime.utcnow() + timedelta(minutes=auto_expire_minutes)
             self.expires_at = expires.isoformat()
         

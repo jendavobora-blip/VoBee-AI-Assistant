@@ -238,7 +238,9 @@ class GateManager:
     ) -> bool:
         """
         Wait for gate approval (blocking operation in real implementation)
-        This is a placeholder - in production would implement actual waiting
+        
+        IMPORTANT: This is a placeholder implementation. In production, this
+        method should implement actual polling or event-based waiting mechanisms.
         
         Args:
             gate_id: Gate to wait for
@@ -249,13 +251,20 @@ class GateManager:
             
         Raises:
             RuntimeError: If gate rejected and raise_on_reject is True
+            
+        Note:
+            This method currently only checks the current status. For production use,
+            implement one of the following:
+            - Polling with configurable intervals
+            - Event-based notification system (e.g., using asyncio or threading)
+            - Webhook/callback mechanism
         """
         gate = self.get_gate(gate_id)
         if not gate:
             raise ValueError(f"Gate {gate_id} not found")
         
-        # In real implementation, this would poll or use event-based waiting
-        # For now, just check current status
+        # Current implementation only checks status
+        # TODO: Implement actual waiting mechanism for production
         
         if gate.is_approved():
             return True

@@ -115,6 +115,8 @@ class MemoryManager:
         
         if key in memory_store:
             del memory_store[key]
+            # Decrement total entries counter
+            self.project_memories[project_id]['metadata']['total_entries'] -= 1
             return True
         
         return False

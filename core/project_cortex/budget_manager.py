@@ -100,7 +100,8 @@ class BudgetManager:
         if budget['remaining'] < amount:
             logger.warning(
                 f"Insufficient budget for project {project_id}: "
-                f"Requested {amount}, Available {budget['remaining']}"
+                f"Requested {amount} {budget['currency']}, "
+                f"Available {budget['remaining']} {budget['currency']}"
             )
             return False
         
