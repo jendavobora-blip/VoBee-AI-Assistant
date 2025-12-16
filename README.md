@@ -40,6 +40,7 @@ A complete, autonomous AI orchestration system featuring:
 - **Priority management** - critical, high, normal, low priorities
 - **Resource allocation** - intelligent CPU/memory/GPU assignment
 - **Cross-domain routing** - seamless integration across services
+- **Deadline enforcement** - automatic task cancellation on timeout
 
 ### 👷 Worker Execution Layer
 - **Stateless workers** - disposable and scalable
@@ -49,6 +50,7 @@ A complete, autonomous AI orchestration system featuring:
   - Benchmark workers for performance testing
 - **Auto-disposal** after task completion
 - **Dynamic worker pool** management
+- **Task deadline enforcement** - prevents stuck or long-running tasks
 
 ## Features
 
@@ -453,6 +455,8 @@ console.log(queries);
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Detailed system architecture and component descriptions
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Step-by-step deployment guide for all environments
+- [DEADLINE_ENFORCEMENT.md](DEADLINE_ENFORCEMENT.md) - Deadline enforcement for Swarm/Bot/Runners
+- [AUTONOMOUS_SYSTEM.md](AUTONOMOUS_SYSTEM.md) - Autonomous system features and usage
 - API Documentation - Available at `http://localhost:8000/docs` when running
 
 ## Monitoring & Observability
