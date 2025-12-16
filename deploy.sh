@@ -6,6 +6,22 @@
 
 set -e  # Exit on error
 
+# CI/Swarm execution guard - fail fast
+if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ] || [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
+    echo "❌ ERROR: Deployment blocked by CI execution guards"
+    echo ""
+    if [ "$CI" = "true" ] || [ "$GITHUB_ACTIONS" = "true" ]; then
+        echo "CI environment detected (CI=true or GITHUB_ACTIONS=true)"
+    fi
+    if [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
+        echo "Swarm execution explicitly disabled (SWARM_EXECUTION_DISABLED=true)"
+    fi
+    echo ""
+    echo "This deployment involves bot/swarm operations that are blocked in CI."
+    echo "These safeguards prevent accidental execution in automated environments."
+    exit 1
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
