@@ -325,6 +325,7 @@ jobs:
     needs: [initialize, deploy-bots]
     runs-on: ubuntu-latest
     # CI hard guard: Skip this job if swarm execution is disabled
+    # Note: always() ensures this runs regardless of deploy-bots success/failure (when not disabled)
     if: ${{ always() && vars.SWARM_EXECUTION_DISABLED != 'true' }}
     permissions:
       contents: read
