@@ -125,7 +125,7 @@ def example_orchestration():
                 'factory': 'media',
                 'action': 'create_media',
                 'params': {
-                    'type': 'image',
+                    'media_type': 'image',
                     'prompt': 'ETH market trends visualization'
                 }
             }
@@ -148,17 +148,17 @@ def example_orchestration():
             {
                 'factory': 'media',
                 'action': 'create_media',
-                'params': {'type': 'image', 'prompt': 'Sunset landscape'}
+                'params': {'media_type': 'image', 'prompt': 'Sunset landscape'}
             },
             {
                 'factory': 'media',
                 'action': 'create_media',
-                'params': {'type': 'video', 'prompt': 'Ocean waves'}
+                'params': {'media_type': 'video', 'prompt': 'Ocean waves'}
             },
             {
                 'factory': 'media',
                 'action': 'create_media',
-                'params': {'type': 'voice', 'text': 'Welcome message'}
+                'params': {'media_type': 'voice', 'text': 'Welcome message'}
             }
         ],
         'factories': ['media'],
@@ -203,12 +203,12 @@ def example_advanced_integration():
             {
                 'factory': 'media',
                 'action': 'create_media',
-                'params': {'type': 'image', 'prompt': 'BTC analysis chart'}
+                'params': {'media_type': 'image', 'prompt': 'BTC analysis chart'}
             },
             {
                 'factory': 'media',
                 'action': 'create_media',
-                'params': {'type': 'voice', 'text': 'BTC analysis summary'}
+                'params': {'media_type': 'voice', 'text': 'BTC analysis summary'}
             }
         ],
         'factories': ['research', 'media'],
