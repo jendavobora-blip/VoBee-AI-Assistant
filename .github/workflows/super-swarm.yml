@@ -34,7 +34,7 @@ jobs:
     name: Initialize Super Swarm Deployment
     runs-on: ubuntu-latest
     # CI hard guard: Skip this job if swarm execution is disabled
-    if: ${{ env.SWARM_EXECUTION_DISABLED != 'true' }}
+    if: ${{ vars.SWARM_EXECUTION_DISABLED != 'true' }}
     permissions:
       contents: read
     outputs:
@@ -125,7 +125,7 @@ jobs:
     needs: initialize
     runs-on: ubuntu-latest
     # CI hard guard: Skip this job if swarm execution is disabled
-    if: ${{ env.SWARM_EXECUTION_DISABLED != 'true' }}
+    if: ${{ vars.SWARM_EXECUTION_DISABLED != 'true' }}
     permissions:
       contents: read
     
@@ -325,7 +325,7 @@ jobs:
     needs: [initialize, deploy-bots]
     runs-on: ubuntu-latest
     # CI hard guard: Skip this job if swarm execution is disabled
-    if: ${{ always() && env.SWARM_EXECUTION_DISABLED != 'true' }}
+    if: ${{ always() && vars.SWARM_EXECUTION_DISABLED != 'true' }}
     permissions:
       contents: read
     
