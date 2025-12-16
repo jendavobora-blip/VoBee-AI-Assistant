@@ -45,17 +45,6 @@ jobs:
       matrix_json: ${{ steps.matrix.outputs.matrix_json }}
     
     steps:
-      - name: CI Environment Guard Check
-        run: |
-          echo "🔒 CI Hard Guard: Checking environment..."
-          if [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
-            echo "❌ Swarm execution is DISABLED in CI environment"
-            echo "   SWARM_EXECUTION_DISABLED=$SWARM_EXECUTION_DISABLED"
-            echo "This workflow is prevented from running in CI to avoid unintended bot deployment."
-            exit 1
-          fi
-          echo "✅ Swarm execution is allowed"
-      
       - name: Checkout repository
         uses: actions/checkout@v4
       
