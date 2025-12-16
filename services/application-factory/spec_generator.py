@@ -249,7 +249,7 @@ class SpecificationGenerator:
         spec['requirements']['non_functional'] = [
             'Response time < 200ms for 95% of requests',
             'Support for 1000 concurrent users',
-            ' 99.9% uptime SLA',
+            'Minimum 99.9% uptime SLA',
             'Automated backup and recovery',
         ]
         

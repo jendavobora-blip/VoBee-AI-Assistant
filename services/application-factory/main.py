@@ -164,8 +164,8 @@ class ApplicationFactory:
         # Backend generation
         try:
             backend_framework = preferences.get('backend_framework', 'fastapi')
-            self.backend_generator.framework = backend_framework
-            results['backend'] = self.backend_generator.generate(
+            backend_generator = BackendGenerator(backend_framework)
+            results['backend'] = backend_generator.generate(
                 specification, architecture, preferences
             )
         except Exception as e:
@@ -175,8 +175,8 @@ class ApplicationFactory:
         # Frontend generation
         try:
             frontend_framework = preferences.get('frontend_framework', 'react')
-            self.frontend_generator.framework = frontend_framework
-            results['frontend'] = self.frontend_generator.generate(
+            frontend_generator = FrontendGenerator(frontend_framework)
+            results['frontend'] = frontend_generator.generate(
                 specification, architecture, preferences
             )
         except Exception as e:

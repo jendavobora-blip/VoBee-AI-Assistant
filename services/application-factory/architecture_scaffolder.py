@@ -460,12 +460,12 @@ class ArchitectureScaffolder:
             for service in services:
                 service_name = service['name']
                 files[f'services/{service_name}/main.py'] = f'# {service_name} service\n'
-                files[f'services/{service_name}/requirements.txt'] = ''
+                files[f'services/{service_name}/requirements.txt'] = '# Add dependencies here\n'
                 files[f'services/{service_name}/Dockerfile'] = f'FROM python:3.11\n'
         
         elif pattern in ['monolith', 'layered']:
             files['src/main.py'] = '# Application entry point\n'
-            files['requirements.txt'] = ''
+            files['requirements.txt'] = '# Add dependencies here\n'
             files['Dockerfile'] = 'FROM python:3.11\n'
         
         elif pattern == 'serverless':
