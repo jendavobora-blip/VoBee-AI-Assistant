@@ -275,55 +275,6 @@ class TaskOrchestrator:
         
         logger.info(f"Resource allocation: CPU={allocation['cpu']}, Memory={allocation['memory']}MB, GPU={allocation['gpu']}")
         return allocation
-            
-            results = []
-            
-            for task in tasks:
-                task_type = task.get('type')
-                task_params = task.get('params', {})
-                
-                # Create and execute task
-                if task_type == 'image_generation':
-                    result = self.execute_image_generation(task_params)
-                elif task_type == 'video_generation':
-                    result = self.execute_video_generation(task_params)
-                elif task_type == 'crypto_prediction':
-                    result = self.execute_crypto_prediction(task_params)
-                elif task_type == 'fraud_detection':
-                    result = self.execute_fraud_detection(task_params)
-                else:
-                    result = {'error': f'Unknown task type: {task_type}'}
-                
-                results.append({
-                    'task_type': task_type,
-                    'result': result
-                })
-            
-            workflow_result = {
-                'workflow_id': workflow_id,
-                'status': 'completed',
-                'priority': priority,
-                'tasks_executed': len(tasks),
-                'results': results,
-                'timestamp': datetime.utcnow().isoformat()
-            }
-            
-            # Store workflow result
-            if self.redis_client:
-                try:
-                    self.redis_client.setex(
-                        f"workflow:{workflow_id}",
-                        7200,  # 2 hours TTL
-                        json.dumps(workflow_result)
-                    )
-                except Exception as e:
-                    logger.error(f"Error storing workflow result: {e}")
-            
-            return workflow_result
-            
-        except Exception as e:
-            logger.error(f"Workflow orchestration failed: {e}")
-            raise
     
     def execute_image_generation(self, params: Dict[str, Any]):
         """Execute image generation task"""

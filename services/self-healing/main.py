@@ -196,13 +196,13 @@ class SelfHealingMonitor:
         Restart a Docker container for a service
         """
         try:
-            # Check if running in Docker environment
-            if not os.path.exists('/.dockerenv'):
-                logger.warning("Not running in Docker, skipping container restart")
+            # Check if Docker socket is available
+            docker_socket = '/var/run/docker.sock'
+            if not os.path.exists(docker_socket):
+                logger.warning("Docker socket not available, skipping container restart")
                 return False
             
             # Use docker-compose to restart the service
-            # This assumes docker socket is mounted
             result = subprocess.run(
                 ['docker', 'restart', service_name],
                 capture_output=True,

@@ -144,7 +144,7 @@ else
 fi
 
 # Test 10: Execute Worker Task
-if [ ! -z "$WORKER_ID" ]; then
+if [ -n "$WORKER_ID" ]; then
     print_test "Testing worker task execution..."
     RESPONSE=$(curl -s -X POST http://localhost:5008/task/execute \
         -H "Content-Type: application/json" \

@@ -27,7 +27,11 @@ DATABASE_URL = os.getenv(
 )
 
 # Owner authentication
-OWNER_SECRET = os.getenv('OWNER_SECRET', 'change-this-secret-key')
+OWNER_SECRET = os.getenv('OWNER_SECRET')
+if not OWNER_SECRET or OWNER_SECRET == 'your_secure_owner_secret_key':
+    logger.error("OWNER_SECRET not configured! Set a secure value in environment variables.")
+    raise ValueError("OWNER_SECRET must be set to a secure value. Please configure it in .env file.")
+
 OWNER_SECRET_HASH = hashlib.sha256(OWNER_SECRET.encode()).hexdigest()
 
 # Database connection pool

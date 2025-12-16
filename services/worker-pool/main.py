@@ -90,7 +90,11 @@ class CrawlerWorker(Worker):
     def _crawl_url(self, url: str, depth: int) -> Dict[str, Any]:
         """Perform actual crawling"""
         try:
-            response = requests.get(url, timeout=10)
+            headers = {
+                'User-Agent': 'VoBee-AI-Assistant-Worker/1.0',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+            }
+            response = requests.get(url, timeout=10, headers=headers, verify=True)
             return {
                 'url': url,
                 'status_code': response.status_code,
