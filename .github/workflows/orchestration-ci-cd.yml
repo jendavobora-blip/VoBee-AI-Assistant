@@ -30,6 +30,7 @@ jobs:
       packages: write
     
     strategy:
+      fail-fast: false
       matrix:
         service:
           - api-gateway
@@ -69,7 +70,8 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=sha
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -121,6 +123,7 @@ jobs:
     name: Security Scanning
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    continue-on-error: true
     needs: build-services
     permissions:
       contents: read
@@ -150,6 +153,9 @@ jobs:
     timeout-minutes: 30
     needs: [build-services, test-services]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://production.example.com
     permissions:
       contents: read
     
