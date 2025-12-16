@@ -46,7 +46,7 @@ class KeywordIntentParser(IntentParser):
         # Define keyword patterns for each intent type
         self.intent_patterns = {
             IntentType.CREATE_APPLICATION: [
-                r'\b(create|build|generate|make)\s+(new\s+)?(app|application|project|system)\b',
+                r'\b(create|build|generate|make)\s+(new\s+)?(app|application|project|system|microservices?\s+(app|application)?)\b',
                 r'\bnew\s+(web|mobile|desktop|api)\s+(app|application)\b',
             ],
             IntentType.ADD_FEATURE: [
