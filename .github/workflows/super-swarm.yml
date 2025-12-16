@@ -179,6 +179,12 @@ jobs:
             exit 1
           fi
           
+          # Validate numeric inputs
+          if ! [[ "$START_BOT" =~ ^[0-9]+$ ]] || ! [[ "$END_BOT" =~ ^[0-9]+$ ]]; then
+            echo "❌ Error: START_BOT and END_BOT must be positive integers"
+            exit 1
+          fi
+          
           if [ "$START_BOT" -gt "$END_BOT" ]; then
             echo "❌ Error: START_BOT ($START_BOT) cannot be greater than END_BOT ($END_BOT)"
             exit 1
