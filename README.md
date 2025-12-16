@@ -1,6 +1,7 @@
 # VoBee AI Assistant <img width="480" height="480" alt="image" src="https://github.com/user-attachments/assets/feb0de59-8c3c-4796-8b99-554155982991" />
 
 A complete, autonomous AI orchestration system featuring:
+- **Application Factory** - Automated application generation from natural language intent (NEW)
 - **Supreme General Intelligence (SGI)** - Owner-only chat interface with intent understanding and confirmation-driven actions
 - **Spy-Orchestration Pipeline** - Automated discovery of AI models, research papers, and technologies
 - **Self-Healing Architecture** - Automated health monitoring and service repair
@@ -12,7 +13,33 @@ A complete, autonomous AI orchestration system featuring:
 - **Auto-scaling** and fraud detection capabilities
 - **CDN pipeline** for fast content delivery
 
-## 🚀 New: Autonomous System Features
+## 🚀 New: Application Factory
+
+### 🏭 Application Factory (Latest Addition)
+Transform natural language descriptions into complete application scaffolds with:
+- **Intent Extraction** - Understand what you want to build from plain English
+- **Specification Generation** - Convert intent into detailed functional specs with validation
+- **Architecture Scaffolding** - Generate project structures for multiple patterns (microservices, monolith, serverless, etc.)
+- **Parallel Code Generation** - Modular stubs for backend, frontend, infrastructure, QA, and documentation
+- **Technology Agnostic** - Supports Python, JavaScript, React, Vue, Docker, Kubernetes, and more
+- **Constraint Validation** - Ensures generated specifications meet quality and security standards
+- **MAX_SPEED Mode** - Focused on structure and interfaces, optimized for rapid development
+
+#### Example Usage
+```bash
+# Generate a complete application from a simple description
+curl -X POST http://localhost:5009/api/v1/factory/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Create a REST API for user management with React frontend",
+    "preferences": {
+      "backend_framework": "fastapi",
+      "frontend_framework": "react"
+    }
+  }'
+```
+
+## 🚀 Autonomous System Features
 
 ### 🧠 Supreme General Intelligence (SGI)
 - **Owner-only access** with encrypted secret authentication
@@ -120,6 +147,16 @@ VoBee-AI-Assistant/
 ├── icons/                  # App icons
 ├── services/               # Microservices
 │   ├── api-gateway/        # FastAPI gateway (port 8000)
+│   ├── application-factory/# Application generation service (port 5009) - NEW
+│   │   ├── intent_extractor.py        # Intent extraction module
+│   │   ├── spec_generator.py          # Specification generator
+│   │   ├── architecture_scaffolder.py # Architecture scaffolding
+│   │   └── code_generators/           # Parallel code generators
+│   │       ├── backend_generator.py
+│   │       ├── frontend_generator.py
+│   │       ├── infrastructure_generator.py
+│   │       ├── qa_generator.py
+│   │       └── docs_generator.py
 │   ├── supreme-general-intelligence/  # SGI service (port 5010)
 │   ├── spy-orchestration/  # Automated discovery (port 5006)
 │   ├── self-healing/       # Health monitoring (port 5007)
@@ -266,6 +303,7 @@ This script will:
    ```
 
 3. Access services:
+   - **Application Factory: http://localhost:5009** (NEW)
    - Supreme General Intelligence: http://localhost:5010
    - API Gateway: http://localhost:8000
    - Spy-Orchestration: http://localhost:5006
@@ -286,6 +324,79 @@ kubectl apply -f kubernetes/03-autoscaling.yaml
 ```
 
 ## API Usage
+
+### Application Factory APIs (NEW)
+
+#### Complete Application Generation Workflow
+```bash
+# Generate a complete application from natural language
+curl -X POST http://localhost:5009/api/v1/factory/process \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Create a microservices application with user authentication and REST API",
+    "context": {},
+    "preferences": {
+      "backend_framework": "fastapi",
+      "frontend_framework": "react"
+    }
+  }'
+```
+
+#### Extract Intent Only
+```bash
+# Understand user intent from natural language
+curl -X POST http://localhost:5009/api/v1/factory/intent \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Build a web application with React and Python backend",
+    "context": {}
+  }'
+```
+
+#### Generate Specification
+```bash
+# Generate detailed specification from extracted intent
+curl -X POST http://localhost:5009/api/v1/factory/specification \
+  -H "Content-Type: application/json" \
+  -d '{
+    "intent": {
+      "intent_type": "create_application",
+      "entities": {"app_types": ["web"]},
+      "technologies": ["python", "react"]
+    },
+    "preferences": {}
+  }'
+```
+
+#### Generate Architecture
+```bash
+# Generate architecture scaffold from specification
+curl -X POST http://localhost:5009/api/v1/factory/architecture \
+  -H "Content-Type: application/json" \
+  -d '{
+    "specification": {
+      "architecture": {"type": "microservices"},
+      "components": {"services": [...]},
+      "technology_stack": {...}
+    },
+    "preferences": {}
+  }'
+```
+
+#### Check Workflow Status
+```bash
+# Get status and results of a workflow
+curl http://localhost:5009/api/v1/factory/workflow/{workflow_id}
+
+# List all workflows
+curl http://localhost:5009/api/v1/factory/workflows
+```
+
+#### Application Factory Health
+```bash
+# Check service health
+curl http://localhost:5009/health
+```
 
 ### Autonomous System APIs
 

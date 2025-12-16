@@ -270,6 +270,20 @@ services:
       - ai-network
     restart: unless-stopped
 
+  # Application Factory Service
+  application-factory:
+    build:
+      context: ./services/application-factory
+      dockerfile: Dockerfile
+    ports:
+      - "5009:5009"
+    environment:
+      - PORT=5009
+      - ENVIRONMENT=production
+    networks:
+      - ai-network
+    restart: unless-stopped
+
 networks:
   ai-network:
     driver: bridge
