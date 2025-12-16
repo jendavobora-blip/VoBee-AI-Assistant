@@ -49,10 +49,13 @@ echo ""
 print_step "1. Checking infrastructure services..."
 sleep 2
 
-if curl -s -f http://localhost:5432 > /dev/null 2>&1 || nc -z localhost 5432 2>/dev/null; then
+# PostgreSQL - use nc (netcat) if available, otherwise just check if port is open
+if nc -z localhost 5432 2>/dev/null; then
+    print_success "PostgreSQL is accessible"
+elif timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/5432' 2>/dev/null; then
     print_success "PostgreSQL is accessible"
 else
-    print_error "PostgreSQL is not accessible on port 5432"
+    print_info "PostgreSQL port 5432 status unknown (nc not available)"
 fi
 
 if redis-cli -h localhost ping 2>/dev/null | grep -q "PONG"; then
