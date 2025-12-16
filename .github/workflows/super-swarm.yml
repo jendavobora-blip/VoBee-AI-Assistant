@@ -25,7 +25,8 @@ on:
 env:
   BOT_COUNT: 20000
   DEPLOYMENT_MODE: auto-scale
-  # CI-specific hard guard: Disable swarm execution in CI environments
+  # CI-specific hard guard: Defaults to 'true' (disabled) for safety in CI environments
+  # Override by setting repository variable SWARM_EXECUTION_DISABLED to 'false' to enable execution
   SWARM_EXECUTION_DISABLED: ${{ vars.SWARM_EXECUTION_DISABLED || 'true' }}
 
 jobs:
@@ -184,7 +185,7 @@ jobs:
           if [ "$SWARM_EXECUTION_DISABLED" = "true" ]; then
             echo "🔒 CI HARD GUARD ACTIVATED"
             echo "❌ Bot swarm execution is DISABLED"
-            echo "   SWARM_EXECUTION_DISABLED=${SWARM_EXECUTION_DISABLED:-unset}"
+            echo "   SWARM_EXECUTION_DISABLED=$SWARM_EXECUTION_DISABLED"
             echo ""
             echo "This script is prevented from running to avoid unintended bot deployment."
             echo "To enable swarm execution, set repository variable SWARM_EXECUTION_DISABLED=false"
