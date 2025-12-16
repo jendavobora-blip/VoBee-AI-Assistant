@@ -5,17 +5,19 @@ Manages task routing, factory connectivity, and multi-factory workflows.
 """
 
 from typing import Dict, Any, Optional
-from .workflow import WorkflowCoordinator, WorkflowTemplate
+from .workflow import WorkflowCoordinator, WorkflowTemplate, WorkflowStep
 from .factory_connector import FactoryConnector, FactoryType
 from .router import TaskRouter, RoutingStrategy
 
 __all__ = [
     "WorkflowCoordinator",
     "WorkflowTemplate",
+    "WorkflowStep",
     "FactoryConnector",
     "FactoryType",
     "TaskRouter",
     "RoutingStrategy",
+    "OrchestrationEngine",
 ]
 
 
