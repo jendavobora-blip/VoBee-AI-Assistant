@@ -7,7 +7,7 @@ from flask import Flask, request, jsonify
 import redis
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Dict, Any
 import requests
 import os
@@ -52,13 +52,14 @@ class TaskOrchestrator:
             logger.error(f"Failed to connect to Redis: {e}")
             self.redis_client = None
     
-    def create_task(self, task_type: str, task_data: Dict[str, Any]):
+    def create_task(self, task_type: str, task_data: Dict[str, Any], deadline: int = None):
         """
         Create a new task in the queue
         
         Args:
             task_type: Type of task (image_gen, video_gen, crypto_pred)
             task_data: Task parameters
+            deadline: Optional deadline in seconds from task creation
         """
         task_id = str(uuid4())
         task = {
@@ -67,7 +68,8 @@ class TaskOrchestrator:
             'data': task_data,
             'status': 'pending',
             'created_at': datetime.utcnow().isoformat(),
-            'updated_at': datetime.utcnow().isoformat()
+            'updated_at': datetime.utcnow().isoformat(),
+            'deadline': deadline
         }
         
         if self.redis_client:
@@ -86,18 +88,70 @@ class TaskOrchestrator:
         
         return task
     
-    def orchestrate_workflow(self, tasks: List[Dict[str, Any]], priority: str = "normal"):
+    def is_deadline_exceeded(self, task: Dict[str, Any]) -> bool:
         """
-        Orchestrate multiple tasks in a workflow with priority management
-        and task decomposition
+        Check if a task's deadline has been exceeded
+        
+        Args:
+            task: Task dictionary with created_at and deadline fields
+            
+        Returns:
+            True if deadline is exceeded, False otherwise
+        """
+        if not task.get('deadline'):
+            return False
+        
+        created_at_str = task['created_at'].replace('Z', '+00:00')
+        created_at = datetime.fromisoformat(created_at_str)
+        deadline_seconds = task['deadline']
+        deadline_time = created_at + timedelta(seconds=deadline_seconds)
+        
+        return datetime.utcnow() > deadline_time
+    
+    def cancel_task(self, task_id: str, reason: str = "Deadline exceeded"):
+        """
+        Cancel a task and update its status
+        
+        Args:
+            task_id: Task ID to cancel
+            reason: Reason for cancellation
+        """
+        if self.redis_client:
+            try:
+                task_data = self.redis_client.get(f"task:{task_id}")
+                if task_data:
+                    task = json.loads(task_data)
+                    task['status'] = 'cancelled'
+                    task['cancelled_reason'] = reason
+                    task['cancelled_at'] = datetime.utcnow().isoformat()
+                    task['updated_at'] = datetime.utcnow().isoformat()
+                    
+                    # Update task in Redis
+                    self.redis_client.setex(
+                        f"task:{task_id}",
+                        3600,  # 1 hour TTL
+                        json.dumps(task)
+                    )
+                    logger.info(f"Cancelled task {task_id}: {reason}")
+                    return True
+            except Exception as e:
+                logger.error(f"Error cancelling task: {e}")
+        return False
+    
+    def orchestrate_workflow(self, tasks: List[Dict[str, Any]], priority: str = "normal", deadline: int = None):
+        """
+        Orchestrate multiple tasks in a workflow with priority management,
+        task decomposition, and deadline enforcement
         
         Args:
             tasks: List of tasks to execute
             priority: Workflow priority (low, normal, high, critical)
+            deadline: Optional workflow deadline in seconds from workflow start
         """
         try:
             workflow_id = str(uuid4())
-            logger.info(f"Orchestrating workflow {workflow_id} with {len(tasks)} tasks, priority: {priority}")
+            workflow_start = datetime.utcnow()
+            logger.info(f"Orchestrating workflow {workflow_id} with {len(tasks)} tasks, priority: {priority}, deadline: {deadline}s" if deadline else f"Orchestrating workflow {workflow_id} with {len(tasks)} tasks, priority: {priority}")
             
             # Decompose and prioritize tasks
             decomposed_tasks = self._decompose_tasks(tasks)
@@ -107,8 +161,23 @@ class TaskOrchestrator:
             resource_allocation = self._allocate_resources(prioritized_tasks, priority)
             
             results = []
+            cancelled_due_to_deadline = False
             
+            # Only perform deadline checks if deadline is set
             for task in prioritized_tasks:
+                # Check workflow deadline before executing each task
+                if deadline:
+                    elapsed = (datetime.utcnow() - workflow_start).total_seconds()
+                    if elapsed >= deadline:
+                        logger.warning(f"Workflow {workflow_id} deadline exceeded ({elapsed:.1f}s >= {deadline}s)")
+                        cancelled_due_to_deadline = True
+                        results.append({
+                            'task_type': task.get('type'),
+                            'priority': task.get('priority', priority),
+                            'result': {'error': 'Workflow deadline exceeded', 'status': 'cancelled'}
+                        })
+                        continue
+                
                 task_type = task.get('type')
                 task_params = task.get('params', {})
                 task_priority = task.get('priority', priority)
@@ -133,13 +202,26 @@ class TaskOrchestrator:
                     'result': result
                 })
             
+            workflow_end = datetime.utcnow()
+            workflow_duration = (workflow_end - workflow_start).total_seconds()
+            
+            workflow_status = 'completed'
+            if cancelled_due_to_deadline:
+                workflow_status = 'partially_completed_deadline_exceeded'
+            
             workflow_result = {
                 'workflow_id': workflow_id,
-                'status': 'completed',
+                'status': workflow_status,
                 'priority': priority,
-                'tasks_executed': len(prioritized_tasks),
+                'deadline': deadline,
+                'duration': workflow_duration,
+                'deadline_exceeded': cancelled_due_to_deadline,
+                'tasks_executed': len([r for r in results if r.get('result', {}).get('status') != 'cancelled']),
+                'tasks_total': len(prioritized_tasks),
                 'resource_allocation': resource_allocation,
                 'results': results,
+                'started_at': workflow_start.isoformat(),
+                'completed_at': workflow_end.isoformat(),
                 'timestamp': datetime.utcnow().isoformat()
             }
             
@@ -359,7 +441,7 @@ def health_check():
 
 @app.route('/orchestrate', methods=['POST'])
 def orchestrate():
-    """Orchestrate multiple AI tasks"""
+    """Orchestrate multiple AI tasks with optional deadline enforcement"""
     try:
         data = request.get_json()
         
@@ -368,7 +450,8 @@ def orchestrate():
         
         result = orchestrator.orchestrate_workflow(
             tasks=data['tasks'],
-            priority=data.get('priority', 'normal')
+            priority=data.get('priority', 'normal'),
+            deadline=data.get('deadline')
         )
         
         return jsonify(result), 200

@@ -5,7 +5,7 @@ Stateless, disposable workers for crawling, analysis, and benchmarking
 
 from flask import Flask, request, jsonify
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import json
 import requests
@@ -31,10 +31,21 @@ class Worker:
         self.current_task = None
         self.tasks_completed = 0
         self.created_at = datetime.utcnow().isoformat()
+        self.task_deadline = None
     
     def execute(self, task: Dict[str, Any]) -> Dict[str, Any]:
         """Execute a task"""
         raise NotImplementedError("Subclasses must implement execute method")
+    
+    def is_deadline_exceeded(self) -> bool:
+        """Check if current task deadline is exceeded"""
+        if not self.task_deadline:
+            return False
+        return datetime.utcnow() > self.task_deadline
+    
+    def _format_deadline_for_display(self) -> Optional[str]:
+        """Format deadline for display in to_dict"""
+        return self.task_deadline.isoformat() if self.task_deadline else None
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert worker to dictionary"""
@@ -44,7 +55,8 @@ class Worker:
             'status': self.status,
             'current_task': self.current_task,
             'tasks_completed': self.tasks_completed,
-            'created_at': self.created_at
+            'created_at': self.created_at,
+            'task_deadline': self._format_deadline_for_display()
         }
 
 class CrawlerWorker(Worker):
@@ -58,7 +70,25 @@ class CrawlerWorker(Worker):
         self.status = 'working'
         self.current_task = task.get('task_id')
         
+        # Set deadline if provided
+        deadline_seconds = task.get('deadline')
+        if deadline_seconds:
+            self.task_deadline = datetime.utcnow() + timedelta(seconds=deadline_seconds)
+            logger.info(f"Worker {self.worker_id} task deadline set to {self.task_deadline.isoformat()}")
+        
         try:
+            # Check deadline before starting
+            if self.is_deadline_exceeded():
+                logger.warning(f"Worker {self.worker_id} task deadline already exceeded before execution")
+                self.status = 'idle'
+                self.current_task = None
+                self.task_deadline = None
+                return {
+                    'status': 'failed',
+                    'worker_id': self.worker_id,
+                    'error': 'Task deadline exceeded before execution'
+                }
+            
             target_url = task.get('url')
             crawl_depth = task.get('depth', 1)
             
@@ -67,9 +97,24 @@ class CrawlerWorker(Worker):
             # Simple crawling simulation
             result = self._crawl_url(target_url, crawl_depth)
             
+            # Check deadline after execution
+            if self.is_deadline_exceeded():
+                logger.warning(f"Worker {self.worker_id} task deadline exceeded during execution")
+                self.tasks_completed += 1
+                self.status = 'idle'
+                self.current_task = None
+                self.task_deadline = None
+                return {
+                    'status': 'timeout',
+                    'worker_id': self.worker_id,
+                    'error': 'Task deadline exceeded during execution',
+                    'partial_data': result
+                }
+            
             self.tasks_completed += 1
             self.status = 'idle'
             self.current_task = None
+            self.task_deadline = None
             
             return {
                 'status': 'success',
@@ -81,6 +126,7 @@ class CrawlerWorker(Worker):
             logger.error(f"Worker {self.worker_id} crawl failed: {e}")
             self.status = 'idle'
             self.current_task = None
+            self.task_deadline = None
             return {
                 'status': 'failed',
                 'worker_id': self.worker_id,
@@ -120,7 +166,25 @@ class AnalysisWorker(Worker):
         self.status = 'working'
         self.current_task = task.get('task_id')
         
+        # Set deadline if provided
+        deadline_seconds = task.get('deadline')
+        if deadline_seconds:
+            self.task_deadline = datetime.utcnow() + timedelta(seconds=deadline_seconds)
+            logger.info(f"Worker {self.worker_id} task deadline set to {self.task_deadline.isoformat()}")
+        
         try:
+            # Check deadline before starting
+            if self.is_deadline_exceeded():
+                logger.warning(f"Worker {self.worker_id} task deadline already exceeded before execution")
+                self.status = 'idle'
+                self.current_task = None
+                self.task_deadline = None
+                return {
+                    'status': 'failed',
+                    'worker_id': self.worker_id,
+                    'error': 'Task deadline exceeded before execution'
+                }
+            
             analysis_type = task.get('analysis_type', 'general')
             data = task.get('data', {})
             
@@ -129,9 +193,24 @@ class AnalysisWorker(Worker):
             # Perform analysis
             result = self._analyze_data(data, analysis_type)
             
+            # Check deadline after execution
+            if self.is_deadline_exceeded():
+                logger.warning(f"Worker {self.worker_id} task deadline exceeded during execution")
+                self.tasks_completed += 1
+                self.status = 'idle'
+                self.current_task = None
+                self.task_deadline = None
+                return {
+                    'status': 'timeout',
+                    'worker_id': self.worker_id,
+                    'error': 'Task deadline exceeded during execution',
+                    'partial_analysis': result
+                }
+            
             self.tasks_completed += 1
             self.status = 'idle'
             self.current_task = None
+            self.task_deadline = None
             
             return {
                 'status': 'success',
@@ -143,6 +222,7 @@ class AnalysisWorker(Worker):
             logger.error(f"Worker {self.worker_id} analysis failed: {e}")
             self.status = 'idle'
             self.current_task = None
+            self.task_deadline = None
             return {
                 'status': 'failed',
                 'worker_id': self.worker_id,
@@ -181,7 +261,25 @@ class BenchmarkWorker(Worker):
         self.status = 'working'
         self.current_task = task.get('task_id')
         
+        # Set deadline if provided
+        deadline_seconds = task.get('deadline')
+        if deadline_seconds:
+            self.task_deadline = datetime.utcnow() + timedelta(seconds=deadline_seconds)
+            logger.info(f"Worker {self.worker_id} task deadline set to {self.task_deadline.isoformat()}")
+        
         try:
+            # Check deadline before starting
+            if self.is_deadline_exceeded():
+                logger.warning(f"Worker {self.worker_id} task deadline already exceeded before execution")
+                self.status = 'idle'
+                self.current_task = None
+                self.task_deadline = None
+                return {
+                    'status': 'failed',
+                    'worker_id': self.worker_id,
+                    'error': 'Task deadline exceeded before execution'
+                }
+            
             benchmark_type = task.get('benchmark_type', 'cpu')
             iterations = task.get('iterations', 100)
             
@@ -190,9 +288,24 @@ class BenchmarkWorker(Worker):
             # Perform benchmark
             result = self._run_benchmark(benchmark_type, iterations)
             
+            # Check deadline after execution
+            if self.is_deadline_exceeded():
+                logger.warning(f"Worker {self.worker_id} task deadline exceeded during execution")
+                self.tasks_completed += 1
+                self.status = 'idle'
+                self.current_task = None
+                self.task_deadline = None
+                return {
+                    'status': 'timeout',
+                    'worker_id': self.worker_id,
+                    'error': 'Task deadline exceeded during execution',
+                    'partial_benchmark': result
+                }
+            
             self.tasks_completed += 1
             self.status = 'idle'
             self.current_task = None
+            self.task_deadline = None
             
             return {
                 'status': 'success',
@@ -204,6 +317,7 @@ class BenchmarkWorker(Worker):
             logger.error(f"Worker {self.worker_id} benchmark failed: {e}")
             self.status = 'idle'
             self.current_task = None
+            self.task_deadline = None
             return {
                 'status': 'failed',
                 'worker_id': self.worker_id,

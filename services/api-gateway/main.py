@@ -65,6 +65,7 @@ class CryptoPredictionRequest(BaseModel):
 class OrchestrationRequest(BaseModel):
     tasks: List[Dict[str, Any]]
     priority: Optional[str] = "normal"
+    deadline: Optional[int] = None  # Deadline in seconds
 
 # Health check endpoint
 @app.get("/health")
