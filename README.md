@@ -102,6 +102,31 @@ A complete, autonomous AI orchestration system featuring:
 - Range requests for video streaming
 - Google Cloud integration (Cloud Run, BigQuery)
 
+## 🏗️ New: Core Architecture Components
+
+### 🧩 Project Cortex
+- **Multi-project management** with isolated contexts
+- **Memory, goals, and budget** tracking per project
+- **Agent assignment** and lifecycle management
+- **Sleep/wake capabilities** for resource optimization
+
+### 🚪 Decision Gate
+- **Confirmation system** for critical actions (YES/NO gates)
+- **Modular rule engine** with priority-based evaluation
+- **Audit trail** for all approval decisions
+- **Extensible** for custom approval workflows
+
+### 🤖 Agent Registry
+- **Role-based agent management** (Architect, Backend Builder, QA, etc.)
+- **Vendor-agnostic** design with logical role definitions
+- **Capability-based** agent discovery and matching
+- **Status tracking** and task assignment
+
+See individual component READMEs:
+- [Project Cortex](core/project_cortex/README.md)
+- [Decision Gate](core/decision_gate/README.md)
+- [Agent Registry](agents/README.md)
+
 ## Project Structure
 
 ```
@@ -112,6 +137,15 @@ VoBee-AI-Assistant/
 ├── deploy.sh               # One-command deployment script
 ├── test-system.sh          # Integration test script
 ├── AUTONOMOUS_SYSTEM.md    # Detailed autonomous system documentation
+├── core/                   # Core architecture components
+│   ├── project_cortex/     # Multi-project management
+│   ├── decision_gate/      # Approval and control system
+│   └── integration_example.py  # Complete integration example
+├── agents/                 # Agent registry system
+│   ├── registry.py         # Role-based agent management
+│   └── README.md          # Agent system documentation
+├── tests/                  # Test suite
+│   └── test_core_smoke.py  # Core component smoke tests
 ├── css/
 │   └── styles.css          # Responsive styles
 ├── js/
@@ -221,7 +255,32 @@ Manages the user interface:
    ```
 3. Open `http://localhost:8080` in your browser
 
-### Option 2: Full Autonomous AI System (Recommended - One Command)
+### Option 2: Core Architecture Components (Python)
+
+Test the foundational architecture components:
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/jendavobora-blip/VoBee-AI-Assistant.git
+   cd VoBee-AI-Assistant
+   ```
+
+2. Run the integration example
+   ```bash
+   PYTHONPATH=. python core/integration_example.py
+   ```
+
+3. Run smoke tests
+   ```bash
+   python tests/test_core_smoke.py
+   ```
+
+The core components include:
+- **Project Cortex**: Multi-project management with isolated contexts
+- **Decision Gate**: Approval system for critical actions
+- **Agent Registry**: Role-based agent management
+
+### Option 3: Full Autonomous AI System (Recommended - One Command)
 
 **Important:** Before starting, configure your owner secret!
 
@@ -256,7 +315,7 @@ This script will:
    ./test-system.sh
    ```
 
-### Option 3: Manual Docker Compose Deployment
+### Option 4: Manual Docker Compose Deployment
 
 1. Clone and configure (steps 1-2 from Option 2)
 
@@ -274,7 +333,7 @@ This script will:
    - Kibana Dashboard: http://localhost:5601
    - CDN: http://localhost:8080
 
-### Option 4: Production Kubernetes Deployment
+### Option 5: Production Kubernetes Deployment
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
 
 ```bash

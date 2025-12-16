@@ -5,6 +5,6 @@ This module provides capabilities for managing multiple projects
 with isolated memory, goals, and budget profiles.
 """
 
-from .project_manager import ProjectCortex, Project
+from .project_manager import ProjectCortex, Project, ProjectStatus, AgentStatus
 
-__all__ = ['ProjectCortex', 'Project']
+__all__ = ['ProjectCortex', 'Project', 'ProjectStatus', 'AgentStatus']
