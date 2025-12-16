@@ -34,6 +34,8 @@ class TaskOrchestrator:
             'video_generation': os.getenv('VIDEO_SERVICE_URL', 'http://video-generation-service:5001'),
             'crypto_prediction': os.getenv('CRYPTO_SERVICE_URL', 'http://crypto-prediction-service:5002'),
             'fraud_detection': os.getenv('FRAUD_SERVICE_URL', 'http://fraud-detection-service:5004'),
+            'application_factory': os.getenv('APP_FACTORY_URL', 'http://application-factory-service:5011'),
+            'media_factory': os.getenv('MEDIA_FACTORY_URL', 'http://media-factory-service:5012'),
         }
         
         logger.info("Task Orchestrator initialized successfully")
@@ -342,6 +344,130 @@ class TaskOrchestrator:
             except Exception as e:
                 logger.error(f"Error retrieving task status: {e}")
         return None
+    
+    def execute_factory_pipeline(self, user_input: str) -> Dict[str, Any]:
+        """
+        Execute end-to-end pipeline: Application Factory -> Media Factory
+        
+        Args:
+            user_input: Natural language user input
+            
+        Returns:
+            Complete pipeline result
+        """
+        pipeline_id = str(uuid4())
+        logger.info(f"Starting factory pipeline {pipeline_id}: '{user_input}'")
+        
+        pipeline_result = {
+            'pipeline_id': pipeline_id,
+            'user_input': user_input,
+            'stages': {},
+            'status': 'in_progress',
+            'started_at': datetime.utcnow().isoformat()
+        }
+        
+        try:
+            # Stage 1: Application Factory - Intent extraction and specification generation
+            logger.info(f"Pipeline {pipeline_id} - Stage 1: Application Factory")
+            app_factory_response = requests.post(
+                f"{self.services['application_factory']}/generate-spec",
+                json={'input': user_input, 'validate': True},
+                timeout=30
+            )
+            app_factory_response.raise_for_status()
+            specification = app_factory_response.json()
+            
+            pipeline_result['stages']['application_factory'] = {
+                'status': 'completed',
+                'specification': specification,
+                'completed_at': datetime.utcnow().isoformat()
+            }
+            
+            # Check if specification is valid
+            validation = specification.get('validation', {})
+            if not validation.get('valid', False):
+                pipeline_result['status'] = 'failed'
+                pipeline_result['error'] = 'Invalid specification generated'
+                pipeline_result['validation_errors'] = validation.get('errors', [])
+                return pipeline_result
+            
+            # Stage 2: Media Factory - Process the task
+            target_factory = specification.get('target_factory')
+            if target_factory == 'media_factory':
+                logger.info(f"Pipeline {pipeline_id} - Stage 2: Media Factory")
+                
+                media_task = {
+                    'action': specification.get('action'),
+                    'parameters': specification.get('parameters', {})
+                }
+                
+                media_factory_response = requests.post(
+                    f"{self.services['media_factory']}/process",
+                    json=media_task,
+                    timeout=60
+                )
+                media_factory_response.raise_for_status()
+                media_result = media_factory_response.json()
+                
+                pipeline_result['stages']['media_factory'] = {
+                    'status': media_result.get('status'),
+                    'result': media_result,
+                    'completed_at': datetime.utcnow().isoformat()
+                }
+                
+                # Set overall status
+                if media_result.get('status') == 'completed':
+                    pipeline_result['status'] = 'completed'
+                    pipeline_result['output'] = media_result.get('output')
+                else:
+                    pipeline_result['status'] = 'failed'
+                    pipeline_result['error'] = media_result.get('error', 'Media processing failed')
+                
+            else:
+                # No target factory or unknown factory
+                pipeline_result['status'] = 'completed'
+                pipeline_result['note'] = 'No media processing required or unknown target factory'
+            
+            pipeline_result['completed_at'] = datetime.utcnow().isoformat()
+            
+            # Store pipeline result in Redis
+            if self.redis_client:
+                try:
+                    self.redis_client.setex(
+                        f"pipeline:{pipeline_id}",
+                        7200,  # 2 hours TTL
+                        json.dumps(pipeline_result)
+                    )
+                except Exception as e:
+                    logger.error(f"Error storing pipeline result: {e}")
+            
+            logger.info(f"Pipeline {pipeline_id} completed with status: {pipeline_result['status']}")
+            return pipeline_result
+            
+        except requests.RequestException as e:
+            logger.error(f"Pipeline {pipeline_id} failed with request error: {e}")
+            pipeline_result['status'] = 'failed'
+            pipeline_result['error'] = f"Request failed: {str(e)}"
+            pipeline_result['completed_at'] = datetime.utcnow().isoformat()
+            return pipeline_result
+        
+        except Exception as e:
+            logger.error(f"Pipeline {pipeline_id} failed with error: {e}")
+            pipeline_result['status'] = 'failed'
+            pipeline_result['error'] = str(e)
+            pipeline_result['completed_at'] = datetime.utcnow().isoformat()
+            return pipeline_result
+    
+    def get_pipeline_status(self, pipeline_id: str):
+        """Get status of a factory pipeline"""
+        if self.redis_client:
+            try:
+                pipeline_data = self.redis_client.get(f"pipeline:{pipeline_id}")
+                if pipeline_data:
+                    return json.loads(pipeline_data)
+            except Exception as e:
+                logger.error(f"Error retrieving pipeline status: {e}")
+        return None
 
 # Initialize orchestrator
 orchestrator = TaskOrchestrator()
@@ -396,6 +522,37 @@ def list_services():
     return jsonify({
         "services": orchestrator.services
     })
+
+@app.route('/factory-pipeline', methods=['POST'])
+def execute_factory_pipeline():
+    """Execute end-to-end factory pipeline (Application Factory -> Media Factory)"""
+    try:
+        data = request.get_json()
+        
+        if 'input' not in data:
+            return jsonify({"error": "Input is required"}), 400
+        
+        result = orchestrator.execute_factory_pipeline(data['input'])
+        
+        status_code = 200 if result.get('status') == 'completed' else 500
+        return jsonify(result), status_code
+        
+    except Exception as e:
+        logger.error(f"Error in factory-pipeline endpoint: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/pipeline/<pipeline_id>', methods=['GET'])
+def get_pipeline(pipeline_id: str):
+    """Get factory pipeline status by ID"""
+    try:
+        pipeline = orchestrator.get_pipeline_status(pipeline_id)
+        if pipeline:
+            return jsonify(pipeline), 200
+        else:
+            return jsonify({"error": "Pipeline not found"}), 404
+    except Exception as e:
+        logger.error(f"Error retrieving pipeline: {e}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003, debug=False)
