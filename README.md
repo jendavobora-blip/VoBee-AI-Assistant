@@ -1,12 +1,54 @@
 # VoBee AI Assistant <img width="480" height="480" alt="image" src="https://github.com/user-attachments/assets/feb0de59-8c3c-4796-8b99-554155982991" />
 
-A complete AI orchestration system featuring:
+A complete, autonomous AI orchestration system featuring:
+- **Supreme General Intelligence (SGI)** - Owner-only chat interface with intent understanding and confirmation-driven actions
+- **Spy-Orchestration Pipeline** - Automated discovery of AI models, research papers, and technologies
+- **Self-Healing Architecture** - Automated health monitoring and service repair
+- **Stateless Worker Pool** - Disposable workers for crawling, analysis, and benchmarking
 - **Creative AI chatbot** PWA with pseudo-learning capabilities
 - **3D/4D image and video generation** (Stable Diffusion, DALL-E, NeRF, Runway ML Gen-2)
 - **Cryptocurrency prediction** with LSTM/Transformer models
 - **Kubernetes-based** distributed infrastructure with GPU acceleration
 - **Auto-scaling** and fraud detection capabilities
 - **CDN pipeline** for fast content delivery
+
+## 🚀 New: Autonomous System Features
+
+### 🧠 Supreme General Intelligence (SGI)
+- **Owner-only access** with encrypted secret authentication
+- **Intent understanding** from natural language commands
+- **Confirmation-driven execution** - all actions require approval
+- **Permanent audit logging** of all actions and results
+- **Voice capability support** (framework ready)
+
+### 🔍 Spy-Orchestration Pipeline
+- **Automated GitHub scanning** for AI repositories and projects
+- **Research paper discovery** from arXiv and academic sources
+- **Technology blog monitoring** for latest AI/ML developments
+- **Intelligent deduplication** and relevance filtering
+- **Automatic summarization** before decision-making
+
+### 🏥 Self-Healing Architecture
+- **Continuous health monitoring** (30-second intervals)
+- **Automatic failure detection** with configurable thresholds
+- **Auto-repair functionality** with container restart
+- **Rollback support** for failed deployments
+- **Proposed fix recommendations** for common issues
+
+### ⚙️ Enhanced Orchestration (L19 Layer)
+- **Task decomposition** - breaks complex tasks into subtasks
+- **Priority management** - critical, high, normal, low priorities
+- **Resource allocation** - intelligent CPU/memory/GPU assignment
+- **Cross-domain routing** - seamless integration across services
+
+### 👷 Worker Execution Layer
+- **Stateless workers** - disposable and scalable
+- **Multiple worker types**:
+  - Crawler workers for web scraping
+  - Analysis workers for data processing
+  - Benchmark workers for performance testing
+- **Auto-disposal** after task completion
+- **Dynamic worker pool** management
 
 ## Features
 
@@ -47,6 +89,8 @@ A complete AI orchestration system featuring:
 - Auto-scaling based on resource metrics
 
 ### 🔐 Security & Monitoring
+- **Owner-only access control** with encrypted secrets
+- **Complete audit logging** for all SGI actions
 - **Fraud detection** models for network and crypto analysis
 - **ElasticSearch + Kibana** for real-time monitoring
 - Security scanning with Trivy
@@ -65,6 +109,9 @@ VoBee-AI-Assistant/
 ├── index.html              # Main HTML entry point (PWA)
 ├── manifest.json           # PWA manifest
 ├── sw.js                   # Service Worker for offline support
+├── deploy.sh               # One-command deployment script
+├── test-system.sh          # Integration test script
+├── AUTONOMOUS_SYSTEM.md    # Detailed autonomous system documentation
 ├── css/
 │   └── styles.css          # Responsive styles
 ├── js/
@@ -73,6 +120,10 @@ VoBee-AI-Assistant/
 ├── icons/                  # App icons
 ├── services/               # Microservices
 │   ├── api-gateway/        # FastAPI gateway (port 8000)
+│   ├── supreme-general-intelligence/  # SGI service (port 5010)
+│   ├── spy-orchestration/  # Automated discovery (port 5006)
+│   ├── self-healing/       # Health monitoring (port 5007)
+│   ├── worker-pool/        # Stateless workers (port 5008)
 │   ├── image-generation/   # Stable Diffusion, DALL-E (port 5000)
 │   ├── video-generation/   # Runway ML, NeRF (port 5001)
 │   ├── crypto-prediction/  # LSTM/Transformer (port 5002)
@@ -92,19 +143,41 @@ VoBee-AI-Assistant/
 
 ## Architecture
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system architecture.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system architecture.  
+See [AUTONOMOUS_SYSTEM.md](AUTONOMOUS_SYSTEM.md) for autonomous features documentation.
 
 ### High-Level Overview
 ```
-API Gateway (FastAPI)
-    ├── Image Generation (Stable Diffusion, DALL-E, StyleGAN3)
-    ├── Video Generation (Runway ML Gen-2, NeRF)
-    ├── Crypto Prediction (LSTM/Transformer)
-    ├── Fraud Detection (XGBoost)
-    └── Orchestrator (Redis, PostgreSQL)
-         ├── Task Queue Management
-         ├── Workflow Coordination
-         └── Service Discovery
+Supreme General Intelligence (SGI) - Owner Interface
+    ├── Intent Understanding & Confirmation
+    └── Action Logging & Audit Trail
+         │
+         ├── Spy-Orchestration Pipeline
+         │    ├── GitHub Scanner
+         │    ├── Research Discovery (arXiv)
+         │    └── Blog Monitoring
+         │
+         ├── API Gateway (FastAPI)
+         │    ├── Image Generation (Stable Diffusion, DALL-E, StyleGAN3)
+         │    ├── Video Generation (Runway ML Gen-2, NeRF)
+         │    ├── Crypto Prediction (LSTM/Transformer)
+         │    └── Fraud Detection (XGBoost)
+         │
+         ├── Enhanced Orchestrator (L19 Layer)
+         │    ├── Task Decomposition
+         │    ├── Priority Management
+         │    ├── Resource Allocation
+         │    └── Cross-Domain Routing
+         │
+         ├── Worker Pool
+         │    ├── Crawler Workers
+         │    ├── Analysis Workers
+         │    └── Benchmark Workers
+         │
+         └── Self-Healing System
+              ├── Health Monitoring
+              ├── Failure Detection
+              └── Auto-Repair
 ```
 
 ### Technologies Used
@@ -114,6 +187,7 @@ API Gateway (FastAPI)
 - **Monitoring**: ElasticSearch, Kibana, Prometheus
 - **Storage**: PostgreSQL, Redis, Persistent Volumes
 - **CDN**: Nginx with caching and compression
+- **Security**: Owner-based authentication, encrypted secrets
 
 ### VoBeeChatbot Class (PWA)
 The main chatbot engine that handles:
@@ -147,7 +221,10 @@ Manages the user interface:
    ```
 3. Open `http://localhost:8080` in your browser
 
-### Option 2: Full AI Orchestration System (Docker Compose)
+### Option 2: Full Autonomous AI System (Recommended - One Command)
+
+**Important:** Before starting, configure your owner secret!
+
 1. Clone the repository
    ```bash
    git clone https://github.com/jendavobora-blip/VoBee-AI-Assistant.git
@@ -157,20 +234,47 @@ Manages the user interface:
 2. Configure environment variables
    ```bash
    cp .env.example .env
-   # Edit .env with your API keys
+   # Edit .env with your API keys and IMPORTANT: set OWNER_SECRET
+   nano .env
    ```
 
-3. Start all services
+3. Deploy with one command
    ```bash
-   docker-compose up -d
+   ./deploy.sh
    ```
 
-4. Access services:
+This script will:
+- Check prerequisites (Docker)
+- Build all services
+- Start infrastructure (PostgreSQL, Redis)
+- Deploy all microservices
+- Verify system health
+- Display service endpoints
+
+4. Test the system
+   ```bash
+   ./test-system.sh
+   ```
+
+### Option 3: Manual Docker Compose Deployment
+
+1. Clone and configure (steps 1-2 from Option 2)
+
+2. Start all services
+   ```bash
+   docker compose up -d
+   ```
+
+3. Access services:
+   - Supreme General Intelligence: http://localhost:5010
    - API Gateway: http://localhost:8000
+   - Spy-Orchestration: http://localhost:5006
+   - Self-Healing Monitor: http://localhost:5007
+   - Worker Pool: http://localhost:5008
    - Kibana Dashboard: http://localhost:5601
    - CDN: http://localhost:8080
 
-### Option 3: Production Kubernetes Deployment
+### Option 4: Production Kubernetes Deployment
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
 
 ```bash
@@ -183,7 +287,73 @@ kubectl apply -f kubernetes/03-autoscaling.yaml
 
 ## API Usage
 
-### Generate Image
+### Autonomous System APIs
+
+#### Supreme General Intelligence - Chat
+```bash
+# Send a command to SGI
+curl -X POST http://localhost:5010/chat \
+  -H "Content-Type: application/json" \
+  -H "X-Owner-Secret: your_secure_owner_secret_key" \
+  -d '{
+    "message": "scan github for AI repositories",
+    "context": {}
+  }'
+```
+
+#### SGI - Confirm Action
+```bash
+# Confirm and execute an action
+curl -X POST http://localhost:5010/confirm \
+  -H "Content-Type: application/json" \
+  -H "X-Owner-Secret: your_secure_owner_secret_key" \
+  -d '{
+    "action_id": "uuid-from-chat-response",
+    "confirmed": true
+  }'
+```
+
+#### Spy-Orchestration - GitHub Scan
+```bash
+# Start a GitHub repository scan
+curl -X POST http://localhost:5006/scan \
+  -H "Content-Type: application/json" \
+  -d '{
+    "scan_type": "github",
+    "parameters": {
+      "query": "AI machine learning stars:>100",
+      "max_results": 50,
+      "min_relevance": 0.5
+    }
+  }'
+```
+
+#### Self-Healing - System Health
+```bash
+# Check overall system health
+curl http://localhost:5007/system/health
+
+# Manually trigger repair
+curl -X POST http://localhost:5007/service/api-gateway/repair
+```
+
+#### Worker Pool - Execute Task
+```bash
+# Execute a crawler task
+curl -X POST http://localhost:5008/task/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "worker_type": "crawler",
+    "task": {
+      "url": "https://github.com",
+      "depth": 1
+    }
+  }'
+```
+
+### AI Generation APIs
+
+#### Generate Image
 ```bash
 curl -X POST http://localhost:8000/api/v1/generate/image \
   -H "Content-Type: application/json" \
