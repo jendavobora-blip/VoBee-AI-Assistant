@@ -43,6 +43,10 @@ class Worker:
             return False
         return datetime.utcnow() > self.task_deadline
     
+    def _format_deadline_for_display(self) -> Optional[str]:
+        """Format deadline for display in to_dict"""
+        return self.task_deadline.isoformat() if self.task_deadline else None
+    
     def to_dict(self) -> Dict[str, Any]:
         """Convert worker to dictionary"""
         return {
@@ -52,7 +56,7 @@ class Worker:
             'current_task': self.current_task,
             'tasks_completed': self.tasks_completed,
             'created_at': self.created_at,
-            'task_deadline': self.task_deadline.isoformat() if self.task_deadline else None
+            'task_deadline': self._format_deadline_for_display()
         }
 
 class CrawlerWorker(Worker):

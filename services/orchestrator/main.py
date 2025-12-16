@@ -101,7 +101,8 @@ class TaskOrchestrator:
         if not task.get('deadline'):
             return False
         
-        created_at = datetime.fromisoformat(task['created_at'])
+        created_at_str = task['created_at'].replace('Z', '+00:00')
+        created_at = datetime.fromisoformat(created_at_str)
         deadline_seconds = task['deadline']
         deadline_time = created_at + timedelta(seconds=deadline_seconds)
         
@@ -162,6 +163,7 @@ class TaskOrchestrator:
             results = []
             cancelled_due_to_deadline = False
             
+            # Only perform deadline checks if deadline is set
             for task in prioritized_tasks:
                 # Check workflow deadline before executing each task
                 if deadline:
