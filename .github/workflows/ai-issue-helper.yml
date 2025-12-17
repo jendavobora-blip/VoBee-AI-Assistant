@@ -1,0 +1,74 @@
+name: AI Issue Helper
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  suggest_solution:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install openai pygithub
+
+      - name: Generate AI Proposal
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python << 'EOF'
+          import os
+          import openai
+          from github import Github
+
+          # GitHub and OpenAI Setup
+          GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+          OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+          ISSUE_NUMBER = os.getenv("ISSUE_NUMBER")
+          REPO_NAME = os.getenv("GITHUB_REPOSITORY")
+
+          # Connect to GitHub
+          g = Github(GITHUB_TOKEN)
+          repo = g.get_repo(REPO_NAME)
+
+          # Fetch Issue Details
+          issue = repo.get_issue(int(os.getenv("ISSUE_NUMBER")))
+          issue_title = issue.title
+          issue_body = issue.body
+
+          # OpenAI Prompt
+          openai.api_key = OPENAI_API_KEY
+          prompt = (
+              "Jsi seniorní softwarový inženýr. "
+              "Analyzuj následující popis problému a navrhni řešení. "
+              "Výstup by měl být ve formátu git diff nebo jasně strukturovaný návrh. "
+              "Vše piš česky.\n\n"
+              f"Issue: {issue_title}\n\nPopis:\n{issue_body}"
+          )
+
+          response = openai.ChatCompletion.create(
+              model="gpt-4",
+              messages=[
+                  {"role": "user", "content": prompt}
+              ]
+          )
+
+          solution = response["choices"][0]["message"]["content"]
+
+          # Post Comment to Issue
+          issue.create_comment(
+              "🤖 **AI návrh řešení**\n\n"
+              f"{solution}\n\n"
+              "_Toto je automaticky generovaný návrh, prosím zkontrolujte._"
+          )
+          EOF
