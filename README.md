@@ -1,5 +1,5 @@
 # VoBee AI Assistant <img width="480" height="480" alt="image" src="https://github.com/user-attachments/assets/feb0de59-8c3c-4796-8b99-554155982991" />
-
+Clarify VoBee MVP scope
 A complete, autonomous AI orchestration system featuring:
 - **Supreme General Intelligence (SGI)** - Owner-only chat interface with intent understanding and confirmation-driven actions
 - **Spy-Orchestration Pipeline** - Automated discovery of AI models, research papers, and technologies
