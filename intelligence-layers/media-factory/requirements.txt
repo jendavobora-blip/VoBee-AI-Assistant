@@ -1,0 +1,9 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+httpx==0.25.1
+replicate==0.15.0
+openai==1.6.1
+elevenlabs==0.2.26
+python-multipart==0.0.6
+pillow==10.1.0
