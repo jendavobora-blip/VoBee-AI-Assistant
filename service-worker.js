@@ -6,13 +6,13 @@
 
 const CACHE_NAME = 'vobee-cache-v1';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/css/styles.css',
-    '/js/chatbot.js',
-    '/js/response-patterns.js',
-    '/manifest.json',
-    '/icons/icon-192.svg'
+    './',
+    './index.html',
+    './css/styles.css',
+    './js/chatbot.js',
+    './js/response-patterns.js',
+    './manifest.json',
+    './icons/icon-192.svg'
 ];
 
 // Install event - cache resources
@@ -41,7 +41,7 @@ self.addEventListener('fetch', (event) => {
                 // Fallback for offline HTML requests
                 const acceptHeader = event.request.headers.get('accept');
                 if (acceptHeader && acceptHeader.includes('text/html')) {
-                    return caches.match('/index.html');
+                    return caches.match('./index.html');
                 }
             })
     );
