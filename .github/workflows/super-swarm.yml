@@ -243,6 +243,9 @@ jobs:
       - name: Deploy bots for this runner
         id: deploy
         run: |
+          # Ensure log directory exists before deployment
+          mkdir -p logs/swarm/${{ env.DEPLOYMENT_ID }}/runner-${{ env.RUNNER_ID }}/
+          
           START_BOT=${{ steps.allocation.outputs.start_bot }}
           END_BOT=${{ steps.allocation.outputs.end_bot }}
           
@@ -279,6 +282,7 @@ jobs:
           name: bot-logs-runner-${{ matrix.runner_id }}
           path: logs/swarm/${{ env.DEPLOYMENT_ID }}/runner-${{ env.RUNNER_ID }}/
           retention-days: 7
+          if-no-files-found: ignore  # Don't fail if no logs were created
       
       - name: Report runner status
         if: always()
