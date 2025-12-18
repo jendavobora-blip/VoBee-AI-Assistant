@@ -261,6 +261,61 @@ print(costs.json()["cost_summary"])
 
 ---
 
+## 🧪 Testing Framework
+
+VoBee includes a comprehensive testing framework to validate system stability under realistic load conditions.
+
+### Test Suites
+
+- **Quick Smoke Test** (30s) - Fast health check of all services
+- **Functional Tests** - Validates all service endpoints and basic functionality
+- **Load Tests** - Tests system under 300 concurrent users for 5 minutes
+- **Stress Tests** - Executes 5000 operations across all services
+- **Integration Tests** - Validates service-to-service communication
+
+### Running Tests
+
+```bash
+# Quick health check (30 seconds)
+python tests/run_all_tests.py quick
+
+# Functional tests only
+python tests/run_all_tests.py functional
+
+# Load test - 300 concurrent users
+python tests/run_all_tests.py load
+
+# Stress test - 5000 operations
+python tests/run_all_tests.py stress
+
+# All tests with HTML reports
+python tests/run_all_tests.py all --report
+```
+
+### Success Criteria
+
+Tests pass when:
+- ✅ Error rate < 5%
+- ✅ Success rate > 95%
+- ✅ P95 response time < 3s
+- ✅ P99 response time < 5s
+- ✅ No service crashes
+- ✅ All functional tests pass
+- ✅ All integration tests pass
+
+### Test Reports
+
+Results are saved to `test_results/`:
+- `functional_test_report.html` - Service endpoint validation
+- `load_test_report.html` - Performance metrics and charts
+- `stress_test_report.html` - Operation statistics
+- `integration_test_report.html` - Service communication results
+- `summary.json` - Machine-readable summary
+
+See **[Testing Guide](tests/README.md)** for detailed documentation.
+
+---
+
 ## 📚 Documentation
 
 - **[API Reference](API.md)** - Complete API documentation for all services
