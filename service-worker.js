@@ -24,9 +24,13 @@ self.addEventListener('install', (event) => {
                 return cache.addAll(urlsToCache);
             })
             .catch((error) => {
-                console.error('VoBee: Cache failed', error);
+                console.error('VoBee: Cache failed during install', error);
+                // Re-throw to prevent installation with incomplete cache
+                throw error;
             })
     );
+    // Force the waiting service worker to become the active service worker
+    self.skipWaiting();
 });
 
 // Fetch event - serve from cache, fallback to network
@@ -34,15 +38,23 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
-                // Return cached version or fetch from network
-                return response || fetch(event.request);
-            })
-            .catch(() => {
-                // Fallback for offline HTML requests
-                const acceptHeader = event.request.headers.get('accept');
-                if (acceptHeader && acceptHeader.includes('text/html')) {
-                    return caches.match('./index.html');
+                if (response) {
+                    // Return cached version if available
+                    return response;
                 }
+                
+                // Clone the request because it can only be used once
+                return fetch(event.request.clone())
+                    .catch(() => {
+                        // Network failed (offline), try to serve cached index.html for navigation requests
+                        const acceptHeader = event.request.headers.get('accept');
+                        if (acceptHeader && acceptHeader.includes('text/html')) {
+                            return caches.match('./index.html')
+                                .then(cachedResponse => cachedResponse || new Response('Offline'));
+                        }
+                        // For non-HTML requests, return a simple offline response
+                        return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+                    });
             })
     );
 });
@@ -61,4 +73,6 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
+    // Take control of all clients immediately
+    return self.clients.claim();
 });
