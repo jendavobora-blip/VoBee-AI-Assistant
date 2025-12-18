@@ -237,9 +237,9 @@ services:
   # vLLM for local inference (LLaMA 3 70B)
   vllm:
     image: vllm/vllm-openai:latest
-    command: --model meta-llama/Meta-Llama-3-70B-Instruct --quantization awq --dtype auto
+    command: --model meta-llama/Meta-Llama-3-70B-Instruct --quantization awq --dtype auto --port 8002
     ports:
-      - "8000:8000"
+      - "8002:8002"
     environment:
       - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
     deploy:

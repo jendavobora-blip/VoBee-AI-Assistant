@@ -350,10 +350,12 @@ def _validate_knowledge(item: Dict[str, Any]) -> Dict[str, Any]:
 def _calculate_relevance(query: str, item: Dict[str, Any]) -> float:
     """Calculate relevance score (simplified)."""
     query_words = set(query.lower().split())
-    content = item.get("compressed_content", "").lower()
+    if not query_words:
+        return 0.0
     
+    content = item.get("compressed_content", "").lower()
     matches = sum(1 for word in query_words if word in content)
-    return min(0.9, matches / len(query_words) if query_words else 0)
+    return min(0.9, matches / len(query_words))
 
 
 if __name__ == "__main__":

@@ -358,7 +358,12 @@ async def clear_cache(older_than_seconds: Optional[int] = None):
 
 # Helper functions
 def _should_use_local(prompt: str, model: str) -> bool:
-    """Determine if local inference should be used."""
+    """
+    Determine if local inference should be used.
+    
+    Note: Auto-decision uses consistent hashing based on prompt content
+    to achieve ~70% local inference rate while being deterministic.
+    """
     # Use local for simple/short prompts
     if len(prompt.split()) < 50:
         return True
@@ -372,7 +377,9 @@ def _should_use_local(prompt: str, model: str) -> bool:
         return False
     
     # Auto-decision: use local for 70% of requests
-    return hashlib.sha256(prompt.encode()).digest()[0] % 10 < 7
+    # Uses consistent hashing to ensure same prompt always routes the same way
+    hash_val = int(hashlib.sha256(prompt.encode()).hexdigest()[:8], 16)
+    return (hash_val % 100) < 70
 
 
 def _should_batch(priority: int) -> bool:

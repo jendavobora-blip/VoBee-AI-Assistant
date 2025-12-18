@@ -342,7 +342,7 @@ def _is_recent(timestamp_str: Optional[str], hours: int) -> bool:
     try:
         timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
         return (datetime.utcnow() - timestamp).total_seconds() < (hours * 3600)
-    except:
+    except (ValueError, TypeError):
         return False
 
 
