@@ -57,8 +57,10 @@ class StressTester:
             self.results['resource_usage']['memory_percent'].append(memory)
             self.results['resource_usage']['network_sent'].append(net_io.bytes_sent)
             self.results['resource_usage']['network_recv'].append(net_io.bytes_recv)
-        except Exception as e:
-            pass  # Skip if unable to get metrics
+        except (psutil.NoSuchProcess, psutil.AccessDenied, AttributeError) as e:
+            # Skip if unable to get metrics (expected on some systems)
+            import logging
+            logging.debug(f"Unable to collect resource metrics: {str(e)}")
     
     async def execute_operation(self, session: aiohttp.ClientSession, service_name: str, operation_id: int):
         """Execute a single operation against a service"""

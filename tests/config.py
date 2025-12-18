@@ -41,6 +41,11 @@ STRESS_TEST_CONFIG = {
     }
 }
 
+# Validate stress test configuration
+_total_distributed = sum(STRESS_TEST_CONFIG['distribution'].values())
+assert _total_distributed == STRESS_TEST_CONFIG['total_operations'], \
+    f"Distribution sum ({_total_distributed}) must equal total_operations ({STRESS_TEST_CONFIG['total_operations']})"
+
 # Success criteria
 SUCCESS_CRITERIA = {
     'max_error_rate': 0.05,  # 5%
