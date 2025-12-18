@@ -1,21 +1,21 @@
 {
-    "name": "VoBee AI Assistant",
+    "name": "VoBee",
     "short_name": "VoBee",
     "description": "Your friendly AI chatbot assistant with creative responses and learning capabilities",
-    "start_url": "/",
+    "start_url": "./",
     "display": "standalone",
     "background_color": "#1a1a2e",
     "theme_color": "#ffc107",
     "orientation": "portrait-primary",
     "icons": [
         {
-            "src": "icons/icon-192.svg",
+            "src": "./icons/icon-192.svg",
             "sizes": "192x192",
             "type": "image/svg+xml",
             "purpose": "any"
         },
         {
-            "src": "icons/icon-192.svg",
+            "src": "./icons/icon-192.svg",
             "sizes": "512x512",
             "type": "image/svg+xml",
             "purpose": "any"
