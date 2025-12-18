@@ -50,7 +50,20 @@ self.addEventListener('fetch', (event) => {
                         const acceptHeader = event.request.headers.get('accept');
                         if (acceptHeader && acceptHeader.includes('text/html')) {
                             return caches.match('./index.html')
-                                .then(cachedResponse => cachedResponse || new Response('Offline'));
+                                .then(cachedResponse => {
+                                    if (cachedResponse) {
+                                        return cachedResponse;
+                                    }
+                                    // If index.html is not cached, return a basic offline page
+                                    return new Response(
+                                        '<!DOCTYPE html><html><head><title>VoBee - Offline</title><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:sans-serif;background:#1a1a2e;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center}h1{color:#ffc107}</style></head><body><div><h1>🐝 VoBee</h1><p>You are currently offline</p><p>Please check your internet connection</p></div></body></html>',
+                                        { 
+                                            status: 200, 
+                                            statusText: 'OK',
+                                            headers: { 'Content-Type': 'text/html' }
+                                        }
+                                    );
+                                });
                         }
                         // For non-HTML requests, return a simple offline response
                         return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
@@ -64,15 +77,16 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
+                cacheNames
+                    .filter(cacheName => cacheName !== CACHE_NAME)
+                    .map((cacheName) => {
                         console.log('VoBee: Deleting old cache', cacheName);
                         return caches.delete(cacheName);
-                    }
-                })
+                    })
             );
+        }).then(() => {
+            // Take control of all clients immediately
+            return self.clients.claim();
         })
     );
-    // Take control of all clients immediately
-    return self.clients.claim();
 });
