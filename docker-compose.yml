@@ -270,6 +270,30 @@ services:
       - ai-network
     restart: unless-stopped
 
+  # Waitlist and Invite Service
+  waitlist-service:
+    build:
+      context: ./services/waitlist-service
+      dockerfile: Dockerfile
+    ports:
+      - "5009:5009"
+    environment:
+      - DATABASE_URL=postgresql://waitlist:${POSTGRES_PASSWORD}@postgres:5432/waitlist_db
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - FROM_EMAIL=${FROM_EMAIL:-noreply@vobee.ai}
+      - FROM_NAME=${FROM_NAME:-VoBee Team}
+      - EMAIL_DEBUG_MODE=${EMAIL_DEBUG_MODE:-true}
+      - DEBUG=false
+    depends_on:
+      - postgres
+    networks:
+      - ai-network
+    restart: unless-stopped
+
 networks:
   ai-network:
     driver: bridge

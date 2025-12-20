@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoBee Growth Metrics - Admin Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #ffc107;
+            --primary-dark: #ffa000;
+            --secondary-color: #2c2c2c;
+            --background-color: #1a1a2e;
+            --text-color: #ffffff;
+            --error-color: #ff4444;
+            --success-color: #00C851;
+            --warning-color: #ffbb33;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            color: var(--secondary-color);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: rgba(44, 44, 44, 0.7);
+            font-size: 1.1rem;
+        }
+
+        .auth-section {
+            max-width: 400px;
+            margin: 100px auto;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            transition: all 0.3s;
+        }
+
+        .metric-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+
+        .metric-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .metric-subvalue {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 193, 7, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .status-good {
+            background: rgba(0, 200, 81, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-warning {
+            background: rgba(255, 187, 51, 0.2);
+            color: var(--warning-color);
+        }
+
+        .status-critical {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--error-color);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: rgba(0, 200, 81, 0.2);
+            border: 2px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .alert-error {
+            background: rgba(255, 68, 68, 0.2);
+            border: 2px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        .alert-warning {
+            background: rgba(255, 187, 51, 0.2);
+            border: 2px solid var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table th {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s;
+        }
+
+        .refresh-btn {
+            float: right;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Section -->
+    <div id="auth-section" class="auth-section">
+        <h2 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">Admin Login</h2>
+        <div class="form-group">
+            <label for="admin-token">Admin Token</label>
+            <input type="password" id="admin-token" placeholder="Enter admin token">
+        </div>
+        <button class="btn btn-primary" onclick="authenticate()" style="width: 100%;">
+            Login
+        </button>
+        <div id="auth-error" class="alert alert-error" style="margin-top: 20px; display: none;"></div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <div class="header">
+            <h1>🐝 VoBee Growth Metrics</h1>
+            <p>Admin Dashboard - Monitor waitlist and quality gates</p>
+        </div>
+
+        <!-- Quality Gate Alert -->
+        <div id="quality-alert" style="display: none;"></div>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Trust Score</div>
+                <div class="metric-value" id="trust-score">-</div>
+                <div class="metric-subvalue" id="trust-status">Loading...</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">30-Day Churn Rate</div>
+                <div class="metric-value" id="churn-rate">-</div>
+                <div class="metric-subvalue">Target: < 15%</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Waitlist Total</div>
+                <div class="metric-value" id="waitlist-total">-</div>
+                <div class="metric-subvalue"><span id="waitlist-pending">-</span> pending</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Invites Sent</div>
+                <div class="metric-value" id="invites-sent">-</div>
+                <div class="metric-subvalue"><span id="invites-used">-</span> redeemed</div>
+            </div>
+        </div>
+
+        <!-- Quality Gate Controls -->
+        <div class="section">
+            <div class="section-title">
+                Quality Gate Controls
+                <button class="btn btn-primary refresh-btn" onclick="loadQualityHealth()">Refresh</button>
+            </div>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">DAU / MAU</div>
+                    <div class="metric-value" style="font-size: 1.5rem;" id="dau-mau">- / -</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Feature Adoption</div>
+                    <div class="metric-value" style="font-size: 1.5rem;" id="feature-adoption">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Paid Conversion</div>
+                    <div class="metric-value" style="font-size: 1.5rem;" id="paid-conversion">-</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Referral Quality</div>
+                    <div class="metric-value" style="font-size: 1.5rem;" id="referral-quality">-</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <h3 style="color: var(--primary-color); margin-bottom: 15px;">Update Metrics</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div class="form-group">
+                        <label>DAU</label>
+                        <input type="number" id="input-dau" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label>MAU</label>
+                        <input type="number" id="input-mau" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Feature Adoption (0-1)</label>
+                        <input type="number" id="input-feature" step="0.01" min="0" max="1" placeholder="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Paid Conversion (0-1)</label>
+                        <input type="number" id="input-paid" step="0.01" min="0" max="1" placeholder="0.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Referral Quality (0-1)</label>
+                        <input type="number" id="input-referral" step="0.01" min="0" max="1" placeholder="0.5">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="updateMetrics()">Update Metrics</button>
+            </div>
+        </div>
+
+        <!-- Waitlist Stats -->
+        <div class="section">
+            <div class="section-title">
+                Waitlist Statistics
+                <button class="btn btn-primary refresh-btn" onclick="loadWaitlistStats()">Refresh</button>
+            </div>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Persona</th>
+                        <th>Count</th>
+                        <th>Avg Score</th>
+                    </tr>
+                </thead>
+                <tbody id="persona-stats">
+                    <tr><td colspan="3">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Batch Release Controls -->
+        <div class="section">
+            <div class="section-title">Generate Invite Batch</div>
+            
+            <div class="form-group">
+                <label>Batch Size</label>
+                <input type="number" id="batch-size" value="50" min="1" max="200">
+            </div>
+            <div class="form-group">
+                <label>Created By (Admin Email)</label>
+                <input type="text" id="created-by" placeholder="admin@vobee.ai">
+            </div>
+            <div class="form-group">
+                <label>Notes (Optional)</label>
+                <textarea id="batch-notes" rows="3" placeholder="Weekly batch release..."></textarea>
+            </div>
+            
+            <button class="btn btn-success" onclick="generateBatch()">Generate Batch</button>
+            
+            <div id="batch-result" style="margin-top: 20px; display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let adminToken = '';
+        const API_BASE = 'http://localhost:5009';
+
+        function authenticate() {
+            adminToken = document.getElementById('admin-token').value;
+            
+            if (!adminToken) {
+                showAuthError('Please enter admin token');
+                return;
+            }
+
+            // Try to load dashboard
+            loadDashboard();
+        }
+
+        function showAuthError(message) {
+            const errorEl = document.getElementById('auth-error');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        async function loadDashboard() {
+            try {
+                // Test authentication by loading waitlist stats
+                const response = await fetch(`${API_BASE}/api/waitlist/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Authentication successful
+                    document.getElementById('auth-section').style.display = 'none';
+                    document.getElementById('dashboard').classList.add('active');
+                    
+                    // Load all data
+                    loadWaitlistStats();
+                    loadQualityHealth();
+                } else {
+                    showAuthError('Invalid admin token');
+                }
+            } catch (error) {
+                showAuthError('Error connecting to server');
+                console.error(error);
+            }
+        }
+
+        async function loadWaitlistStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/waitlist/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('waitlist-total').textContent = data.total;
+                    document.getElementById('waitlist-pending').textContent = data.pending;
+                    
+                    // Update persona stats table
+                    const tbody = document.getElementById('persona-stats');
+                    tbody.innerHTML = '';
+                    
+                    for (const [persona, stats] of Object.entries(data.by_persona)) {
+                        const row = tbody.insertRow();
+                        row.innerHTML = `
+                            <td>${persona}</td>
+                            <td>${stats.count}</td>
+                            <td>${stats.avg_score.toFixed(1)}</td>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading waitlist stats:', error);
+            }
+        }
+
+        async function loadQualityHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/api/quality/health`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Update trust score
+                    const trustScore = (data.trust_score * 100).toFixed(0);
+                    document.getElementById('trust-score').textContent = trustScore + '%';
+                    
+                    const trustStatus = document.getElementById('trust-status');
+                    if (data.trust_score >= 0.8) {
+                        trustStatus.innerHTML = '<span class="status-indicator status-good">Excellent</span>';
+                    } else if (data.trust_score >= 0.75) {
+                        trustStatus.innerHTML = '<span class="status-indicator status-warning">Good</span>';
+                    } else {
+                        trustStatus.innerHTML = '<span class="status-indicator status-critical">Critical</span>';
+                    }
+                    
+                    // Update churn rate
+                    document.getElementById('churn-rate').textContent = (data.churn_rate * 100).toFixed(1) + '%';
+                    
+                    // Update detailed metrics
+                    document.getElementById('dau-mau').textContent = `${data.dau} / ${data.mau}`;
+                    document.getElementById('feature-adoption').textContent = (data.feature_adoption_rate * 100).toFixed(0) + '%';
+                    document.getElementById('paid-conversion').textContent = (data.paid_conversion_rate * 100).toFixed(0) + '%';
+                    document.getElementById('referral-quality').textContent = (data.referral_quality_score * 100).toFixed(0) + '%';
+                    
+                    // Show quality alert if paused
+                    const alertEl = document.getElementById('quality-alert');
+                    if (data.invite_pause_status) {
+                        alertEl.className = 'alert alert-error';
+                        alertEl.innerHTML = `
+                            <strong>⚠️ INVITE GENERATION PAUSED</strong><br>
+                            Reasons: ${data.pause_reasons.join(', ')}
+                        `;
+                        alertEl.style.display = 'block';
+                    } else {
+                        alertEl.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading quality health:', error);
+            }
+        }
+
+        async function updateMetrics() {
+            const metrics = {
+                dau: parseInt(document.getElementById('input-dau').value) || 0,
+                mau: parseInt(document.getElementById('input-mau').value) || 1,
+                feature_adoption_rate: parseFloat(document.getElementById('input-feature').value) || 0,
+                paid_conversion_rate: parseFloat(document.getElementById('input-paid').value) || 0,
+                referral_quality_score: parseFloat(document.getElementById('input-referral').value) || 0
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/api/quality/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(metrics)
+                });
+
+                if (response.ok) {
+                    alert('Metrics updated successfully');
+                    loadQualityHealth();
+                } else {
+                    alert('Error updating metrics');
+                }
+            } catch (error) {
+                console.error('Error updating metrics:', error);
+                alert('Error connecting to server');
+            }
+        }
+
+        async function generateBatch() {
+            const batchSize = parseInt(document.getElementById('batch-size').value);
+            const createdBy = document.getElementById('created-by').value || 'admin';
+            const notes = document.getElementById('batch-notes').value;
+
+            if (batchSize < 1 || batchSize > 200) {
+                alert('Batch size must be between 1 and 200');
+                return;
+            }
+
+            if (!confirm(`Generate ${batchSize} invite codes?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/invites/generate-batch`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        batch_size: batchSize,
+                        created_by: createdBy,
+                        notes: notes
+                    })
+                });
+
+                const data = await response.json();
+                const resultEl = document.getElementById('batch-result');
+
+                if (response.ok) {
+                    resultEl.className = 'alert alert-success';
+                    resultEl.innerHTML = `
+                        <strong>✓ Batch Generated Successfully</strong><br>
+                        Batch ID: ${data.batch_id}<br>
+                        Codes generated: ${data.generated}<br>
+                        Emails sent to recipients
+                    `;
+                    resultEl.style.display = 'block';
+                    
+                    // Refresh stats
+                    loadWaitlistStats();
+                } else {
+                    resultEl.className = 'alert alert-error';
+                    resultEl.innerHTML = `<strong>Error:</strong> ${data.error}`;
+                    resultEl.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error generating batch:', error);
+                alert('Error connecting to server');
+            }
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (document.getElementById('dashboard').classList.contains('active')) {
+                loadQualityHealth();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
