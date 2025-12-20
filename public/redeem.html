@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aktivujte svůj VoBee AI Assistant účet">
+    <title>VoBee AI - Aktivace účtu / Account Activation</title>
+    <style>
+        :root {
+            --primary-color: #ffc107;
+            --primary-dark: #ffa000;
+            --secondary-color: #2c2c2c;
+            --background-color: #1a1a2e;
+            --text-color: #ffffff;
+            --error-color: #ff4444;
+            --success-color: #00C851;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--background-color) 0%, #16213e 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .code-input {
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .password-hint {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 5px;
+        }
+
+        .password-strength {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(0, 200, 81, 0.2);
+            border: 2px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .message.error {
+            background: rgba(255, 68, 68, 0.2);
+            border: 2px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .success-box {
+            background: rgba(0, 200, 81, 0.1);
+            border: 2px solid var(--success-color);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-box.show {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .countdown {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-top: 20px;
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.5;
+            margin-top: 15px;
+        }
+
+        .required {
+            color: var(--error-color);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon">🐝</div>
+            <h1>VoBee AI</h1>
+            <p class="subtitle">Aktivace účtu / Account Activation</p>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <form id="redeem-form">
+            <div class="form-group">
+                <label for="code">
+                    Pozvánkový kód / Invite Code <span class="required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    id="code" 
+                    name="code" 
+                    class="code-input"
+                    required 
+                    placeholder="VOBEE-XXXXXXXXXXXX"
+                    pattern="VOBEE-[A-Z0-9]{12}"
+                    maxlength="19"
+                >
+                <p class="password-hint">Formát: VOBEE-XXXXXXXXXXXX</p>
+            </div>
+
+            <div class="form-group">
+                <label for="email">
+                    Email <span class="required">*</span>
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    placeholder="vas@email.cz"
+                    autocomplete="email"
+                >
+                <p class="password-hint">Email, na který byl kód vydán / Email the code was issued to</p>
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    Heslo / Password <span class="required">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required 
+                    minlength="8"
+                    placeholder="••••••••"
+                >
+                <p class="password-hint">Minimálně 8 znaků / Minimum 8 characters</p>
+                <div class="password-strength">
+                    <div class="password-strength-bar" id="strength-bar"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password_confirm">
+                    Potvrzení hesla / Confirm Password <span class="required">*</span>
+                </label>
+                <input 
+                    type="password" 
+                    id="password_confirm" 
+                    name="password_confirm" 
+                    required 
+                    minlength="8"
+                    placeholder="••••••••"
+                >
+            </div>
+
+            <p class="info-text">
+                Po aktivaci dostanete 14denní bezplatné zkušební období bez nutnosti kreditní karty.
+                <br><br>
+                After activation, you'll get a 14-day free trial with no credit card required.
+            </p>
+
+            <button type="submit" class="submit-btn" id="submit-btn">
+                Aktivovat účet / Activate Account
+            </button>
+        </form>
+
+        <div id="success-box" class="success-box">
+            <div class="success-icon">✓</div>
+            <h2 style="color: var(--success-color); margin-bottom: 15px;">
+                Účet aktivován! / Account Activated!
+            </h2>
+            <p style="font-size: 1.1rem; margin-bottom: 10px;">
+                Vítejte ve VoBee AI Assistant
+            </p>
+            <p style="color: rgba(255, 255, 255, 0.7);">
+                14denní zkušební období začalo
+                <br>
+                Your 14-day free trial has started
+            </p>
+            <div class="countdown" id="countdown">
+                Přesměrování za <span id="countdown-seconds">5</span> sekund...
+                <br>
+                Redirecting in <span id="countdown-seconds-2">5</span> seconds...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('redeem-form');
+        const codeInput = document.getElementById('code');
+        const passwordInput = document.getElementById('password');
+        const passwordConfirmInput = document.getElementById('password_confirm');
+        const strengthBar = document.getElementById('strength-bar');
+        const messageBox = document.getElementById('message');
+        const successBox = document.getElementById('success-box');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Auto-format code input
+        codeInput.addEventListener('input', (e) => {
+            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+            
+            if (!value.startsWith('VOBEE-') && value.length > 0) {
+                if (value.startsWith('VOBEE')) {
+                    value = 'VOBEE-' + value.substring(5);
+                } else {
+                    value = 'VOBEE-' + value;
+                }
+            }
+            
+            e.target.value = value;
+        });
+
+        // Password strength indicator
+        passwordInput.addEventListener('input', () => {
+            const password = passwordInput.value;
+            let strength = 0;
+            
+            if (password.length >= 8) strength += 25;
+            if (password.length >= 12) strength += 25;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+            if (/[0-9]/.test(password)) strength += 12.5;
+            if (/[^a-zA-Z0-9]/.test(password)) strength += 12.5;
+            
+            strengthBar.style.width = strength + '%';
+            
+            if (strength < 50) {
+                strengthBar.style.background = var(--error-color);
+            } else if (strength < 75) {
+                strengthBar.style.background = 'orange';
+            } else {
+                strengthBar.style.background = var(--success-color);
+            }
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.className = `message ${type} show`;
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 5000);
+        }
+
+        // Countdown redirect
+        function startCountdown(seconds) {
+            let remaining = seconds;
+            const countdownEl = document.getElementById('countdown-seconds');
+            const countdownEl2 = document.getElementById('countdown-seconds-2');
+            
+            const interval = setInterval(() => {
+                remaining--;
+                countdownEl.textContent = remaining;
+                countdownEl2.textContent = remaining;
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    window.location.href = '/index.html';
+                }
+            }, 1000);
+        }
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const password = passwordInput.value;
+            const passwordConfirm = passwordConfirmInput.value;
+
+            // Validate passwords match
+            if (password !== passwordConfirm) {
+                showMessage('Hesla se neshodují / Passwords do not match', 'error');
+                return;
+            }
+
+            // Validate password length
+            if (password.length < 8) {
+                showMessage('Heslo musí mít alespoň 8 znaků / Password must be at least 8 characters', 'error');
+                return;
+            }
+
+            const formData = {
+                code: codeInput.value.toUpperCase().trim(),
+                email: document.getElementById('email').value.trim(),
+                password: password
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Aktivuji... / Activating...';
+
+            try {
+                // Update this URL to match your deployment
+                const response = await fetch('http://localhost:5009/api/invites/redeem', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Show success and redirect
+                    form.style.display = 'none';
+                    messageBox.style.display = 'none';
+                    successBox.classList.add('show');
+                    startCountdown(5);
+                } else {
+                    showMessage(data.error || 'Došlo k chybě / An error occurred', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Aktivovat účet / Activate Account';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Chyba připojení k serveru / Server connection error', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Aktivovat účet / Activate Account';
+            }
+        });
+    </script>
+</body>
+</html>

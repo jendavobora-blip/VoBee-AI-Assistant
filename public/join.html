@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Připojte se k VoBee AI Assistant - Čekací seznam pro early access">
+    <title>VoBee AI - Čekací seznam / Waitlist</title>
+    <style>
+        :root {
+            --primary-color: #ffc107;
+            --primary-dark: #ffa000;
+            --secondary-color: #2c2c2c;
+            --background-color: #1a1a2e;
+            --text-color: #ffffff;
+            --error-color: #ff4444;
+            --success-color: #00C851;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--background-color) 0%, #16213e 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input[type="email"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 5px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(0, 200, 81, 0.2);
+            border: 2px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .message.error {
+            background: rgba(255, 68, 68, 0.2);
+            border: 2px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .result-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .result-value {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+
+        .required {
+            color: var(--error-color);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-icon">🐝</div>
+            <h1>VoBee AI Assistant</h1>
+            <p class="subtitle">Připojte se k early access / Join early access</p>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <form id="waitlist-form">
+            <div class="form-group">
+                <label for="email">
+                    Email <span class="required">*</span>
+                </label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    required 
+                    placeholder="vas@email.cz"
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="persona">
+                    Typ uživatele / User Type <span class="required">*</span>
+                </label>
+                <select id="persona" name="persona" required>
+                    <option value="">Vyberte / Select...</option>
+                    <option value="agency">Agentura / Agency</option>
+                    <option value="small_team">Malý tým / Small Team</option>
+                    <option value="solo_founder">Solo founder</option>
+                    <option value="content_creator">Content Creator</option>
+                    <option value="other">Jiné / Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="use_case">
+                    Jak plánujete VoBee používat? / How will you use VoBee? <span class="required">*</span>
+                </label>
+                <textarea 
+                    id="use_case" 
+                    name="use_case" 
+                    required 
+                    minlength="20"
+                    placeholder="Popište svůj use case (min. 20 znaků, ideálně 2-3 věty)...&#10;&#10;Describe your use case (min. 20 characters, ideally 2-3 sentences)..."
+                ></textarea>
+                <div class="char-count" id="char-count">0 / 20 znaků</div>
+            </div>
+
+            <p class="info-text">
+                Spouštíme VoBee pomalu, abychom udrželi vysokou kvalitu. Dostanete potvrzovací email s vaší pozicí na čekacím seznamu.
+                <br><br>
+                We're launching VoBee slowly to maintain high quality. You'll receive a confirmation email with your waitlist position.
+            </p>
+
+            <button type="submit" class="submit-btn" id="submit-btn">
+                Připojit se na waitlist / Join Waitlist
+            </button>
+        </form>
+
+        <div id="result-box" class="result-box">
+            <h3 style="color: var(--primary-color); margin-bottom: 15px;">
+                ✓ Úspěšně zařazeno / Successfully Added
+            </h3>
+            <div class="result-item">
+                <span class="result-label">Vaše pozice / Your position:</span>
+                <span class="result-value" id="position">#-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Celkem čekajících / Total waiting:</span>
+                <span class="result-value" id="total-waiting">-</span>
+            </div>
+            <div class="result-item">
+                <span class="result-label">Odhadovaný čas / Estimated wait:</span>
+                <span class="result-value" id="estimated-wait">-</span>
+            </div>
+            <p class="info-text" style="margin-top: 20px;">
+                Zkontrolujte svůj email pro potvrzení. Pošleme vám pozvánkový kód, až na vás přijde řada.
+                <br><br>
+                Check your email for confirmation. We'll send your invite code when it's your turn.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('waitlist-form');
+        const useCaseInput = document.getElementById('use_case');
+        const charCount = document.getElementById('char-count');
+        const messageBox = document.getElementById('message');
+        const resultBox = document.getElementById('result-box');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Character count
+        useCaseInput.addEventListener('input', () => {
+            const count = useCaseInput.value.length;
+            charCount.textContent = `${count} / 20 znaků`;
+            charCount.style.color = count >= 20 ? 'var(--success-color)' : 'rgba(255, 255, 255, 0.5)';
+        });
+
+        // Show message
+        function showMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.className = `message ${type} show`;
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 5000);
+        }
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                email: document.getElementById('email').value.trim(),
+                persona: document.getElementById('persona').value,
+                use_case: useCaseInput.value.trim()
+            };
+
+            // Basic validation
+            if (formData.use_case.length < 20) {
+                showMessage('Use case musí mít alespoň 20 znaků / Use case must be at least 20 characters', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Odesílání... / Sending...';
+
+            try {
+                // Update this URL to match your deployment
+                const response = await fetch('http://localhost:5009/api/waitlist/join', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Show success
+                    form.style.display = 'none';
+                    resultBox.classList.add('show');
+                    
+                    document.getElementById('position').textContent = `#${data.position}`;
+                    document.getElementById('total-waiting').textContent = data.total_waiting;
+                    document.getElementById('estimated-wait').textContent = data.estimated_wait;
+                    
+                    showMessage('Úspěšně přidáno na waitlist! / Successfully added to waitlist!', 'success');
+                } else {
+                    showMessage(data.error || 'Došlo k chybě / An error occurred', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Připojit se na waitlist / Join Waitlist';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Chyba připojení k serveru / Server connection error', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Připojit se na waitlist / Join Waitlist';
+            }
+        });
+    </script>
+</body>
+</html>
