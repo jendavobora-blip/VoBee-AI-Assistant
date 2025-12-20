@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
-# In-memory metrics storage (in production, use Redis or database)
+# In-memory metrics storage (for demo/development purposes)
+# In production, replace this with Redis, database, or metrics collection service
+# TODO: Integrate with Prometheus, StatsD, or similar metrics backend
 current_metrics = {
     'churn_rate': 0.12,
     'fraud_rate': 0.02,

@@ -21,7 +21,9 @@ app = Flask(__name__)
 CORS(app)
 
 # Database configuration
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://orchestrator:postgres@postgres:5432/orchestrator_db')
+DATABASE_URL = os.getenv('DATABASE_URL')
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable must be set")
 
 
 def get_db_connection():

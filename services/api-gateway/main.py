@@ -220,7 +220,8 @@ async def proxy_to_service(service_name: str, path: str, method: str = "GET", js
             raise HTTPException(status_code=404, detail=f"Service {service_name} not found")
         
         async with httpx.AsyncClient() as client:
-            url = f"{service_url}/api/{service_name}/{path}"
+            # Construct URL without duplicating /api prefix
+            url = f"{service_url}/api/{path}"
             
             if method == "GET":
                 response = await client.get(url, timeout=30.0)
