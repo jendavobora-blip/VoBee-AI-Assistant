@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "modules": {
+    "business": [
+      {"name": "email-ai", "enabled": true, "port": 5100, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "facebook-ai", "enabled": true, "port": 5101, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "marketing-ai", "enabled": true, "port": 5102, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "seo-ai", "enabled": true, "port": 5103, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "content-ai", "enabled": true, "port": 5104, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "analytics-ai", "enabled": true, "port": 5105, "resources": {"cpu": "1", "memory": "1Gi"}}
+    ],
+    "finance": [
+      {"name": "finance-ai", "enabled": true, "port": 5110, "read_only": true, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "invoice-ai", "enabled": true, "port": 5111, "resources": {"cpu": "250m", "memory": "256Mi"}},
+      {"name": "budget-ai", "enabled": true, "port": 5112, "resources": {"cpu": "250m", "memory": "256Mi"}},
+      {"name": "tax-ai", "enabled": false, "port": 5113, "resources": {"cpu": "250m", "memory": "256Mi"}},
+      {"name": "cashflow-ai", "enabled": true, "port": 5114, "resources": {"cpu": "250m", "memory": "256Mi"}}
+    ],
+    "research": [
+      {"name": "research-ai", "enabled": true, "port": 5120, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "web-scraper-ai", "enabled": true, "port": 5121, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "data-mining-ai", "enabled": true, "port": 5122, "resources": {"cpu": "1", "memory": "1Gi"}},
+      {"name": "sentiment-ai", "enabled": true, "port": 5123, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "trend-ai", "enabled": true, "port": 5124, "resources": {"cpu": "500m", "memory": "512Mi"}}
+    ],
+    "communication": [
+      {"name": "email-response-ai", "enabled": true, "port": 5130, "resources": {"cpu": "250m", "memory": "256Mi"}},
+      {"name": "chat-support-ai", "enabled": true, "port": 5131, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "translation-ai", "enabled": false, "port": 5132, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "voice-ai", "enabled": false, "port": 5133, "resources": {"cpu": "1", "memory": "1Gi"}},
+      {"name": "meeting-ai", "enabled": true, "port": 5134, "resources": {"cpu": "500m", "memory": "512Mi"}}
+    ],
+    "creative": [
+      {"name": "music-ai", "enabled": false, "port": 5140, "resources": {"cpu": "1", "memory": "1Gi"}},
+      {"name": "design-ai", "enabled": true, "port": 5141, "resources": {"cpu": "1", "memory": "1Gi"}},
+      {"name": "animation-ai", "enabled": false, "port": 5142, "resources": {"cpu": "2", "memory": "2Gi"}},
+      {"name": "presentation-ai", "enabled": true, "port": 5143, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "podcast-ai", "enabled": false, "port": 5144, "resources": {"cpu": "1", "memory": "1Gi"}}
+    ],
+    "technical": [
+      {"name": "code-review-ai", "enabled": true, "port": 5150, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "documentation-ai", "enabled": true, "port": 5151, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "testing-ai", "enabled": true, "port": 5152, "resources": {"cpu": "500m", "memory": "512Mi"}},
+      {"name": "deployment-ai", "enabled": false, "port": 5153, "resources": {"cpu": "500m", "memory": "512Mi"}}
+    ]
+  }
+}
