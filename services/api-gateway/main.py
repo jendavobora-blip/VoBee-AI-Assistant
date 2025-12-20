@@ -38,6 +38,10 @@ SERVICES = {
     "crypto_prediction": os.getenv("CRYPTO_SERVICE_URL", "http://crypto-prediction:5002"),
     "orchestrator": os.getenv("ORCHESTRATOR_URL", "http://orchestrator:5003"),
     "fraud_detection": os.getenv("FRAUD_SERVICE_URL", "http://fraud-detection:5004"),
+    "waitlist": os.getenv("WAITLIST_URL", "http://waitlist:5000"),
+    "invites": os.getenv("INVITES_URL", "http://invites:5000"),
+    "referrals": os.getenv("REFERRALS_URL", "http://referrals:5000"),
+    "quality_gates": os.getenv("QUALITY_GATES_URL", "http://quality-gates:5000"),
 }
 
 # Request models
@@ -206,6 +210,84 @@ async def get_metrics():
         "services": len(SERVICES),
         "status": "operational"
     }
+
+# Proxy helper function
+async def proxy_to_service(service_name: str, path: str, method: str = "GET", json_data: Dict = None):
+    """Proxy request to a service"""
+    try:
+        service_url = SERVICES.get(service_name)
+        if not service_url:
+            raise HTTPException(status_code=404, detail=f"Service {service_name} not found")
+        
+        async with httpx.AsyncClient() as client:
+            url = f"{service_url}/api/{service_name}/{path}"
+            
+            if method == "GET":
+                response = await client.get(url, timeout=30.0)
+            elif method == "POST":
+                response = await client.post(url, json=json_data, timeout=30.0)
+            else:
+                raise HTTPException(status_code=405, detail="Method not allowed")
+            
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPError as e:
+        logger.error(f"Proxy error for {service_name}/{path}: {e}")
+        raise HTTPException(status_code=500, detail=f"{service_name} service error")
+
+# Waitlist endpoints
+@app.post("/api/waitlist/join")
+async def proxy_waitlist_join(data: Dict[str, Any]):
+    """Join waitlist"""
+    return await proxy_to_service("waitlist", "join", "POST", data)
+
+@app.get("/api/waitlist/stats")
+async def proxy_waitlist_stats():
+    """Get waitlist stats"""
+    return await proxy_to_service("waitlist", "stats", "GET")
+
+# Invite code endpoints
+@app.post("/api/invites/generate")
+async def proxy_invites_generate(data: Dict[str, Any]):
+    """Generate invite codes"""
+    return await proxy_to_service("invites", "generate", "POST", data)
+
+@app.post("/api/invites/redeem")
+async def proxy_invites_redeem(data: Dict[str, Any]):
+    """Redeem invite code"""
+    return await proxy_to_service("invites", "redeem", "POST", data)
+
+@app.get("/api/invites/{code}/status")
+async def proxy_invites_status(code: str):
+    """Get invite code status"""
+    return await proxy_to_service("invites", f"{code}/status", "GET")
+
+# Referral endpoints
+@app.post("/api/referrals/earn")
+async def proxy_referrals_earn(data: Dict[str, Any]):
+    """Check earned codes"""
+    return await proxy_to_service("referrals", "earn", "POST", data)
+
+@app.post("/api/referrals/share")
+async def proxy_referrals_share(data: Dict[str, Any]):
+    """Share referral"""
+    return await proxy_to_service("referrals", "share", "POST", data)
+
+@app.get("/api/referrals/{email}/quality")
+async def proxy_referrals_quality(email: str):
+    """Get referral quality"""
+    return await proxy_to_service("referrals", f"{email}/quality", "GET")
+
+# Quality gates endpoints
+@app.get("/api/quality/trust-score")
+async def proxy_quality_trust_score():
+    """Get trust score"""
+    return await proxy_to_service("quality_gates", "trust-score", "GET")
+
+@app.post("/api/quality/evaluate-gate")
+async def proxy_quality_evaluate():
+    """Evaluate quality gate"""
+    return await proxy_to_service("quality_gates", "evaluate-gate", "POST", {})
 
 if __name__ == "__main__":
     import uvicorn

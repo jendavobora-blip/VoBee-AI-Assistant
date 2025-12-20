@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You've Earned Referral Codes!</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .reward-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            border-left: 4px solid #28a745;
+        }
+        .reward-box h3 {
+            color: #28a745;
+            margin-top: 0;
+        }
+        .stats {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌟 You've Earned Rewards!</h1>
+    </div>
+    <div class="content">
+        <p>Hi {{email}},</p>
+        
+        <p>Congratulations! Your engagement with VoBee has earned you referral rewards.</p>
+        
+        <div class="reward-box">
+            <h3>🎁 Your Rewards</h3>
+            <p style="font-size: 2rem; font-weight: bold; color: #667eea;">{{codes_count}} Invite Codes</p>
+            <p>You earned these after {{days_active}} days of active usage</p>
+        </div>
+        
+        <div class="stats">
+            <h4>Your Referral Stats</h4>
+            <p><strong>Total Referrals:</strong> {{total_referrals}}</p>
+            <p><strong>Quality Score:</strong> {{quality_score}}/1.0</p>
+            <p><strong>Active Referrals:</strong> {{active_referrals}}</p>
+        </div>
+        
+        <p style="text-align: center;">
+            <a href="https://vobee.ai/dashboard/referrals" class="button">View Your Codes</a>
+        </p>
+        
+        <p><strong>How to use your codes:</strong></p>
+        <ul>
+            <li>Share codes with colleagues and friends who would benefit from VoBee</li>
+            <li>Each successful referral improves your quality score</li>
+            <li>High-quality referrals unlock additional bonuses</li>
+        </ul>
+        
+        <p><strong>Unlock More Rewards:</strong></p>
+        <ul>
+            <li>Reach 10 referrals: Earn 5 additional codes</li>
+            <li>Reach 25 referrals: Get 1 month of premium features</li>
+            <li>Maintain quality score above 0.8: Unlock quality bonuses</li>
+        </ul>
+        
+        <p>Thank you for being an amazing VoBee ambassador!</p>
+        
+        <p>Best regards,<br>The VoBee Team</p>
+    </div>
+    <div class="footer">
+        <p>&copy; 2025 VoBee AI Assistant. All rights reserved.</p>
+    </div>
+</body>
+</html>
