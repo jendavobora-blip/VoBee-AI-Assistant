@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "safety_rules": {
+    "finance": {
+      "read_only": true,
+      "auto_transactions": false,
+      "require_approval": true,
+      "approval_levels": ["user", "admin"]
+    },
+    "self_improvement": {
+      "auto_apply": false,
+      "require_review": true,
+      "approval_required": true
+    },
+    "data_protection": {
+      "encrypt_at_rest": true,
+      "encrypt_in_transit": true,
+      "pii_protection": true
+    }
+  },
+  "operations_requiring_approval": [
+    "financial_transaction",
+    "data_deletion",
+    "configuration_change",
+    "module_deployment",
+    "security_change"
+  ],
+  "rate_limits": {
+    "per_second": 10,
+    "per_minute": 100,
+    "per_hour": 1000,
+    "per_day": 10000
+  },
+  "input_validation": {
+    "enabled": true,
+    "sanitize_html": true,
+    "check_sql_injection": true,
+    "check_xss": true
+  },
+  "audit_logging": {
+    "enabled": true,
+    "log_authentication": true,
+    "log_authorization_failures": true,
+    "log_configuration_changes": true,
+    "log_financial_operations": true,
+    "never_log": ["passwords", "api_keys", "tokens", "credit_cards"]
+  }
+}
