@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoBee Early Access - Join the Waitlist</title>
+    <link rel="stylesheet" href="/css/join.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VoBee AI Assistant</h1>
+            <p class="tagline">Your intelligent AI-powered automation platform</p>
+        </header>
+
+        <main>
+            <section class="hero">
+                <h2>Get Early Access</h2>
+                <p>Join our exclusive waitlist and be among the first to experience the future of AI automation.</p>
+            </section>
+
+            <section class="form-container">
+                <form id="waitlist-form">
+                    <h2>Join the Waitlist</h2>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address*</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            required 
+                            placeholder="your.email@example.com"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="use_case">What would you use VoBee for?*</label>
+                        <textarea 
+                            id="use_case" 
+                            name="use_case" 
+                            required 
+                            rows="4"
+                            placeholder="Tell us about your use case... The more detail you provide, the higher your priority in the queue!"
+                        ></textarea>
+                        <small class="hint">Detailed descriptions get higher priority</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="persona">I am a...*</label>
+                        <select id="persona" name="persona" required>
+                            <option value="">Select your profile</option>
+                            <option value="solo_founder">Solo Founder</option>
+                            <option value="small_team">Small Team (2-10 people)</option>
+                            <option value="agency">Agency</option>
+                            <option value="content_creator">Content Creator</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Join Waitlist</button>
+                </form>
+
+                <div id="response-message" class="response-message"></div>
+            </section>
+
+            <section class="features">
+                <h3>What You'll Get</h3>
+                <div class="features-grid">
+                    <div class="feature">
+                        <h4>🎨 AI Image & Video Generation</h4>
+                        <p>Create stunning 3D/4D visuals with HDR and PBR rendering</p>
+                    </div>
+                    <div class="feature">
+                        <h4>📊 Crypto Predictions</h4>
+                        <p>Advanced LSTM/Transformer models for market analysis</p>
+                    </div>
+                    <div class="feature">
+                        <h4>🤖 Smart Orchestration</h4>
+                        <p>Automate complex workflows with intelligent task management</p>
+                    </div>
+                    <div class="feature">
+                        <h4>⚡ Real-time Scaling</h4>
+                        <p>Auto-scaling infrastructure that grows with your needs</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 VoBee AI Assistant. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="/js/waitlist.js"></script>
+</body>
+</html>

@@ -270,6 +270,62 @@ services:
       - ai-network
     restart: unless-stopped
 
+  # Waitlist Service
+  waitlist:
+    build:
+      context: ./services/waitlist
+      dockerfile: Dockerfile
+    ports:
+      - "5010:5000"
+    environment:
+      - DATABASE_URL=postgresql://orchestrator:${POSTGRES_PASSWORD}@postgres:5432/orchestrator_db
+    depends_on:
+      - postgres
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Invite Codes Service
+  invites:
+    build:
+      context: ./services/invites
+      dockerfile: Dockerfile
+    ports:
+      - "5011:5000"
+    environment:
+      - DATABASE_URL=postgresql://orchestrator:${POSTGRES_PASSWORD}@postgres:5432/orchestrator_db
+    depends_on:
+      - postgres
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Referrals Service
+  referrals:
+    build:
+      context: ./services/referrals
+      dockerfile: Dockerfile
+    ports:
+      - "5012:5000"
+    environment:
+      - DATABASE_URL=postgresql://orchestrator:${POSTGRES_PASSWORD}@postgres:5432/orchestrator_db
+    depends_on:
+      - postgres
+    networks:
+      - ai-network
+    restart: unless-stopped
+
+  # Quality Gates Service
+  quality-gates:
+    build:
+      context: ./services/quality-gates
+      dockerfile: Dockerfile
+    ports:
+      - "5013:5000"
+    networks:
+      - ai-network
+    restart: unless-stopped
+
 networks:
   ai-network:
     driver: bridge
