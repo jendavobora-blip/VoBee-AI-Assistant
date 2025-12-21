@@ -79,3 +79,14 @@ Thumbs.db
 # Redis dumps
 dump.rdb
 appendonly.aof
+
+# Node.js
+node_modules/
+package-lock.json
+yarn.lock
+
+# React build
+vobio-ai-studio/frontend/build/
+
+# Electron dist
+vobio-ai-studio/frontend/electron/dist/
