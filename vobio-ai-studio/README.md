@@ -10,10 +10,28 @@
 - **Electron Desktop App**: Cross-platform (Windows, macOS, Linux)
 - **Real-time Progress**: Live updates during generation
 - **Cancellation Support**: Stop operations mid-process
+- **Docker Support**: Containerized deployment ready
+- **REST API**: Complete FastAPI backend with OpenAPI docs
 
 ## Quick Start
 
-### Backend
+### Option 1: Automated Start Script (Recommended)
+
+```bash
+cd vobio-ai-studio
+./start.sh
+```
+
+This will automatically:
+- Check dependencies
+- Setup virtual environment
+- Install all dependencies
+- Start backend server
+- Start Electron application
+
+### Option 2: Manual Start
+
+#### Backend
 
 ```bash
 cd vobio-ai-studio/backend
@@ -21,7 +39,7 @@ pip install -r requirements.txt
 python api_server.py
 ```
 
-### Frontend
+#### Frontend
 
 ```bash
 cd vobio-ai-studio/frontend
@@ -31,12 +49,51 @@ npm install
 npm start
 ```
 
+### Option 3: Docker Compose
+
+```bash
+cd vobio-ai-studio
+docker-compose up
+```
+
 ## Architecture
 
-- **Backend**: Python + FastAPI + PyTorch (mock mode)
-- **Frontend**: Electron + React
+- **Backend**: Python 3.8+ + FastAPI + PyTorch (mock mode)
+- **Frontend**: Electron 27 + React 18
 - **IPC**: Secure context-isolated communication
-- **AI Engine**: Abstracted, vendor-agnostic
+- **AI Engine**: Abstracted, vendor-agnostic design
+- **API Documentation**: Auto-generated OpenAPI/Swagger at http://127.0.0.1:8000/docs
+
+## Testing
+
+### Backend Tests
+
+```bash
+cd vobio-ai-studio
+python test_backend.py
+```
+
+This will test:
+- Health check endpoint
+- GPU info endpoint
+- Image generation (full workflow)
+- Video generation (full workflow)
+
+### Manual API Testing
+
+```bash
+# Start the backend
+cd backend && python api_server.py
+
+# In another terminal, test endpoints
+curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8000/gpu-info
+
+# Generate an image
+curl -X POST http://127.0.0.1:8000/generate/image \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "A sunset", "style": "realistic"}'
+```
 
 ## System Requirements
 
