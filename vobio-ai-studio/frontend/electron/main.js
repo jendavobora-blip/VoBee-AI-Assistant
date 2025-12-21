@@ -2,6 +2,9 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 
+// Note: This code uses the built-in fetch API available in Node.js 18+
+// If using an older Node.js version, install and require 'node-fetch'
+
 let mainWindow;
 let backendProcess;
 

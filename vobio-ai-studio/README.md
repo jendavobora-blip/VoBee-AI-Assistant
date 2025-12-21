@@ -56,6 +56,27 @@ cd vobio-ai-studio
 docker-compose up
 ```
 
+## Dependencies
+
+All dependencies are automatically installed by the start script or npm/pip install commands.
+
+## API Endpoints
+
+### Backend Server (http://127.0.0.1:8000)
+
+- `GET /health` - Health check
+- `GET /gpu-info` - GPU information
+- `POST /generate/image` - Generate an image
+- `POST /generate/video` - Generate a video
+- `GET /progress/{operation_id}` - Get operation progress
+- `POST /cancel/{operation_id}` - Cancel an operation
+
+### API Documentation
+
+Interactive API documentation available at:
+- **Swagger UI:** http://127.0.0.1:8000/docs
+- **ReDoc:** http://127.0.0.1:8000/redoc
+
 ## Architecture
 
 - **Backend**: Python 3.8+ + FastAPI + PyTorch (mock mode)
@@ -97,12 +118,14 @@ curl -X POST http://127.0.0.1:8000/generate/image \
 
 ## System Requirements
 
-- Python 3.8 or higher
-- Node.js 16 or higher
-- 4GB RAM minimum
-- Works on CPU (GPU optional)
+- **Python:** 3.8 or higher
+- **Node.js:** 18 or higher (required for built-in fetch API)
+- **npm:** 8 or higher
+- **RAM:** 4GB minimum
+- **OS:** Windows, macOS, or Linux
+- **GPU:** Optional (works perfectly on CPU)
 
-## API Endpoints
+## Dependencies
 
 ### Backend Server (http://127.0.0.1:8000)
 
