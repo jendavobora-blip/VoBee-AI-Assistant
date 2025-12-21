@@ -1,0 +1,14 @@
+{
+  "name": "vobio-ai-studio",
+  "version": "1.0.0",
+  "description": "Vobio AI Studio - Extremely capable AI system",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Jan Vobora",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "electron": "^27.0.0"
+  }
+}
