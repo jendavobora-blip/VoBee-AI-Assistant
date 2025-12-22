@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    container_name: vobio-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    networks:
+      - vobio-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  langfuse-db:
+    image: postgres:15
+    container_name: vobio-langfuse-db
+    environment:
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: langfuse_password
+      POSTGRES_DB: langfuse
+    volumes:
+      - langfuse_db:/var/lib/postgresql/data
+    networks:
+      - vobio-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U langfuse"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  langfuse:
+    image: langfuse/langfuse:latest
+    container_name: vobio-langfuse
+    depends_on:
+      langfuse-db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://langfuse:langfuse_password@langfuse-db:5432/langfuse
+      NEXTAUTH_SECRET: change-this-in-production-min-32-chars
+      NEXTAUTH_URL: http://localhost:3000
+      TELEMETRY_ENABLED: false
+    networks:
+      - vobio-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.91.0
+    container_name: vobio-otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./vobio-ai-studio/config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "8888:8888"
+      - "13133:13133"
+    networks:
+      - vobio-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:13133/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  vobio-api:
+    build:
+      context: ./vobio-ai-studio/backend
+      dockerfile: Dockerfile
+    container_name: vobio-api
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      langfuse:
+        condition: service_healthy
+      otel-collector:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      LANGFUSE_HOST: http://langfuse:3000
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      LANGFUSE_PUBLIC_KEY: pk-lf-mock-key
+      LANGFUSE_SECRET_KEY: sk-lf-mock-key
+      MOCK_MODE: "true"
+      LOG_LEVEL: INFO
+      OTEL_SERVICE_NAME: vobio-api
+      DAILY_COST_LIMIT: "10.0"
+      HOURLY_COST_LIMIT: "2.0"
+      MAX_API_CALLS_PER_MINUTE: "10"
+    volumes:
+      - ./vobio-ai-studio/backend:/app
+      - quarantine_volume:/app/quarantine
+      - logs_volume:/app/logs
+    networks:
+      - vobio-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  vobio-network:
+    driver: bridge
+
+volumes:
+  qdrant_storage:
+  langfuse_db:
+  quarantine_volume:
+  logs_volume:

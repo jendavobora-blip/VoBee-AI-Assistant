@@ -1,0 +1,43 @@
+# Core Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+python-multipart==0.0.6
+
+# LangChain & LangGraph
+langgraph==0.0.26
+langchain==0.1.6
+langchain-core==0.1.23
+
+# Langfuse (Observability)
+langfuse==2.15.0
+
+# OpenTelemetry
+opentelemetry-api==1.22.0
+opentelemetry-sdk==1.22.0
+opentelemetry-exporter-otlp==1.22.0
+opentelemetry-instrumentation-fastapi==0.43b0
+
+# Qdrant (Vector DB)
+qdrant-client==1.7.3
+
+# OpenFeature (Feature Flags)
+openfeature-sdk==0.4.1
+
+# Passkey/WebAuthn
+webauthn==1.11.1
+
+# Additional utilities
+httpx==0.26.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.0
+aiofiles==23.2.1
+redis==5.0.1
+
+# Code execution safety
+RestrictedPython==6.2
+
+# Testing (for test.sh)
+pytest==7.4.4
+pytest-asyncio==0.23.3

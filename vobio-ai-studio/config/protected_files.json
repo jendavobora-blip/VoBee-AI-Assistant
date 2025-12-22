@@ -1,0 +1,19 @@
+{
+  "protected_files": [
+    "api_server_integrated.py",
+    "safety_system.py",
+    "feature_gates.py",
+    "ai_orchestrator.py",
+    "cost_tracker.py",
+    "memory_service.py",
+    "identity.py",
+    ".env",
+    "docker-compose.yml"
+  ],
+  "allowed_write_dirs": [
+    "skills/",
+    "knowledge/",
+    "temp/",
+    "logs/"
+  ]
+}
