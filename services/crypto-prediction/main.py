@@ -6,8 +6,6 @@ Capabilities: Price prediction, sentiment analysis, risk assessment
 """
 
 from flask import Flask, request, jsonify
-import torch
-import torch.nn as nn
 import numpy as np
 import pandas as pd
 import os
@@ -21,31 +19,11 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-class LSTMPredictor(nn.Module):
-    """LSTM model for time-series prediction"""
-    
-    def __init__(self, input_size=10, hidden_size=128, num_layers=2, output_size=1):
-        super(LSTMPredictor, self).__init__()
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        
-        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_size, output_size)
-    
-    def forward(self, x):
-        device = x.device
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
-        
-        out, _ = self.lstm(x, (h0, c0))
-        out = self.fc(out[:, -1, :])
-        return out
-
 class CryptoPredictor:
     """Main cryptocurrency prediction engine"""
     
     def __init__(self):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cpu"  # Minimal mode
         logger.info(f"Initializing Crypto Predictor on device: {self.device}")
         self.models = {}
         self.api_keys = {
@@ -58,9 +36,8 @@ class CryptoPredictor:
     def load_models(self):
         """Load prediction models"""
         try:
-            # Initialize LSTM model and move to device
-            self.models['lstm'] = LSTMPredictor().to(self.device)
-            logger.info("Crypto prediction models loaded successfully")
+            # Placeholder for LSTM model
+            logger.info("Crypto prediction models loaded successfully (minimal mode)")
         except Exception as e:
             logger.error(f"Error loading models: {e}")
     

@@ -233,7 +233,8 @@ class TaskOrchestrator:
         # Sort by priority score (highest first)
         prioritized = sorted(tasks, key=lambda x: x.get('priority_score', 0), reverse=True)
         
-        logger.info(f"Tasks prioritized: {[f\"{t['type']}({t['priority_score']:.1f})\" for t in prioritized]}")
+        task_list = [f"{t['type']}({t['priority_score']:.1f})" for t in prioritized]
+        logger.info(f"Tasks prioritized: {task_list}")
         return prioritized
     
     def _allocate_resources(self, tasks: List[Dict[str, Any]], priority: str) -> Dict[str, Any]:
@@ -279,6 +280,10 @@ class TaskOrchestrator:
     def execute_image_generation(self, params: Dict[str, Any]):
         """Execute image generation task"""
         try:
+            # Ensure params has required fields
+            if 'prompt' not in params:
+                params['prompt'] = 'Generated image'
+            
             response = requests.post(
                 f"{self.services['image_generation']}/generate",
                 json=params,
@@ -293,6 +298,10 @@ class TaskOrchestrator:
     def execute_video_generation(self, params: Dict[str, Any]):
         """Execute video generation task"""
         try:
+            # Ensure params has required fields
+            if 'prompt' not in params:
+                params['prompt'] = 'Generated video'
+            
             response = requests.post(
                 f"{self.services['video_generation']}/generate",
                 json=params,
@@ -307,6 +316,10 @@ class TaskOrchestrator:
     def execute_crypto_prediction(self, params: Dict[str, Any]):
         """Execute crypto prediction task"""
         try:
+            # Ensure params has required fields
+            if 'symbol' not in params:
+                params['symbol'] = 'BTC'
+            
             response = requests.post(
                 f"{self.services['crypto_prediction']}/predict",
                 json=params,

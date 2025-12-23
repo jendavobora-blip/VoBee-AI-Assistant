@@ -1,0 +1,186 @@
+version: '3.8'
+
+services:
+  # PostgreSQL for persistent data storage
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=orchestrator_db
+      - POSTGRES_USER=orchestrator
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    networks:
+      - ai-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orchestrator"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and task queue
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - ai-network
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Main Orchestrator Service
+  orchestrator:
+    build:
+      context: ./services/orchestrator
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=orchestrator_db
+      - POSTGRES_USER=orchestrator
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - IMAGE_SERVICE_URL=http://image-generation:5000
+      - VIDEO_SERVICE_URL=http://video-generation:5001
+      - CRYPTO_SERVICE_URL=http://crypto-prediction:5002
+      - FRAUD_SERVICE_URL=http://fraud-detection:5004
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - ai-network
+    ports:
+      - "5003:5003"
+
+  # Image Generation Service (CPU-only for minimal pipeline)
+  image-generation:
+    build:
+      context: ./services/image-generation
+      dockerfile: Dockerfile.cpu
+    environment:
+      - GPU_ENABLED=false
+      - MODEL_TYPE=stable-diffusion
+      - HDR_ENABLED=true
+      - PBR_RENDERING=true
+    networks:
+      - ai-network
+    volumes:
+      - ./data/outputs/images:/app/outputs
+
+  # Video Generation Service (CPU-only for minimal pipeline)
+  video-generation:
+    build:
+      context: ./services/video-generation
+      dockerfile: Dockerfile.cpu
+    environment:
+      - GPU_ENABLED=false
+      - NERF_ENABLED=false
+      - VIDEO_QUALITY=1080p
+      - FRAME_RATE=30
+    networks:
+      - ai-network
+    volumes:
+      - ./data/outputs/videos:/app/outputs
+
+  # Crypto Prediction Service
+  crypto-prediction:
+    build:
+      context: ./services/crypto-prediction
+      dockerfile: Dockerfile
+    environment:
+      - COINGECKO_API_KEY=${COINGECKO_API_KEY}
+      - BINANCE_API_KEY=${BINANCE_API_KEY}
+      - BINANCE_API_SECRET=${BINANCE_API_SECRET}
+      - MODEL_TYPE=transformer
+      - PREDICTION_INTERVAL=1h
+    networks:
+      - ai-network
+    volumes:
+      - ./data/crypto-data:/app/data
+
+  # Fraud Detection Service
+  fraud-detection:
+    build:
+      context: ./services/fraud-detection
+      dockerfile: Dockerfile
+    environment:
+      - MODEL_PATH=/app/models/fraud-detection
+      - ALERT_THRESHOLD=0.75
+    networks:
+      - ai-network
+
+  # API Gateway - Main entry point for all services
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+      - IMAGE_SERVICE_URL=http://image-generation:5000
+      - VIDEO_SERVICE_URL=http://video-generation:5001
+      - CRYPTO_SERVICE_URL=http://crypto-prediction:5002
+      - ORCHESTRATOR_URL=http://orchestrator:5003
+      - FRAUD_SERVICE_URL=http://fraud-detection:5004
+    depends_on:
+      - orchestrator
+      - image-generation
+      - video-generation
+      - crypto-prediction
+    networks:
+      - ai-network
+
+  # Supreme General Intelligence Service
+  supreme-general-intelligence:
+    build:
+      context: ./services/supreme-general-intelligence
+      dockerfile: Dockerfile
+    ports:
+      - "5010:5010"
+    environment:
+      - DATABASE_URL=postgresql://orchestrator:${POSTGRES_PASSWORD}@postgres:5432/orchestrator_db
+      - OWNER_SECRET=${OWNER_SECRET}
+      - ORCHESTRATOR_URL=http://orchestrator:5003
+      - SPY_ORCHESTRATION_URL=http://spy-orchestration:5006
+    depends_on:
+      postgres:
+        condition: service_healthy
+      orchestrator:
+        condition: service_started
+    networks:
+      - ai-network
+
+  # Spy-Orchestration Pipeline Service
+  spy-orchestration:
+    build:
+      context: ./services/spy-orchestration
+      dockerfile: Dockerfile
+    ports:
+      - "5006:5006"
+    environment:
+      - DATABASE_URL=postgresql://orchestrator:${POSTGRES_PASSWORD}@postgres:5432/orchestrator_db
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ai-network
+
+networks:
+  ai-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  postgres-data:
