@@ -1,0 +1,31 @@
+# vLLM Fast Inference Service Requirements
+# Ultra-fast LLM inference with PagedAttention
+
+# ========================================
+# CORE DEPENDENCIES
+# ========================================
+fastapi==0.108.0
+uvicorn[standard]==0.25.0
+pydantic==2.5.3
+
+# ========================================
+# vLLM - 24x faster LLM inference
+# ========================================
+vllm==0.3.0
+
+# ========================================
+# MODEL & TOKENIZER
+# ========================================
+transformers==4.37.0
+tokenizers==0.15.0
+
+# ========================================
+# UTILITIES
+# ========================================
+numpy==1.24.3
+torch==2.1.0  # vLLM dependency
+
+# ========================================
+# LOGGING & MONITORING
+# ========================================
+python-json-logger==2.0.7

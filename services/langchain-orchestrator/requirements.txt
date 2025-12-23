@@ -1,0 +1,38 @@
+# LangChain Orchestration Service Requirements
+
+# ========================================
+# CORE DEPENDENCIES
+# ========================================
+fastapi==0.108.0
+uvicorn[standard]==0.25.0
+pydantic==2.5.3
+
+# ========================================
+# LANGCHAIN - LLM Orchestration Framework
+# ========================================
+langchain==0.1.0
+langchain-community==0.0.13
+langchain-core==0.1.10
+
+# ========================================
+# LLM PROVIDERS
+# ========================================
+openai==1.7.2
+anthropic==0.8.1  # Claude support
+
+# ========================================
+# UTILITIES
+# ========================================
+numpy==1.24.3
+requests==2.31.0
+
+# ========================================
+# MEMORY & STORAGE
+# ========================================
+chromadb==0.4.22  # Vector store for memory
+tiktoken==0.5.2  # Token counting
+
+# ========================================
+# LOGGING
+# ========================================
+python-json-logger==2.0.7
