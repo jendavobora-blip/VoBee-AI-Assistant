@@ -1,0 +1,129 @@
+# Target Repositories for Mega Optimizer Bot
+# Configure which repositories to analyze and optimize
+
+owner: "jendavobora-blip"
+
+repositories:
+  - name: "VoBee-AI-Assistant"
+    enabled: true
+    priority: "high"
+    tech_stack:
+      - python
+      - docker
+      - kubernetes
+      - javascript
+    services:
+      - api-gateway
+      - image-generation
+      - video-generation
+      - crypto-prediction
+      - orchestrator
+      - fraud-detection
+      - auto-scaler
+      - self-healing
+      - worker-pool
+      - spy-orchestration
+      - supreme-general-intelligence
+      - cdn
+    optimizations:
+      python: true
+      docker: true
+      infrastructure: true
+      monitoring: true
+    
+  - name: "VoBee-AI-by-Vobora-J"
+    enabled: true
+    priority: "high"
+    tech_stack:
+      - rust
+      - docker
+      - kubernetes
+    optimizations:
+      rust: true
+      docker: true
+      infrastructure: true
+      gpu: true
+
+# Optimization Settings
+optimization_settings:
+  # Create PRs automatically
+  auto_create_pr: true
+  
+  # Require approval before applying
+  require_approval: true
+  
+  # Run tests before creating PR
+  run_tests: true
+  
+  # Maximum optimizations per PR
+  max_optimizations_per_pr: 10
+  
+  # Branch naming
+  branch_prefix: "optimization/"
+  
+  # PR labels
+  pr_labels:
+    - "optimization"
+    - "performance"
+    - "bot-generated"
+  
+  # Reviewers (optional)
+  reviewers:
+    - "jendavobora"
+  
+  # Schedule (cron format)
+  schedule: "0 0 * * 0"  # Weekly on Sunday at midnight
+
+# Exclusions
+exclusions:
+  files:
+    - "*.md"
+    - "*.txt"
+    - ".git/**"
+    - ".github/**"
+    - "node_modules/**"
+    - "__pycache__/**"
+    - "*.pyc"
+  
+  directories:
+    - ".git"
+    - "node_modules"
+    - "__pycache__"
+    - "venv"
+    - ".venv"
+    - "dist"
+    - "build"
+
+# Notification Settings
+notifications:
+  enabled: true
+  channels:
+    - type: "github"
+      events:
+        - "pr_created"
+        - "optimization_completed"
+        - "failure"
+    
+    - type: "slack"
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      events:
+        - "optimization_completed"
+        - "failure"
+
+# Performance Targets
+performance_targets:
+  api_gateway:
+    response_time_p95: "50ms"
+    throughput: "20000 req/s"
+    
+  image_generation:
+    generation_time: "2s"
+    batch_size: 32
+    
+  video_generation:
+    generation_time: "10s"
+    batch_size: 8
+    
+  crypto_prediction:
+    prediction_time: "100ms"
+    cache_hit_rate: "80%"
