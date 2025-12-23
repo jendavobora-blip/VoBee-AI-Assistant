@@ -50,6 +50,9 @@ yarn-error.log*
 data/models/*
 data/outputs/*
 data/crypto-data/*
+data/projects/*
+data/decisions/*
+data/agents/*
 !data/.gitkeep
 
 # Kubernetes secrets (should use sealed secrets in production)
