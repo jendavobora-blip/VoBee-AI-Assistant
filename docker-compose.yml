@@ -270,6 +270,66 @@ services:
       - ai-network
     restart: unless-stopped
 
+  # ========================================
+  # NEW OPTIONAL SERVICES - TOP AI TECH 2025
+  # Uncomment or use --profile enhanced to enable
+  # ========================================
+
+  # vLLM - Ultra-fast LLM Inference (24x faster)
+  # To enable: docker-compose --profile enhanced up -d vllm-inference
+  vllm-inference:
+    build:
+      context: ./services/vllm-inference
+      dockerfile: Dockerfile
+    ports:
+      - "5020:5020"
+    environment:
+      - VLLM_MODEL=meta-llama/Llama-3-8b
+      - VLLM_MAX_MODEL_LEN=4096
+      - PRELOAD_MODEL=false
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - ai-network
+    profiles:
+      - enhanced
+    restart: unless-stopped
+
+  # LangChain - LLM Orchestration Framework
+  # To enable: docker-compose --profile enhanced up -d langchain-orchestrator
+  langchain-orchestrator:
+    build:
+      context: ./services/langchain-orchestrator
+      dockerfile: Dockerfile
+    ports:
+      - "5021:5021"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    networks:
+      - ai-network
+    profiles:
+      - enhanced
+    restart: unless-stopped
+
+  # Haystack - RAG & Semantic Search
+  # To enable: docker-compose --profile enhanced up -d haystack-search
+  haystack-search:
+    build:
+      context: ./services/haystack-search
+      dockerfile: Dockerfile
+    ports:
+      - "5022:5022"
+    networks:
+      - ai-network
+    profiles:
+      - enhanced
+    restart: unless-stopped
+
 networks:
   ai-network:
     driver: bridge
