@@ -1,13 +1,13 @@
 use anyhow::Result;
 use clap::Parser;
 use log::{info, error};
+use std::env;
 
 mod analyzers;
 mod optimizers;
 mod github;
 mod ai;
 
-use analyzers::{AnalysisResult, TechStack};
 use github::GitHubClient;
 
 #[derive(Parser, Debug)]
@@ -21,9 +21,9 @@ struct Args {
     #[arg(short, long)]
     repo: Option<String>,
 
-    /// GitHub token for API access
-    #[arg(short, long, env = "GITHUB_TOKEN")]
-    token: String,
+    /// GitHub token for API access (can also use GITHUB_TOKEN environment variable)
+    #[arg(short, long)]
+    token: Option<String>,
 
     /// Dry run mode (don't create PRs)
     #[arg(short, long, default_value = "false")]
@@ -36,10 +36,15 @@ async fn main() -> Result<()> {
     
     let args = Args::parse();
     
+    // Get token from args or environment
+    let token = args.token
+        .or_else(|| env::var("GITHUB_TOKEN").ok())
+        .expect("GitHub token must be provided via --token or GITHUB_TOKEN environment variable");
+    
     info!("🚀 Starting Mega Optimizer Bot System");
     info!("Owner: {}", args.owner);
     
-    let github_client = GitHubClient::new(args.token.clone())?;
+    let github_client = GitHubClient::new(token)?;
     
     // Get repositories to analyze
     let repos = if let Some(repo_name) = args.repo {
