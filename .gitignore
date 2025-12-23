@@ -79,3 +79,41 @@ Thumbs.db
 # Redis dumps
 dump.rdb
 appendonly.aof
+
+# ========================================
+# NEW: TOP AI Technologies 2025
+# ========================================
+
+# ONNX models
+*.onnx
+models/onnx/*
+!models/onnx/.gitkeep
+
+# Rust build artifacts
+bot-system/rust-ai-bridge/target/
+bot-system/rust-ai-bridge/Cargo.lock
+bot-system/rust-ai-bridge/**/*.so
+bot-system/rust-ai-bridge/**/*.pyd
+bot-system/rust-ai-bridge/**/*.dylib
+
+# PyTorch Lightning checkpoints
+lightning_logs/
+checkpoints/
+*.ckpt
+
+# JAX cache
+__pycache__/
+.jax_cache/
+
+# Weights & Biases
+wandb/
+
+# TensorBoard logs
+runs/
+tb_logs/
+
+# Model downloads (vLLM, LangChain, etc.)
+.cache/
+huggingface/
+.model_cache/
+

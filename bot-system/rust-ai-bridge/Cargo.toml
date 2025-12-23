@@ -1,0 +1,20 @@
+[package]
+name = "rust-ai-bridge"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rust_ai_bridge"
+crate-type = ["cdylib"]
+
+[dependencies]
+# Python bindings
+pyo3 = { version = "0.20", features = ["extension-module"] }
+
+# Rust AI libraries (optional - uncomment as needed)
+# burn = "0.11"  # Burn: Comprehensive deep learning framework
+# candle-core = "0.3"  # Candle: Minimalist ML framework by HuggingFace
+# tract-onnx = "0.20"  # Tract: ONNX runtime in Rust
+
+# Numerical computing
+ndarray = "0.15"
