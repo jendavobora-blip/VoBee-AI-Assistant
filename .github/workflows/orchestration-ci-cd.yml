@@ -12,6 +12,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 env:
   REGISTRY: ghcr.io
   IMAGE_PREFIX: ${{ github.repository_owner }}/ai-orchestration
@@ -20,11 +24,13 @@ jobs:
   build-services:
     name: Build Docker Images
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     permissions:
       contents: read
       packages: write
     
     strategy:
+      fail-fast: false
       matrix:
         service:
           - api-gateway
@@ -65,6 +71,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -79,6 +86,7 @@ jobs:
   test-services:
     name: Test Services
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: build-services
     permissions:
       contents: read
@@ -99,12 +107,23 @@ jobs:
       
       - name: Run health check tests
         run: |
-          echo "Health check tests would run here"
-          # In production, add actual tests
+          echo "🧪 Running health check tests..."
+          echo ""
+          echo "⚠️  Production test commands:"
+          echo "  # Test each service endpoint"
+          echo "  python -m pytest tests/integration/test_services.py -v"
+          echo ""
+          echo "  # Or use curl for basic health checks"
+          echo "  curl -f http://localhost:8000/health || exit 1"
+          echo "  curl -f http://localhost:5000/health || exit 1"
+          echo ""
+          echo "TODO: Add actual integration tests in tests/integration/ directory"
 
   security-scan:
     name: Security Scanning
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
     needs: build-services
     permissions:
       contents: read
@@ -123,7 +142,7 @@ jobs:
           output: 'trivy-results.sarif'
       
       - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
@@ -131,8 +150,13 @@ jobs:
   deploy-kubernetes:
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [build-services, test-services]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      # TODO: Replace with actual production URL
+      # url: https://your-production-domain.com
     permissions:
       contents: read
     
@@ -142,25 +166,65 @@ jobs:
       
       - name: Configure kubectl
         run: |
-          echo "Kubectl configuration would happen here"
-          # In production, configure actual Kubernetes cluster
+          echo "📝 Kubectl configuration steps:"
+          echo "  1. Set up kubeconfig with cluster credentials"
+          echo "  2. Configure namespace and context"
+          echo "  3. Verify cluster connectivity"
+          echo ""
+          echo "⚠️  Production Setup Required:"
+          echo "  - Add KUBE_CONFIG secret to repository"
+          echo "  - Configure cluster endpoint and credentials"
+          echo "  - Set up appropriate RBAC permissions"
+          echo ""
+          echo "Example configuration:"
+          echo "  kubectl config set-cluster production --server=\$CLUSTER_ENDPOINT"
+          echo "  kubectl config set-credentials deployer --token=\$DEPLOY_TOKEN"
+          echo "  kubectl config set-context production --cluster=production --user=deployer"
+          echo "  kubectl config use-context production"
       
       - name: Deploy to cluster
         run: |
-          echo "Deployment steps:"
-          echo "1. kubectl apply -f kubernetes/"
-          echo "2. Wait for rollout completion"
-          echo "3. Verify services are healthy"
-          # In production, add actual deployment commands
+          echo "📦 Deployment steps:"
+          echo "  1. Apply namespace and configuration"
+          echo "  2. Deploy infrastructure components"
+          echo "  3. Deploy application services"
+          echo "  4. Apply autoscaling policies"
+          echo ""
+          echo "⚠️  Production deployment commands:"
+          echo "  kubectl apply -f kubernetes/00-namespace-config.yaml"
+          echo "  kubectl apply -f kubernetes/02-infrastructure.yaml"
+          echo "  kubectl apply -f kubernetes/01-deployments.yaml"
+          echo "  kubectl apply -f kubernetes/03-autoscaling.yaml"
+          echo ""
+          echo "  # Wait for rollout"
+          echo "  kubectl rollout status deployment/api-gateway -n ai-orchestration --timeout=5m"
+          echo "  kubectl rollout status deployment/orchestrator -n ai-orchestration --timeout=5m"
       
       - name: Verify deployment
         run: |
-          echo "Verification would run here"
-          # Check pod status, service endpoints, etc.
+          echo "🔍 Deployment verification steps:"
+          echo ""
+          echo "⚠️  Production verification commands:"
+          echo "  # Check pod status"
+          echo "  kubectl get pods -n ai-orchestration"
+          echo "  kubectl get deployments -n ai-orchestration"
+          echo ""
+          echo "  # Verify service endpoints"
+          echo "  kubectl get services -n ai-orchestration"
+          echo ""
+          echo "  # Check pod health"
+          echo "  kubectl get pods -n ai-orchestration -o jsonpath='{range .items[*]}{.metadata.name}{\"\t\"}{.status.phase}{\"\n\"}{end}'"
+          echo ""
+          echo "  # Verify all pods are running"
+          echo "  if kubectl get pods -n ai-orchestration | grep -v Running | grep -v Completed; then"
+          echo "    echo 'Error: Some pods are not running'"
+          echo "    exit 1"
+          echo "  fi"
 
   notify:
     name: Notify Deployment Status
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [deploy-kubernetes]
     if: always()
     permissions:

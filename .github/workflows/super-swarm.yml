@@ -1,9 +1,10 @@
 name: Super Swarm - High Performance Virtual Bots
 
 on:
-  # Scheduled to run every 5 minutes
+  # Scheduled to run daily at 2 AM UTC to avoid excessive quota consumption
+  # Changed from */5 * * * * (every 5 minutes) to reduce GitHub Actions usage
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '0 2 * * *'  # Daily at 2:00 AM UTC
   
   # Manual trigger via workflow_dispatch
   workflow_dispatch:
@@ -22,6 +23,10 @@ on:
           - fixed
           - test
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.deployment_mode || 'scheduled' }}
+  cancel-in-progress: false
+
 env:
   BOT_COUNT: 20000
   DEPLOYMENT_MODE: auto-scale
@@ -31,6 +36,7 @@ jobs:
   initialize:
     name: Initialize Super Swarm Deployment
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
     outputs:
@@ -71,15 +77,8 @@ jobs:
         id: matrix
         run: |
           MATRIX_SIZE=${{ steps.config.outputs.matrix_size }}
-          # Generate JSON array for matrix
-          MATRIX_JSON="["
-          for i in $(seq 1 $MATRIX_SIZE); do
-            if [ $i -gt 1 ]; then
-              MATRIX_JSON="${MATRIX_JSON},"
-            fi
-            MATRIX_JSON="${MATRIX_JSON}${i}"
-          done
-          MATRIX_JSON="${MATRIX_JSON}]"
+          # Generate JSON array for matrix using more efficient method
+          MATRIX_JSON=$(seq 1 $MATRIX_SIZE | jq -c --slurp .)
           echo "matrix_json=$MATRIX_JSON" >> $GITHUB_OUTPUT
           echo "Generated matrix: $MATRIX_JSON"
       
@@ -108,6 +107,7 @@ jobs:
     name: Deploy Bot Swarm (Runner ${{ matrix.runner_id }})
     needs: initialize
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
     
@@ -158,10 +158,11 @@ jobs:
       
       - name: Create bot management script
         run: |
+          set -euo pipefail  # Exit on error, undefined variables, and pipe failures
           mkdir -p scripts/swarm
           cat > scripts/swarm/bot-manager.sh << 'EOFSCRIPT'
           #!/bin/bash
-          set -e
+          set -euo pipefail
           
           START_BOT=$1
           END_BOT=$2
@@ -171,6 +172,23 @@ jobs:
           echo "🚀 Starting bot deployment on Runner $RUNNER_ID"
           echo "Bot range: $START_BOT to $END_BOT"
           echo "Deployment ID: $DEPLOYMENT_ID"
+          
+          # Validate inputs
+          if [ -z "$START_BOT" ] || [ -z "$END_BOT" ] || [ -z "$DEPLOYMENT_ID" ] || [ -z "$RUNNER_ID" ]; then
+            echo "❌ Error: Missing required parameters"
+            exit 1
+          fi
+          
+          # Validate numeric inputs
+          if ! [[ "$START_BOT" =~ ^[0-9]+$ ]] || ! [[ "$END_BOT" =~ ^[0-9]+$ ]]; then
+            echo "❌ Error: START_BOT and END_BOT must be positive integers"
+            exit 1
+          fi
+          
+          if [ "$START_BOT" -gt "$END_BOT" ]; then
+            echo "❌ Error: START_BOT ($START_BOT) cannot be greater than END_BOT ($END_BOT)"
+            exit 1
+          fi
           
           # Create logs directory
           mkdir -p logs/swarm/$DEPLOYMENT_ID/runner-$RUNNER_ID
@@ -294,6 +312,7 @@ jobs:
     name: Monitor & Aggregate Results
     needs: [initialize, deploy-bots]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     if: always()
