@@ -5,22 +5,89 @@ Provides unified interface for all AI services
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 import httpx
 import os
 import logging
 from datetime import datetime
+import redis.asyncio as aioredis
+import json
+from functools import wraps
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Redis client for caching
+redis_client = None
+
 app = FastAPI(
     title="AI Orchestration System API Gateway",
     description="Unified API for 3D/4D generation, crypto prediction, and AI services",
-    version="1.0.0"
+    version="1.0.0",
+    default_response_class=ORJSONResponse  # Faster JSON serialization
 )
+
+# Cache decorator for Redis
+def cache_result(ttl: int = 300):
+    """Cache decorator with Redis backend"""
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            if redis_client is None:
+                return await func(*args, **kwargs)
+            
+            # Generate cache key from function name and args
+            cache_key = f"{func.__name__}:{str(args)}:{str(kwargs)}"
+            
+            try:
+                # Try to get from cache
+                cached = await redis_client.get(cache_key)
+                if cached:
+                    logger.info(f"Cache hit for {cache_key}")
+                    return json.loads(cached)
+            except Exception as e:
+                logger.warning(f"Cache read error: {e}")
+            
+            # Execute function
+            result = await func(*args, **kwargs)
+            
+            try:
+                # Store in cache
+                await redis_client.setex(cache_key, ttl, json.dumps(result))
+            except Exception as e:
+                logger.warning(f"Cache write error: {e}")
+            
+            return result
+        return wrapper
+    return decorator
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize Redis connection on startup"""
+    global redis_client
+    redis_host = os.getenv("REDIS_HOST", "redis")
+    redis_port = int(os.getenv("REDIS_PORT", "6379"))
+    
+    try:
+        redis_client = await aioredis.from_url(
+            f"redis://{redis_host}:{redis_port}",
+            encoding="utf-8",
+            decode_responses=True
+        )
+        logger.info("Redis connection established")
+    except Exception as e:
+        logger.error(f"Failed to connect to Redis: {e}")
+        redis_client = None
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Close Redis connection on shutdown"""
+    if redis_client:
+        await redis_client.close()
+        logger.info("Redis connection closed")
 
 # CORS configuration
 app.add_middleware(
@@ -78,6 +145,7 @@ async def health_check():
 
 # Service status endpoint
 @app.get("/status")
+@cache_result(ttl=30)  # Cache for 30 seconds
 async def get_status():
     """Get status of all services"""
     status = {}
@@ -209,4 +277,13 @@ async def get_metrics():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Optimized Uvicorn configuration for production
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        workers=4,  # Multi-worker for better performance
+        loop="uvloop",  # Fastest event loop
+        http="httptools",  # Faster HTTP parsing
+        log_level="info"
+    )

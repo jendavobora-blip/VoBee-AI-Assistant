@@ -8,5 +8,11 @@ omegaconf==2.3.0
 pillow==10.1.0
 numpy==1.24.3
 scipy==1.11.4
-flask==3.0.0
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+orjson==3.9.10
+uvloop==0.19.0
+httptools==0.6.1
 opencv-python-headless==4.8.1.78
+redis==5.0.1
+aioredis==2.0.1

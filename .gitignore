@@ -23,6 +23,13 @@ wheels/
 .installed.cfg
 *.egg
 
+# Rust
+bot-system/mega-optimizer/target/
+bot-system/mega-optimizer/Cargo.lock
+*.rlib
+*.rmeta
+*.crate
+
 # Docker
 .dockerignore
 

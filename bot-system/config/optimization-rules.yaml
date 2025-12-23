@@ -1,0 +1,189 @@
+# VoBee AI Mega Optimizer - Optimization Rules
+# This file defines the optimization strategies and their priorities
+
+optimization_categories:
+  - name: "Performance"
+    priority: "high"
+    weight: 10
+    
+  - name: "Cost"
+    priority: "medium"
+    weight: 5
+    
+  - name: "Scalability"
+    priority: "high"
+    weight: 8
+    
+  - name: "Security"
+    priority: "critical"
+    weight: 15
+
+# Python/FastAPI Optimizations
+python_optimizations:
+  - name: "Multi-Worker Uvicorn"
+    description: "Configure Uvicorn with multiple workers"
+    impact: "10x"
+    difficulty: "easy"
+    files:
+      - "*/main.py"
+      - "*/Dockerfile"
+    rules:
+      - pattern: 'uvicorn.run\(app'
+        replacement: 'uvicorn.run(app, workers=4, loop="uvloop", http="httptools")'
+        
+  - name: "ORJSONResponse"
+    description: "Use ORJSON for faster JSON serialization"
+    impact: "3x"
+    difficulty: "easy"
+    files:
+      - "*/main.py"
+    rules:
+      - pattern: 'FastAPI\('
+        replacement: 'FastAPI(default_response_class=ORJSONResponse'
+        
+  - name: "Redis Caching"
+    description: "Add Redis caching layer"
+    impact: "20x"
+    difficulty: "medium"
+    files:
+      - "*/main.py"
+    dependencies:
+      - "redis[asyncio]>=5.0"
+      - "aioredis>=2.0"
+      
+  - name: "Connection Pooling"
+    description: "Implement connection pooling for databases"
+    impact: "5x"
+    difficulty: "medium"
+    files:
+      - "*/main.py"
+    dependencies:
+      - "sqlalchemy[asyncio]>=2.0"
+      
+  - name: "Batch Inference"
+    description: "Add batch inference for ML models"
+    impact: "15x"
+    difficulty: "hard"
+    files:
+      - "services/image-generation/main.py"
+      - "services/video-generation/main.py"
+      
+  - name: "Model Quantization"
+    description: "Apply INT8/FP16 quantization to models"
+    impact: "10x"
+    difficulty: "medium"
+    files:
+      - "services/*/main.py"
+    conditions:
+      - has_pytorch: true
+      - has_tensorflow: true
+
+# Docker Optimizations
+docker_optimizations:
+  - name: "Multi-Stage Build"
+    description: "Convert to multi-stage Docker build"
+    impact: "70% size reduction"
+    difficulty: "easy"
+    files:
+      - "*/Dockerfile"
+    rules:
+      - pattern: 'FROM python:3.11-slim$'
+        replacement: 'FROM python:3.11-slim AS builder'
+        
+  - name: "Alpine Base Image"
+    description: "Use Alpine-based images"
+    impact: "80% size reduction"
+    difficulty: "medium"
+    files:
+      - "*/Dockerfile"
+    rules:
+      - pattern: 'FROM python:3.11-slim'
+        replacement: 'FROM python:3.11-alpine'
+        
+  - name: "Layer Caching"
+    description: "Optimize layer caching"
+    impact: "5x build speed"
+    difficulty: "easy"
+    files:
+      - "*/Dockerfile"
+
+# Infrastructure Optimizations
+infrastructure_optimizations:
+  - name: "Kubernetes HPA"
+    description: "Add Horizontal Pod Autoscaler"
+    impact: "Auto-scaling"
+    difficulty: "medium"
+    files:
+      - "kubernetes/*.yaml"
+    
+  - name: "Load Balancing"
+    description: "Add Nginx/Traefik load balancer"
+    impact: "3x throughput"
+    difficulty: "medium"
+    
+  - name: "CDN Integration"
+    description: "Add CDN for static content"
+    impact: "10x faster delivery"
+    difficulty: "medium"
+
+# Monitoring & Observability
+monitoring_optimizations:
+  - name: "Prometheus Metrics"
+    description: "Add Prometheus metrics"
+    impact: "Observability"
+    difficulty: "easy"
+    dependencies:
+      - "prometheus-client>=0.19"
+      
+  - name: "Grafana Dashboards"
+    description: "Create performance dashboards"
+    impact: "Visibility"
+    difficulty: "easy"
+    
+  - name: "Distributed Tracing"
+    description: "Add OpenTelemetry tracing"
+    impact: "Debug performance"
+    difficulty: "medium"
+    dependencies:
+      - "opentelemetry-api>=1.20"
+      - "opentelemetry-sdk>=1.20"
+
+# Success Metrics
+success_metrics:
+  performance:
+    - metric: "response_time_p95"
+      target: "<100ms"
+      improvement: "10x"
+      
+    - metric: "throughput"
+      target: ">10000 req/s"
+      improvement: "20x"
+      
+  cost:
+    - metric: "cloud_costs"
+      target: "-50%"
+      improvement: "2x"
+      
+  reliability:
+    - metric: "uptime"
+      target: "99.99%"
+      improvement: "4 nines"
+      
+  scalability:
+    - metric: "concurrent_users"
+      target: "100000+"
+      improvement: "100x"
+
+# Auto-Apply Rules
+auto_apply:
+  - optimization: "ORJSONResponse"
+    condition: "always"
+    
+  - optimization: "Multi-Worker Uvicorn"
+    condition: "production"
+    
+  - optimization: "Redis Caching"
+    condition: "high_traffic"
+    
+  - optimization: "Batch Inference"
+    condition: "has_ml_models"
